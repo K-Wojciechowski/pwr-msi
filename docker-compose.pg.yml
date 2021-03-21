@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+    postgres:
+        image: postgres:alpine
+        environment:
+            - POSTGRES_DB=msi
+            - POSTGRES_USER=msi
+            - POSTGRES_PASSWORD=msi
+            - PGDATA=/var/lib/postgresql/data/pgdata
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+
+
+volumes:
+    pgdata:
