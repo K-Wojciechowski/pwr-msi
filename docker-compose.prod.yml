@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+    backend:
+        build: .
+        links:
+            - nginx
+        environment:
+            - MSI_DB_CONNECTION_STRING
+    nginx:
+        build: ClientApp
+        ports:
+            - "127.0.0.1:8674:80"
