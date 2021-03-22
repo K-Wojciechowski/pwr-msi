@@ -7,6 +7,7 @@
         public int AddressId { get; set; }
         public decimal TotalPrice { get; set; }
         public string DeliveryNotes { get; set; }
+        public OrderStatus Status { get; set; }
 
         public Restaurant Restaurant { get; set; }
         public User Customer { get; set; }

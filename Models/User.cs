@@ -9,12 +9,15 @@ namespace pwr_msi.Models {
         public string Password { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public decimal Balance { get; set; }
 
         public int BillingAddressId { get; set; }
         public Address BillingAddress { get; set; }
 
         public ICollection<Address> Addresses { get; set; }
         public ICollection<Restaurant> Restaurants { get; set; }
+        public ICollection<Payment> Payments { get; set; }
+        public ICollection<BalanceRepayment> BalanceRepayments { get; set; }
         public List<RestaurantUser> RestaurantUsers { get; set; }
     }
 }

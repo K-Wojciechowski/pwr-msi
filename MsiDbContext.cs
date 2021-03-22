@@ -4,6 +4,7 @@ using pwr_msi.Models;
 namespace pwr_msi {
     public class MsiDbContext : DbContext {
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<BalanceRepayment> BalanceRepayments { get; set; }
         public DbSet<Cuisine> Cuisines { get; set; }
         public DbSet<MenuCategory> MenuCategories { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
@@ -12,7 +13,8 @@ namespace pwr_msi {
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<OrderItemCustomization> OrderItemCustomizations { get; set; }
-        public DbSet<OrderItemTask> OrderItemTasks { get; set; }
+        public DbSet<OrderTask> OrderTasks { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<RestaurantUser> RestaurantUsers { get; set; }
         public DbSet<User> Users { get; set; }
