@@ -4,9 +4,15 @@ services:
         build: .
         links:
             - nginx
+            - redis
         environment:
             - MSI_DB_CONNECTION_STRING
+            - MSI_REDIS_HOST="redis"
     nginx:
         build: ClientApp
+        links:
+            - backend
         ports:
             - "127.0.0.1:8674:80"
+    redis:
+        image: redis:alpine
