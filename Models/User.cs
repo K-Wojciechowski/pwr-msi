@@ -10,6 +10,8 @@ namespace pwr_msi.Models {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public decimal Balance { get; set; }
+        public bool IsAdmin { get; set; }
+        public bool IsVerified { get; set; }
 
         public int BillingAddressId { get; set; }
         public Address BillingAddress { get; set; }
