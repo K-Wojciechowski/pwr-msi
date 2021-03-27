@@ -20,6 +20,7 @@ namespace pwr_msi.Services {
                 if (userId.HasValue) {
                     var user = await dbContext.Users.FindAsync(userId);
                     context.Items["User"] = user;
+                    context.Items["UserID"] = userId;
                 }
             }
 

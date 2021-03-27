@@ -21,5 +21,7 @@ namespace pwr_msi.Models {
         public ICollection<Payment> Payments { get; set; }
         public ICollection<BalanceRepayment> BalanceRepayments { get; set; }
         public List<RestaurantUser> RestaurantUsers { get; set; }
+
+        public string FullName => FirstName + " " + LastName;
     }
 }

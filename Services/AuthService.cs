@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using pwr_msi.Models;
 
@@ -13,10 +14,20 @@ namespace pwr_msi.Services {
         public const string ClaimRefreshValue = "refresh";
 
         private AppConfig _appConfig;
+        private MsiDbContext _dbContext;
+        private readonly PasswordHasher<User> _passwordHasher;
 
-        public AuthService(AppConfig appConfig) {
+        public AuthService(AppConfig appConfig, MsiDbContext dbContext) {
             _appConfig = appConfig;
+            _dbContext = dbContext;
+            _passwordHasher = new PasswordHasher<User>();
         }
+
+        public PasswordVerificationResult VerifyHashedPassword(User user, string password) =>
+            _passwordHasher.VerifyHashedPassword(user, user.Password, password);
+
+        public string HashPassword (User user, string password) =>
+            _passwordHasher.HashPassword(user, password);
 
         public JwtSecurityToken ReadToken(string tokenStr) {
             try {
@@ -52,11 +63,14 @@ namespace pwr_msi.Services {
             var tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(allClaims),
                 Expires = DateTime.UtcNow.Add(lifeTime),
+                Issuer = _appConfig.ServerAddress,
+                Audience = _appConfig.ServerAddress,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_appConfig.JwtKey),
                     SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-}
     }
+}
+

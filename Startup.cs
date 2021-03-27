@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using pwr_msi.Models;
 using pwr_msi.Services;
@@ -24,7 +25,7 @@ namespace pwr_msi {
         private const string DefaultConnectionString = "Host=localhost;Database=msi;Username=msi;Password=msi";
         private const string DefaultServerAddress = "http://localhost:5000/";
 
-        private byte[] GenerateJwtKey() {
+        private byte[] GetJwtKey() {
             var jwtKeyString = Configuration.GetValue<string>("JWT_KEY", defaultValue: null);
             if (jwtKeyString == null) {
                 var jwtKey = new byte[32];
@@ -39,27 +40,32 @@ namespace pwr_msi {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            var jwtKey = GenerateJwtKey();
+            var jwtKey = GetJwtKey();
+            var serverAddress = Configuration.GetValue("SERVER_ADDRESS", DefaultServerAddress);
             var jwtTokenValidationParameters = new TokenValidationParameters {
-                ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
+                RequireSignedTokens = true,
+                RequireExpirationTime = true,
+                ValidateLifetime = true,
                 ValidateIssuer = true,
-                ValidateAudience = false,
+                ValidateAudience = true,
+                ValidIssuer = serverAddress,
+                ValidAudience = serverAddress,
                 ClockSkew = TimeSpan.Zero,
             };
 
-            services.Configure<AppConfig>(ac => {
-                    ac.AuthTokenLifetime =
-                        TimeSpan.FromSeconds(Configuration.GetValue("AUTH_TOKEN_LIFETIME", defaultValue: 300));
-                    ac.RefreshTokenLifetime =
-                        TimeSpan.FromSeconds(Configuration.GetValue("AUTH_REFRESH_TOKEN_LIFETIME", defaultValue: 3600));
-                    ac.ServerAddress = Configuration.GetValue("SERVER_ADDRESS", DefaultServerAddress);
-                    ac.JwtKey = jwtKey;
-                    ac.JwtValidationParameters = jwtTokenValidationParameters;
+            services.AddSingleton(new AppConfig {
+                    AuthTokenLifetime =
+                        TimeSpan.FromSeconds(Configuration.GetValue("AUTH_TOKEN_LIFETIME", defaultValue: 300)),
+                    RefreshTokenLifetime =
+                        TimeSpan.FromSeconds(Configuration.GetValue("AUTH_REFRESH_TOKEN_LIFETIME", defaultValue: 3600)),
+                    ServerAddress = serverAddress,
+                    JwtKey = jwtKey,
+                    JwtValidationParameters = jwtTokenValidationParameters,
                 }
             );
 
-            services.Configure<AuthService>(_ => {});
+            services.AddScoped<AuthService, AuthService>();
             services.AddControllersWithViews();
 
             // In production, the Angular files will be served from this directory
@@ -68,11 +74,12 @@ namespace pwr_msi {
                 options.UseNpgsql(Configuration.GetValue("DB_CONNECTION_STRING", DefaultConnectionString)));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(o => {
-                    o.Authority = Configuration.GetValue("SERVER_ADDRESS", DefaultServerAddress);
-                    o.Audience = Configuration.GetValue("SERVER_ADDRESS", DefaultServerAddress);
+                    o.Authority = serverAddress;
+                    o.Audience = serverAddress;
                     o.SaveToken = true;
                     o.RequireHttpsMetadata = false;
                     o.TokenValidationParameters = jwtTokenValidationParameters;
+                    o.Configuration = new OpenIdConnectConfiguration {Issuer = serverAddress};
                 });
         }
 
@@ -91,6 +98,10 @@ namespace pwr_msi {
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseMiddleware<AuthMiddleware>();
 
