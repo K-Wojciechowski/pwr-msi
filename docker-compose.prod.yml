@@ -6,13 +6,13 @@ services:
             - nginx
             - redis
         environment:
+            - ASPNETCORE_ENVIRONMENT
             - MSI_DB_CONNECTION_STRING
+            - MSI_SERVER_ADDRESS
             - MSI_REDIS_HOST="redis"
     nginx:
         build: ClientApp
-        links:
-            - backend
         ports:
-            - "127.0.0.1:8674:80"
+            - "127.0.0.2:8674:80"
     redis:
         image: redis:alpine
