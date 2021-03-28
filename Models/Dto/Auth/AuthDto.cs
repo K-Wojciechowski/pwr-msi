@@ -1,4 +1,4 @@
-﻿namespace pwr_msi.Models.Dto {
+﻿namespace pwr_msi.Models.Dto.Auth {
     public class AuthInput {
         public string Username { get; set; }
         public string Password { get; set; }

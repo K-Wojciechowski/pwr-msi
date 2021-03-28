@@ -8,13 +8,12 @@ namespace pwr_msi {
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) => {
-                    config.AddEnvironmentVariables("MSI_");
+        public static IHostBuilder CreateHostBuilder(string[] args) {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(configureDelegate: (hostingContext, config) => {
+                    config.AddEnvironmentVariables(prefix: "MSI_");
                 })
-                    .ConfigureWebHostDefaults(webBuilder => {
-                    webBuilder.UseStartup<Startup>();
-                });
+                .ConfigureWebHostDefaults(configure: webBuilder => { webBuilder.UseStartup<Startup>(); });
+        }
     }
 }

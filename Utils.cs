@@ -10,7 +10,7 @@ namespace pwr_msi {
         }
 
         public static User UserFromContext(HttpContext context) {
-            return (User) context.Items["User"];
+            return (User) context.Items[key: "User"];
         }
     }
 }

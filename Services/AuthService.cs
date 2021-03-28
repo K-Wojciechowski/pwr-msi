@@ -12,10 +12,10 @@ namespace pwr_msi.Services {
         public const string ClaimUserId = "userId";
         public const string ClaimRefreshKey = "refresh";
         public const string ClaimRefreshValue = "refresh";
-
-        private AppConfig _appConfig;
-        private MsiDbContext _dbContext;
         private readonly PasswordHasher<User> _passwordHasher;
+
+        private readonly AppConfig _appConfig;
+        private MsiDbContext _dbContext;
 
         public AuthService(AppConfig appConfig, MsiDbContext dbContext) {
             _appConfig = appConfig;
@@ -23,38 +23,46 @@ namespace pwr_msi.Services {
             _passwordHasher = new PasswordHasher<User>();
         }
 
-        public PasswordVerificationResult VerifyHashedPassword(User user, string password) =>
-            _passwordHasher.VerifyHashedPassword(user, user.Password, password);
+        public PasswordVerificationResult VerifyHashedPassword(User user, string password) {
+            return _passwordHasher.VerifyHashedPassword(user, user.Password, password);
+        }
 
-        public string HashPassword (User user, string password) =>
-            _passwordHasher.HashPassword(user, password);
+        public string HashPassword(User user, string password) {
+            return _passwordHasher.HashPassword(user, password);
+        }
 
         public JwtSecurityToken ReadToken(string tokenStr) {
             try {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                tokenHandler.ValidateToken(tokenStr, _appConfig.JwtValidationParameters, out var token);
+                tokenHandler.ValidateToken(tokenStr, _appConfig.JwtValidationParameters, validatedToken: out var token);
                 return (JwtSecurityToken) token;
             } catch {
                 return null;
             }
         }
 
-        public Claim GetUserIdClaim(int userId) => new(ClaimUserId, userId.ToString());
-        public Claim GetRefreshClaim() => new (ClaimRefreshKey, ClaimRefreshValue);
+        public Claim GetUserIdClaim(int userId) {
+            return new(ClaimUserId, value: userId.ToString());
+        }
+
+        public Claim GetRefreshClaim() {
+            return new(ClaimRefreshKey, ClaimRefreshValue);
+        }
 
         public int? ExtractUserFromToken(JwtSecurityToken token) {
-            var userIdClaim = token?.Claims?.FirstOrDefault(c => c.Type == ClaimUserId);
+            var userIdClaim = token?.Claims?.FirstOrDefault(predicate: c => c.Type == ClaimUserId);
             return userIdClaim == null ? null : Utils.TryParseInt(userIdClaim.Value);
         }
 
 
         public bool IsRefreshToken(JwtSecurityToken token) {
-            var refreshClaim = token?.Claims?.FirstOrDefault(c => c.Type == ClaimRefreshKey);
+            var refreshClaim = token?.Claims?.FirstOrDefault(predicate: c => c.Type == ClaimRefreshKey);
             return refreshClaim != null && refreshClaim.Value == ClaimRefreshValue;
         }
 
-        public string GenerateJwtToken(User user, TimeSpan lifeTime, IReadOnlyCollection<Claim> extraClaims = null) =>
-            GenerateJwtToken(user.UserId, lifeTime, extraClaims);
+        public string GenerateJwtToken(User user, TimeSpan lifeTime, IReadOnlyCollection<Claim> extraClaims = null) {
+            return GenerateJwtToken(user.UserId, lifeTime, extraClaims);
+        }
 
         public string GenerateJwtToken(int userId, TimeSpan lifeTime, IReadOnlyCollection<Claim> extraClaims = null) {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -65,12 +73,11 @@ namespace pwr_msi.Services {
                 Expires = DateTime.UtcNow.Add(lifeTime),
                 Issuer = _appConfig.ServerAddress,
                 Audience = _appConfig.ServerAddress,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_appConfig.JwtKey),
-                    SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(key: new SymmetricSecurityKey(_appConfig.JwtKey),
+                    SecurityAlgorithms.HmacSha256Signature),
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
     }
 }
-

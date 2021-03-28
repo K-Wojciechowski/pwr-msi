@@ -1,11 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace pwr_msi.Migrations
-{
-    public partial class UserIsAdminField : Migration
-    {
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
+namespace pwr_msi.Migrations {
+    public partial class UserIsAdminField : Migration {
+        protected override void Up(MigrationBuilder migrationBuilder) {
             migrationBuilder.AddColumn<bool>(
                 name: "IsAdmin",
                 table: "Users",
@@ -21,8 +18,7 @@ namespace pwr_msi.Migrations
                 defaultValue: false);
         }
 
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+        protected override void Down(MigrationBuilder migrationBuilder) {
             migrationBuilder.DropColumn(
                 name: "IsAdmin",
                 table: "Users");

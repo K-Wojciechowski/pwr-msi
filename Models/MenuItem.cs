@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using NodaTime;
 
 namespace pwr_msi.Models {
     public class MenuItem {
@@ -9,8 +9,8 @@ namespace pwr_msi.Models {
         public decimal Price { get; set; }
         public decimal Amount { get; set; }
         public AmountUnit AmountUnit { get; set; }
-        public DateTime ValidFrom { get; set; }
-        public DateTime ValidUntil { get; set; }
+        public ZonedDateTime ValidFrom { get; set; }
+        public ZonedDateTime ValidUntil { get; set; }
         public int MenuOrder { get; set; }
 
         public int MenuCategoryId { get; set; }
