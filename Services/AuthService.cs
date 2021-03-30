@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using NodaTime;
 using pwr_msi.Models;
 
 namespace pwr_msi.Services {
@@ -78,6 +79,12 @@ namespace pwr_msi.Services {
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public Instant GetExpiryDate(string token) {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var expiryDate = tokenHandler.ReadToken(token).ValidTo;
+            return Instant.FromDateTimeUtc(expiryDate);
         }
     }
 }

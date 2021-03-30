@@ -39,7 +39,7 @@ namespace pwr_msi.Services {
         }
 
         private string GetLink(VerificationToken token) {
-            return _appConfig.ServerAddress.TrimEnd(trimChar: '/') + $"/user/verify/{token.Token}/";
+            return _appConfig.ServerAddress.TrimEnd(trimChar: '/') + $"/user/verify/{token.Token}";
         }
 
         private async Task<VerificationToken> GenerateAndSaveToken(User user, VerificationTokenType tokenType) {

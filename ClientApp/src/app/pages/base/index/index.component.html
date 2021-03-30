@@ -1,0 +1,4 @@
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<app-welcome-new-users *ngIf="!showLoading && !isAuthenticated"></app-welcome-new-users>
+<app-dashboard *ngIf="!showLoading && isAuthenticated"></app-dashboard>
+

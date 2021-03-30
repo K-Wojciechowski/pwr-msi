@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace pwr_msi.Controllers {
                     extraClaims: new List<Claim> {_authService.GetRefreshClaim()});
                 return new AuthResult {
                     AuthToken = authToken,
-                    RefreshIn = (int) _appConfig.AuthTokenLifetime.TotalSeconds,
+                    RefreshAt = _authService.GetExpiryDate(authToken),
                     RefreshToken = refreshToken,
                 };
             } catch (InvalidOperationException) {
@@ -66,7 +67,8 @@ namespace pwr_msi.Controllers {
             if (_authService.IsRefreshToken(token) && userId != null) {
                 var authToken = _authService.GenerateJwtToken(userId.Value, _appConfig.AuthTokenLifetime);
                 return new RefreshResult {
-                    AuthToken = authToken, RefreshIn = (int) _appConfig.AuthTokenLifetime.TotalSeconds,
+                    AuthToken = authToken,
+                    RefreshAt = _authService.GetExpiryDate(authToken),
                 };
             }
 
@@ -100,6 +102,22 @@ namespace pwr_msi.Controllers {
             await _dbContext.SaveChangesAsync();
             await _accountEmailService.SendVerificationEmail(user);
             return StatusCode(statusCode: (int) HttpStatusCode.Created, value: user.AsProfile());
+        }
+
+        [Authorize]
+        [Route(template: "access/")]
+        public async Task<ActionResult<UserAccessDto>> GetAccess() {
+            var userPermissions = _dbContext.RestaurantUsers.Where(ru => ru.UserId == MsiUserId);
+            var manage = await userPermissions.Where(ru => ru.CanManage).ToListAsync();
+            var accept = await userPermissions.Where(ru => ru.CanManage).ToListAsync();
+            var deliver = await userPermissions.Where(ru => ru.CanManage).ToListAsync();
+            return new UserAccessDto {
+                Profile = MsiUser.AsProfile(),
+                Admin = MsiUser.IsAdmin,
+                Manage = manage.Select(ru => ru.Restaurant.AsBasicDto()),
+                Accept = accept.Select(ru => ru.Restaurant.AsBasicDto()),
+                Deliver = deliver.Select(ru => ru.Restaurant.AsBasicDto()),
+            };
         }
 
         [Authorize]

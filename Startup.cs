@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using NodaTime;
+using NodaTime.Serialization.JsonNet;
 using pwr_msi.Models;
 using pwr_msi.Services;
 
@@ -32,7 +34,8 @@ namespace pwr_msi {
             services.AddLocalization(setupAction: options => options.ResourcesPath = "Resources");
 
             services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization();
+                .AddDataAnnotationsLocalization().AddNewtonsoftJson(s =>
+                    s.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration: configuration => { configuration.RootPath = "ClientApp/dist"; });

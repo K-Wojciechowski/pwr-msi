@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using pwr_msi.Models.Dto;
 
 namespace pwr_msi.Models {
     public class Restaurant {
@@ -15,5 +16,7 @@ namespace pwr_msi.Models {
         public ICollection<MenuCategory> MenuCategories { get; set; }
         public ICollection<User> Users { get; set; }
         public List<RestaurantUser> RestaurantUsers { get; set; }
+
+        public RestaurantBasicDto AsBasicDto() => new() {RestaruantId = RestaurantId, Name = Name};
     }
 }
