@@ -36,10 +36,13 @@ export class LogInComponent extends RouteComponent implements OnInit {
         }
         this.showLoading = true;
         this.authService.logIn(f.value.username, f.value.password).subscribe(
-            access => {
+            async access => {
+                this.showLoading = false;
                 this.toastService.showSuccess(`Welcome, ${access.profile.firstName}!`);
+                await this.router.navigateByUrl("/");
             },
             error => {
+                this.showLoading = false;
                 console.log(error);
                 this.toastService.showError("Failed to log in. Please check your credentials.")
             }

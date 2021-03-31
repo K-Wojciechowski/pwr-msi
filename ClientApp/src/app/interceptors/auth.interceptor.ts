@@ -9,6 +9,7 @@ import {Observable, throwError} from 'rxjs';
 import {AuthService} from "../services/auth.service";
 import {catchError, switchMap} from "rxjs/operators";
 import {SKIP_AUTH_HEADER_NAME, SKIP_AUTH_HEADER_VALUE_AUTH, SKIP_AUTH_HEADER_VALUE_REFRESH} from "./auth.types";
+import {AuthStoreService} from "../services/auth-store.service";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -17,14 +18,14 @@ export class AuthInterceptor implements HttpInterceptor {
 
     private authService!: AuthService;
 
-    constructor(private injector: Injector) {
+    constructor(private injector: Injector, private authStore: AuthStoreService) {
         setTimeout(() => {
             this.authService = injector.get(AuthService);
         });
     }
 
     private setAuthHeader(request: HttpRequest<unknown>): HttpRequest<unknown> {
-        const authToken = this.authService.authToken;
+        const authToken = this.authStore.authToken;
         if (authToken !== null) {
             const headers: any = {};
             headers[AuthInterceptor.AUTH_HEADER_KEY] = AuthInterceptor.AUTH_HEADER_VALUE_BEFORE + authToken;
@@ -46,12 +47,10 @@ export class AuthInterceptor implements HttpInterceptor {
         if ((skipAuthHeaderValue & SKIP_AUTH_HEADER_VALUE_AUTH) == 0) {
             authReq = this.setAuthHeader(authReq);
         }
-        // TODO requests sent twice?
         return next.handle(authReq)
             .pipe(
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401 && (skipAuthHeaderValue & SKIP_AUTH_HEADER_VALUE_REFRESH) != 0) {
-                        // TODO loop?
                         // Try to refresh the token.
                         return this.authService.refresh().pipe(
                             switchMap(() => {
