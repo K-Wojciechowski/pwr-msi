@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {RouteComponent} from "../../../utils/route-component";
 import {AuthService} from "../../../services/auth.service";
 import {AuthStoreService} from "../../../services/auth-store.service";
 
@@ -8,16 +7,11 @@ import {AuthStoreService} from "../../../services/auth-store.service";
     templateUrl: './index.component.html',
     styleUrls: ['./index.component.scss']
 })
-export class IndexComponent extends RouteComponent implements OnInit {
+export class IndexComponent implements OnInit {
     showLoading: boolean = true;
     isAuthenticated: boolean = false;
 
-    USE_NAVBAR: boolean = true;
-    USE_SIDEBAR: boolean = false;
-
-
     constructor(private authService: AuthService, private authStore: AuthStoreService) {
-        super();
         this.authService.ensureAuthReady();
     }
 

@@ -4,8 +4,8 @@ import {IndexComponent} from "./pages/base/index/index.component";
 import {LogInComponent} from "./pages/auth/log-in/log-in.component";
 
 const routes: Routes = [
-    {path: "", component: IndexComponent, pathMatch: "full"},
-    {path: "auth/login", component: LogInComponent}
+    {path: "", component: IndexComponent, pathMatch: "full", data: {hideSidebar: true}},
+    {path: "auth/login", component: LogInComponent, data: {hideNavbar: true, hideSidebar: true}}
 ];
 
 @NgModule({

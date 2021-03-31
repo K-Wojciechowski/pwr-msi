@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {RouteComponent} from "../../../utils/route-component";
 import {NgForm} from "@angular/forms";
 import {AuthService} from "../../../services/auth.service";
 import {ToastService} from "../../../services/toast.service";
@@ -10,16 +9,12 @@ import {Router} from "@angular/router";
     templateUrl: './log-in.component.html',
     styleUrls: ['./log-in.component.scss']
 })
-export class LogInComponent extends RouteComponent implements OnInit {
-    USE_SIDEBAR: boolean = false;
-    USE_NAVBAR: boolean = false;
-
+export class LogInComponent implements OnInit {
     username: string = "";
     password: string = "";
     showLoading: boolean = false;
 
     constructor(private authService: AuthService, private toastService: ToastService, private router: Router) {
-        super();
     }
 
     ngOnInit(): void {
