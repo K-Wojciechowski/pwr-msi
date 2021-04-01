@@ -6,13 +6,13 @@ namespace pwr_msi.Models {
         public OrderTaskType Task { get; set; }
         public ZonedDateTime DateCompleted { get; set; }
         public int CompletedById { get; set; }
-        public User CompletedBy { get; set; }
+        public virtual User CompletedBy { get; set; }
 
         public int AssigneeUserId { get; set; }
-        public User AssigneeUser { get; set; }
+        public virtual User AssigneeUser { get; set; }
 
         public int AssigneeRestaurantId { get; set; }
-        public Restaurant AssigneeRestaurant { get; set; }
+        public virtual Restaurant AssigneeRestaurant { get; set; }
 
         public AssigneeType AssigneeType { get; set; }
     }

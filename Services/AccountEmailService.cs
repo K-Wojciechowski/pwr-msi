@@ -38,12 +38,17 @@ namespace pwr_msi.Services {
             await smtp.DisconnectAsync(quit: true);
         }
 
-        private string GetLink(VerificationToken token) {
-            return _appConfig.ServerAddress.TrimEnd(trimChar: '/') + $"/user/verify/{token.Token}";
+        private string GetVerificationLink(VerificationToken token) {
+            return _appConfig.ServerAddress.TrimEnd(trimChar: '/') + $"/auth/verify/{token.Token}";
+        }
+
+
+        private string GetResetLink(VerificationToken token) {
+            return _appConfig.ServerAddress.TrimEnd(trimChar: '/') + $"/auth/reset/{token.Token}";
         }
 
         private async Task<VerificationToken> GenerateAndSaveToken(User user, VerificationTokenType tokenType) {
-            var tokenStr = new Guid().ToString();
+            var tokenStr = Guid.NewGuid().ToString();
             var token = new VerificationToken {
                 Token = tokenStr,
                 User = user,
@@ -58,37 +63,39 @@ namespace pwr_msi.Services {
 
         public async Task SendVerificationEmail(User user) {
             var token = await GenerateAndSaveToken(user, VerificationTokenType.VERIFY_EMAIL);
-            var link = GetLink(token);
+            var link = GetVerificationLink(token);
             var expiresAt = token.ValidUntil.ToString();
+            var username = user.Username;
             await SendEmail(
                 user,
                 subject: _localizer[name: "Verify your MSI Account"].ToString(),
                 textBody: _localizer[
                     name:
-                    "Hello!\n\nTo use your MSI account, you need to visit this link:\n{0}\n\nThis link will expire on {1}.",
-                    link, expiresAt].ToString(),
-                htmlBody: _htmlLocalizer[
+                    "Hello!\n\nTo use your MSI account named {2}, you need to visit this link:\n{0}\n\nThis link will expire on {1}.",
+                    link, expiresAt, username].Value,
+                htmlBody: _localizer[
                     name:
-                    "Hello!<br><br>To use your MSI account, you need to visit this link:<br><a href=\"{0}\">{0}</a><br><br>This link will expire on {1}.",
-                    link, expiresAt].ToString()
+                    "Hello!<br><br>To use your MSI account named <b>{2}</b>, you need to visit this link:<br><a href=\"{0}\">{0}</a><br><br>This link will expire on {1}.",
+                    link, expiresAt, username].Value
             );
         }
 
         public async Task SendResetEmail(User user) {
             var token = await GenerateAndSaveToken(user, VerificationTokenType.RESET_PASSWORD);
-            var link = GetLink(token);
+            var link = GetResetLink(token);
             var expiresAt = token.ValidUntil.ToString();
+            var username = user.Username;
             await SendEmail(
                 user,
                 subject: _localizer[name: "Reset your MSI Account Password"].ToString(),
                 textBody: _localizer[
                     name:
-                    "Hello!\n\nTo reset the password for your MSI account, you need to visit this link:\n{0}\n\nThis link will expire on {1}.",
-                    link, expiresAt].ToString(),
-                htmlBody: _htmlLocalizer[
+                    "Hello!\n\nTo reset the password for your MSI account named {2}, you need to visit this link:\n{0}\n\nThis link will expire on {1}.",
+                    link, expiresAt, username].Value,
+                htmlBody: _localizer[
                     name:
-                    "Hello!<br><br>To reset the password for your MSI account, you need to visit this link:<br><a href=\"{0}\">{0}</a><br><br>This link will expire on {1}.",
-                    link, expiresAt].ToString()
+                    "Hello!<br><br>To reset the password for your MSI account named <b>{2}</b>, you need to visit this link:<br><a href=\"{0}\">{0}</a><br><br>This link will expire on {1}.",
+                    link, expiresAt, username].Value
             );
         }
     }

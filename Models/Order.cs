@@ -9,9 +9,9 @@
         public string DeliveryNotes { get; set; }
         public OrderStatus Status { get; set; }
 
-        public Restaurant Restaurant { get; set; }
-        public User Customer { get; set; }
-        public User DeliveryPerson { get; set; }
-        public Address Address { get; set; }
+        public virtual Restaurant Restaurant { get; set; }
+        public virtual User Customer { get; set; }
+        public virtual User DeliveryPerson { get; set; }
+        public virtual Address Address { get; set; }
     }
 }

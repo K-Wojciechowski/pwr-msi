@@ -1,0 +1,23 @@
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<div class="card login-card" *ngIf="showLoading || showError">
+    <div class="card-header">
+        Verify e-mail
+    </div>
+    <div class="card-body" *ngIf="!showError">
+        Verifying your e-mail…
+    </div>
+    <div class="card-body" *ngIf="showError">
+        E-mail verification failed.
+    </div>
+</div>
+<div class="card login-card" *ngIf="!showLoading && !showError">
+    <div class="card-header">
+        E-mail verified!
+    </div>
+    <div class="card-body">
+        Your e-mail is verified.
+        <div class="btn-box">
+            <a routerLink="/auth/login" class="btn btn-lg btn-primary"><bs-icon name="key"></bs-icon> Log in</a>
+        </div>
+    </div>
+</div>

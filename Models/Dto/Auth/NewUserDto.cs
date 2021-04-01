@@ -18,6 +18,6 @@ namespace pwr_msi.Models.Dto.Auth {
 
         [Required] public string LastName { get; set; }
 
-        [Required] public Address BillingAddress { get; set; }
+        public Address BillingAddress { get; set; }
     }
 }

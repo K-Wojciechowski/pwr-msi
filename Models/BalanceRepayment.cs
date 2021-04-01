@@ -5,7 +5,8 @@
         public decimal Amount { get; set; }
         public PaymentStatus Status { get; set; }
         public string ErrorMessage { get; set; }
+
         public int UserId { get; set; }
-        public User User { get; set; }
+        public virtual User User { get; set; }
     }
 }

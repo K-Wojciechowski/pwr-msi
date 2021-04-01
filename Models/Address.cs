@@ -10,6 +10,6 @@ namespace pwr_msi.Models {
         public string City { get; set; }
         public string Country { get; set; }
 
-        public ICollection<User> Users { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 }

@@ -29,7 +29,6 @@ export class AppComponent implements OnInit {
             map(route => route.firstChild),
             switchMap(route => route === null ? of({}) : route.data))
             .subscribe((data: any) => {
-                debugger;
                 this.showNavbar = !data.hideNavbar;
                 this.showSidebar = !data.hideSidebar;
             });

@@ -10,8 +10,6 @@ import {Router} from "@angular/router";
     styleUrls: ['./log-in.component.scss']
 })
 export class LogInComponent implements OnInit {
-    username: string = "";
-    password: string = "";
     showLoading: boolean = false;
 
     constructor(private authService: AuthService, private toastService: ToastService, private router: Router) {

@@ -40,7 +40,9 @@ namespace pwr_msi {
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration: configuration => { configuration.RootPath = "ClientApp/dist"; });
             services.AddDbContext<MsiDbContext>(optionsAction: options =>
-                options.UseNpgsql(appConfig.DbConnectionString, npgsqlOptionsAction: o => o.UseNodaTime())
+                options
+                    .UseLazyLoadingProxies()
+                    .UseNpgsql(appConfig.DbConnectionString, npgsqlOptionsAction: o => o.UseNodaTime())
             );
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(configureOptions: o => {

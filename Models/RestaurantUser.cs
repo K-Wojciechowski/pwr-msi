@@ -6,7 +6,7 @@
         public bool CanAcceptOrders { get; set; }
         public bool CanDeliverOrders { get; set; }
 
-        public Restaurant Restaurant { get; set; }
-        public User User { get; set; }
+        public virtual Restaurant Restaurant { get; set; }
+        public virtual User User { get; set; }
     }
 }

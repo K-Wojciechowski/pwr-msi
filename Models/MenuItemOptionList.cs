@@ -6,8 +6,8 @@ namespace pwr_msi.Models {
         public string Name { get; set; }
         public bool IsMultipleChoice { get; set; }
         public int MenuItemId { get; set; }
-        public MenuItem MenuItem { get; set; }
+        public virtual MenuItem MenuItem { get; set; }
 
-        public ICollection<MenuItemOptionItem> Items { get; set; }
+        public virtual ICollection<MenuItemOptionItem> Items { get; set; }
     }
 }

@@ -33,7 +33,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "")]
         public async Task<ActionResult<AuthResult>> Authenticate([FromBody] AuthInput authInput) {
             try {
-                var user = await _dbContext.Users.SingleAsync(predicate: u => u.Username == authInput.Username);
+                var user = await _dbContext.Users.SingleAsync(predicate: u => u.Username == authInput.Username && u.IsVerified);
                 var result = _authService.VerifyHashedPassword(user, authInput.Password);
 
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
@@ -98,7 +98,7 @@ namespace pwr_msi.Controllers {
             var anyAdminUser = await _dbContext.Users.FirstOrDefaultAsync(predicate: u => u.IsAdmin);
             if (anyAdminUser == null) user.IsAdmin = true;
 
-            _dbContext.Add(user);
+            await _dbContext.AddAsync(user);
             await _dbContext.SaveChangesAsync();
             await _accountEmailService.SendVerificationEmail(user);
             return StatusCode(statusCode: (int) HttpStatusCode.Created, value: user.AsProfile());
@@ -144,7 +144,6 @@ namespace pwr_msi.Controllers {
             user.LastName = changes.LastName;
             user.BillingAddress = changes.BillingAddress;
 
-            await _dbContext.AddAsync(user);
             await _dbContext.SaveChangesAsync();
             return user.AsProfile();
         }
@@ -174,7 +173,6 @@ namespace pwr_msi.Controllers {
 
             verificationToken.User.IsVerified = true;
             verificationToken.IsUsed = true;
-            await _dbContext.AddAsync(verificationToken);
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
@@ -199,7 +197,6 @@ namespace pwr_msi.Controllers {
 
             verificationToken.User.Password = _authService.HashPassword(verificationToken.User, resetDto.Password);
             verificationToken.IsUsed = true;
-            await _dbContext.AddAsync(verificationToken);
             await _dbContext.SaveChangesAsync();
             return Ok();
         }

@@ -5,9 +5,12 @@ import {ProgressSpinnerComponent} from './progress-spinner/progress-spinner.comp
 import {ProgressSpinnerOverlayComponent} from './progress-spinner-overlay/progress-spinner-overlay.component';
 import {ToastsComponent} from "./toasts/toasts.component";
 import {NgbToastModule} from "@ng-bootstrap/ng-bootstrap";
+import {FormInputComponent} from "./form-input/form-input.component";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 const components = [
     BsIconComponent,
+    FormInputComponent,
     ProgressSpinnerComponent,
     ProgressSpinnerOverlayComponent,
     ToastsComponent,
@@ -18,7 +21,9 @@ const components = [
     exports: components,
     imports: [
         CommonModule,
-        NgbToastModule
+        NgbToastModule,
+        FormsModule,
+        ReactiveFormsModule
     ],
 })
 export class WidgetsModule {
