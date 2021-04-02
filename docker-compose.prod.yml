@@ -10,7 +10,7 @@ services:
             - ASPNETCORE_ENVIRONMENT
             - MSI_DB_CONNECTION_STRING
             - MSI_REDIS_HOST="redis"
-            - MSI_MAILHOG_HOST="mailhog"
+            - MSI_SMTP_HOST="mailhog"
     nginx:
         build: ClientApp
         ports:
