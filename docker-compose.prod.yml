@@ -13,8 +13,6 @@ services:
             - MSI_MAILHOG_HOST="mailhog"
     nginx:
         build: ClientApp
-        links:
-            - backend
         ports:
             - "127.0.0.2:8674:80"
     redis:

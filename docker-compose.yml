@@ -13,8 +13,6 @@ services:
             - MSI_MAILHOG_HOST="mailhog"
     nginx:
         build: ClientApp
-        links:
-            - backend
         ports:
             - "8080:80"
     postgres:
