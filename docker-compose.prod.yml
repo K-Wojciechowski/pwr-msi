@@ -10,6 +10,7 @@ services:
         environment:
             - ASPNETCORE_ENVIRONMENT
             - MSI_DB_CONNECTION_STRING
+            - MSI_SERVER_ADDRESS
             - MSI_JWT_KEY
             - MSI_REDIS_HOST=redis
             - MSI_SMTP_HOST=mailhog
