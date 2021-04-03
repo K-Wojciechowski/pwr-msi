@@ -1,6 +1,7 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark static-top" id="navbar" *ngIf="showNavbar">
     <a class="navbar-brand" routerLink="/">MSI</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -29,7 +30,30 @@
     </div>
 </nav>
 
-<main role="main" class="container" id="main-container">
-    <router-outlet></router-outlet>
+<main role="main" class="container-fluid" id="main-container">
+    <div class="row" id="main-container-row">
+        <div *ngIf="sidebar != null" class="col-sidebar" [ngSwitch]="sidebar">
+            <ng-container *ngSwitchCase="'admin'">
+                <h1>Admin Panel</h1>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/admin/users">
+                            <bs-icon name="people"></bs-icon>
+                            Users
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/admin/restaurants">
+                            <bs-icon name="shop"></bs-icon>
+                            Restaurants
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
+        </div>
+        <div [class.col-main-sidebar]="sidebar != null" [class.col-main-full]="sidebar == null">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
 </main>
 <app-toasts aria-live="polite" aria-atomic="true"></app-toasts>

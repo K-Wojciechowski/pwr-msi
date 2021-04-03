@@ -1,1 +1,44 @@
-<p>dashboard works!</p>
+<div class="dashboard-items">
+    <app-dashboard-app-box
+        routerLink="/browse"
+        background="var(--blue)"
+        icon="search"
+        name="Browse"
+        description="Find a restaurant to order food from."
+    ></app-dashboard-app-box>
+
+    <app-dashboard-app-box
+        routerLink="/orders"
+        background="var(--green)"
+        icon="receipt"
+        name="Orders"
+        description="View order history."
+    ></app-dashboard-app-box>
+</div>
+
+<div class="dashboard-items">
+    <app-dashboard-app-box
+        routerLink="/orders"
+        background="var(--teal)"
+        icon="bicycle"
+        name="Deliver"
+        description="Deliver orders to customers."
+    ></app-dashboard-app-box>
+
+    <app-dashboard-app-box
+        routerLink="/manage"
+        background="var(--red)"
+        icon="shop"
+        name="Manage"
+        description="Accept orders and manage restaurants."
+    ></app-dashboard-app-box>
+
+
+    <app-dashboard-app-box
+        routerLink="/admin"
+        background="var(--dark)"
+        icon="gear"
+        name="Admin Panel"
+        description="Manage users and restaurants."
+    ></app-dashboard-app-box>
+</div>

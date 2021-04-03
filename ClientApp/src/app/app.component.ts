@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
     public isLoggedIn: boolean = false;
     public userName = "?";
     public showNavbar: boolean = true;
-    public showSidebar: boolean = true;
+    public sidebar: string | null = null;
 
     constructor(private authService: AuthService, private authStore: AuthStoreService, private toastService: ToastService, private router: Router, private activatedRoute: ActivatedRoute) {
     }
@@ -30,7 +30,7 @@ export class AppComponent implements OnInit {
             switchMap(route => route === null ? of({}) : route.data))
             .subscribe((data: any) => {
                 this.showNavbar = !data.hideNavbar;
-                this.showSidebar = !data.hideSidebar;
+                this.sidebar = data.sidebar;
             });
 
         this.authStore.user.subscribe(user => {

@@ -1,0 +1,9 @@
+.dashboard-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+app-dashboard-app-box {
+    margin: 0.25rem;
+}
