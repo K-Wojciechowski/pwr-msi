@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using pwr_msi.Models;
+using pwr_msi.Models.Dto;
 
 namespace pwr_msi {
     public static class Utils {
@@ -11,6 +16,17 @@ namespace pwr_msi {
 
         public static User UserFromContext(HttpContext context) {
             return (User) context.Items[key: "User"];
+        }
+
+        public static async Task<Page<TO>> Paginate<TD, TO>(IQueryable<TD> queryable, int pageRaw,
+            Func<TD, TO> converter) where TD : class {
+            var maxPage = (int) Math.Ceiling(a: await queryable.CountAsync() / (double) Constants.PageSize);
+            var page = pageRaw;
+            if (page < 0) page = 1;
+            if (page > maxPage) page = maxPage;
+            var items = await queryable.Skip(count: (page - 1) * Constants.PageSize).Take(Constants.PageSize)
+                .ToListAsync();
+            return new Page<TO> {Items = items.Select(converter), Max = maxPage, PageNumber = page};
         }
     }
 }

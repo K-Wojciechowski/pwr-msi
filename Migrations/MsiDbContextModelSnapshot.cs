@@ -468,6 +468,9 @@ namespace pwr_msi.Migrations {
                     .IsRequired()
                     .HasColumnType(typeName: "text");
 
+                b.Property<bool>(propertyName: "IsActive")
+                    .HasColumnType(typeName: "boolean");
+
                 b.Property<bool>(propertyName: "IsAdmin")
                     .HasColumnType(typeName: "boolean");
 

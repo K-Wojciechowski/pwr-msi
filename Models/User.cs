@@ -18,6 +18,8 @@ namespace pwr_msi.Models {
 
         [Required] public decimal Balance { get; set; }
 
+        [Required] public bool IsActive { get; set; }
+
         [Required] public bool IsAdmin { get; set; }
 
         [Required] public bool IsVerified { get; set; }
@@ -33,6 +35,12 @@ namespace pwr_msi.Models {
 
         public string FullName => FirstName + " " + LastName;
 
+        public bool CanLogIn => IsActive && IsVerified;
+
+        public object DefaultOrdering() {
+            return new {LastName, FirstName};
+        }
+
         public UserProfileDto AsProfile() {
             return new() {
                 UserId = UserId,
@@ -43,6 +51,33 @@ namespace pwr_msi.Models {
                 Balance = Balance,
                 BillingAddress = BillingAddress,
             };
+        }
+
+        public UserAdminDto AsAdminDto() {
+            return new() {
+                UserId = UserId,
+                Username = Username,
+                Email = Email,
+                FirstName = FirstName,
+                LastName = LastName,
+                Balance = Balance,
+                BillingAddress = BillingAddress,
+                IsActive = IsActive,
+                IsAdmin = IsAdmin,
+                IsVerified = IsVerified,
+            };
+        }
+
+        public void UpdateWithAdminDto(UserAdminDto userAdminDto) {
+            Username = userAdminDto.Username;
+            Email = userAdminDto.Email;
+            FirstName = userAdminDto.FirstName;
+            LastName = userAdminDto.LastName;
+            Balance = userAdminDto.Balance;
+            BillingAddress = userAdminDto.BillingAddress;
+            IsActive = userAdminDto.IsActive;
+            IsAdmin = userAdminDto.IsAdmin;
+            IsVerified = userAdminDto.IsVerified;
         }
     }
 }
