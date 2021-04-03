@@ -11,8 +11,8 @@ services:
             - ASPNETCORE_ENVIRONMENT
             - MSI_DB_CONNECTION_STRING
             - MSI_JWT_KEY
-            - MSI_REDIS_HOST="redis"
-            - MSI_SMTP_HOST="mailhog"
+            - MSI_REDIS_HOST=redis
+            - MSI_SMTP_HOST=mailhog
     nginx:
         restart: unless-stopped
         build: ClientApp
