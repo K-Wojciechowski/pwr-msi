@@ -27,3 +27,5 @@ services:
         image: mailhog/mailhog:latest
         ports:
             - "127.0.0.2:8025:8025"
+        environment:
+            - MH_UI_WEB_PATH=mailhog
