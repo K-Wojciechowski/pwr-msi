@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -15,8 +16,8 @@ namespace pwr_msi.Controllers {
     [ApiController]
     [Route(template: "api/admin/restaurants/")]
     public class AdminRestaurantsController : MsiControllerBase {
-        private readonly MsiDbContext _dbContext;
         private readonly AdminCommonService _adminCommonService;
+        private readonly MsiDbContext _dbContext;
 
         public AdminRestaurantsController(MsiDbContext dbContext, AdminCommonService adminCommonService) {
             _dbContext = dbContext;
@@ -71,8 +72,15 @@ namespace pwr_msi.Controllers {
             [FromBody] List<RestaurantUserDto> ruDtos) {
             var incomingRestaurantUsers = ruDtos.Where(ru => ru.Restaurant.RestaruantId == restaurantId);
             await _adminCommonService.UpdateRestaurantUsers(incomingRestaurantUsers,
-                ru => ru.RestaurantId == restaurantId);
+                criteria: ru => ru.RestaurantId == restaurantId);
             return await GetRestaurants(restaurantId);
+        }
+
+        [Route(template: "typeahead/")]
+        public async Task<ActionResult<List<RestaurantAdminDto>>> RestaurantsTypeAhead(string query) {
+            var restaurants =
+                _dbContext.Restaurants.Where(r => r.Name.StartsWith(query, StringComparison.OrdinalIgnoreCase));
+            return (await restaurants.ToListAsync()).Select(r => r.AsAdminDto()).ToList();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -16,9 +17,9 @@ namespace pwr_msi.Controllers {
     [ApiController]
     [Route(template: "api/admin/users/")]
     public class AdminUsersController : MsiControllerBase {
-        private readonly MsiDbContext _dbContext;
         private readonly AdminCommonService _adminCommonService;
         private readonly AuthService _authService;
+        private readonly MsiDbContext _dbContext;
 
         public AdminUsersController(MsiDbContext dbContext, AdminCommonService adminCommonService,
             AuthService authService) {
@@ -83,8 +84,19 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<List<RestaurantUserDto>>> UpdateRestaurants([FromRoute] int userId,
             [FromBody] List<RestaurantUserDto> ruDtos) {
             var incomingRestaurantUsers = ruDtos.Where(ru => ru.User.UserId == userId);
-            await _adminCommonService.UpdateRestaurantUsers(incomingRestaurantUsers, ru => ru.UserId == userId);
+            await _adminCommonService.UpdateRestaurantUsers(incomingRestaurantUsers,
+                criteria: ru => ru.UserId == userId);
             return await GetRestaurants(userId);
+        }
+
+        [Route(template: "typeahead/")]
+        public async Task<ActionResult<List<UserAdminDto>>> UsersTypeAhead(string query) {
+            var users = _dbContext.Users.Where(r =>
+                r.Username.StartsWith(query, StringComparison.OrdinalIgnoreCase) ||
+                r.FirstName.StartsWith(query, StringComparison.OrdinalIgnoreCase) ||
+                r.LastName.StartsWith(query, StringComparison.OrdinalIgnoreCase)
+            );
+            return (await users.ToListAsync()).Select(u => u.AsAdminDto()).ToList();
         }
     }
 }
