@@ -11,7 +11,7 @@ using pwr_msi;
 namespace pwr_msi.Migrations
 {
     [DbContext(typeof(MsiDbContext))]
-    [Migration("20210403233550_UserIsActive")]
+    [Migration("20210404192911_UserIsActive")]
     partial class UserIsActive
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -477,8 +477,11 @@ namespace pwr_msi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                    b.Property<bool?>("IsActive")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("boolean");

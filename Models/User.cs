@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using pwr_msi.Models.Dto;
+using pwr_msi.Models.Dto.Admin;
 using pwr_msi.Models.Dto.Auth;
 
 namespace pwr_msi.Models {
@@ -18,7 +21,7 @@ namespace pwr_msi.Models {
 
         [Required] public decimal Balance { get; set; }
 
-        [Required] public bool IsActive { get; set; }
+        [Required] public bool? IsActive { get; set; }
 
         [Required] public bool IsAdmin { get; set; }
 
@@ -35,38 +38,32 @@ namespace pwr_msi.Models {
 
         public string FullName => FirstName + " " + LastName;
 
-        public bool CanLogIn => IsActive && IsVerified;
+        public UserProfileDto AsProfile() => new() {
+            UserId = UserId,
+            Username = Username,
+            Email = Email,
+            FirstName = FirstName,
+            LastName = LastName,
+            Balance = Balance,
+            BillingAddress = BillingAddress,
+        };
 
-        public object DefaultOrdering() {
-            return new {LastName, FirstName};
-        }
+        public UserAdminDto AsAdminDto() => new() {
+            UserId = UserId,
+            Username = Username,
+            Email = Email,
+            FirstName = FirstName,
+            LastName = LastName,
+            Balance = Balance,
+            BillingAddress = BillingAddress,
+            IsActive = IsActive.GetValueOrDefault(false),
+            IsAdmin = IsAdmin,
+            IsVerified = IsVerified,
+        };
 
-        public UserProfileDto AsProfile() {
-            return new() {
-                UserId = UserId,
-                Username = Username,
-                Email = Email,
-                FirstName = FirstName,
-                LastName = LastName,
-                Balance = Balance,
-                BillingAddress = BillingAddress,
-            };
-        }
-
-        public UserAdminDto AsAdminDto() {
-            return new() {
-                UserId = UserId,
-                Username = Username,
-                Email = Email,
-                FirstName = FirstName,
-                LastName = LastName,
-                Balance = Balance,
-                BillingAddress = BillingAddress,
-                IsActive = IsActive,
-                IsAdmin = IsAdmin,
-                IsVerified = IsVerified,
-            };
-        }
+        public UserBasicDto AsBasicDto() => new() {
+            UserId = UserId, Username = Username, FirstName = FirstName, LastName = LastName,
+        };
 
         public void UpdateWithAdminDto(UserAdminDto userAdminDto) {
             Username = userAdminDto.Username;

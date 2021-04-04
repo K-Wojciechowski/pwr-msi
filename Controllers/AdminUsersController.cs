@@ -1,26 +1,36 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using pwr_msi.Models;
+using Microsoft.EntityFrameworkCore;
+using pwr_msi.AuthPolicies;
 using pwr_msi.Models.Dto;
+using pwr_msi.Models.Dto.Admin;
 using pwr_msi.Models.Dto.Auth;
+using pwr_msi.Services;
 
 namespace pwr_msi.Controllers {
+    [Authorize]
+    [AdminAuthorize]
     [ApiController]
-    [Route(template: "api/admin/users")]
+    [Route(template: "api/admin/users/")]
     public class AdminUsersController : MsiControllerBase {
-        private readonly AppConfig _appConfig;
         private readonly MsiDbContext _dbContext;
+        private readonly AdminCommonService _adminCommonService;
+        private readonly AuthService _authService;
 
-        public AdminUsersController(AppConfig appConfig, MsiDbContext dbContext) {
-            _appConfig = appConfig;
+        public AdminUsersController(MsiDbContext dbContext, AdminCommonService adminCommonService,
+            AuthService authService) {
             _dbContext = dbContext;
+            _adminCommonService = adminCommonService;
+            _authService = authService;
         }
 
         [Route(template: "")]
-        public async Task<ActionResult<Page<UserAdminDto>>> List([FromQuery] int page) {
+        public async Task<ActionResult<Page<UserAdminDto>>> List([FromQuery] int page = 1) {
             return await Utils.Paginate(
-                queryable: _dbContext.Users.OrderBy(keySelector: u => u.DefaultOrdering()),
+                queryable: _dbContext.Users.OrderBy(u => u.LastName).ThenBy(u => u.FirstName).ThenBy(u => u.Email),
                 page,
                 converter: u => u.AsAdminDto()
             );
@@ -49,6 +59,32 @@ namespace pwr_msi.Controllers {
             user.UpdateWithAdminDto(userAdminDto);
             await _dbContext.SaveChangesAsync();
             return user.AsAdminDto();
+        }
+
+        [Route(template: "{id}/password/")]
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword([FromRoute] int id, [FromBody] PasswordResetDto resetDto) {
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null) return NotFound();
+            user.Password = _authService.HashPassword(user, resetDto.Password);
+            await _dbContext.SaveChangesAsync();
+            return Ok();
+        }
+
+        [Route(template: "{id}/restaurants/")]
+        public async Task<ActionResult<List<RestaurantUserDto>>> GetRestaurants([FromRoute] int userId) {
+            var query = _dbContext.RestaurantUsers.Where(ru => ru.UserId == userId);
+            var ruList = await query.ToListAsync();
+            return ruList.Select(ru => ru.AsDto()).ToList();
+        }
+
+        [Route(template: "{id}/restaurants/")]
+        [HttpPost]
+        public async Task<ActionResult<List<RestaurantUserDto>>> UpdateRestaurants([FromRoute] int userId,
+            [FromBody] List<RestaurantUserDto> ruDtos) {
+            var incomingRestaurantUsers = ruDtos.Where(ru => ru.User.UserId == userId);
+            await _adminCommonService.UpdateRestaurantUsers(incomingRestaurantUsers, ru => ru.UserId == userId);
+            return await GetRestaurants(userId);
         }
     }
 }

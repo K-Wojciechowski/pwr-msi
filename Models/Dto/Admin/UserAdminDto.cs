@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace pwr_msi.Models.Dto.Auth {
+namespace pwr_msi.Models.Dto.Admin {
     public class UserAdminDto {
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         [Required] public string Username { get; set; }
         [Required] [EmailAddress] public string Email { get; set; }
         [Required] public string FirstName { get; set; }

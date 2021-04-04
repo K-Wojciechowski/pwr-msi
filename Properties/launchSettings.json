@@ -6,7 +6,7 @@
       "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
           "ASPNETCORE_ENVIRONMENT": "Development",
-          "MSI_KEY": "developmentJwtKey"
+          "MSI_JWT_KEY": "developmentJwtKey"
       }
     }
   }

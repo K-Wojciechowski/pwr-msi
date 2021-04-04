@@ -14,7 +14,7 @@ using pwr_msi.Services;
 
 namespace pwr_msi.Controllers {
     [ApiController]
-    [Route(template: "api/[controller]")]
+    [Route(template: "api/auth/")]
     public class AuthController : MsiControllerBase {
         private readonly AccountEmailService _accountEmailService;
         private readonly AppConfig _appConfig;
@@ -34,7 +34,7 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<AuthResult>> Authenticate([FromBody] AuthInput authInput) {
             try {
                 var user = await _dbContext.Users.SingleAsync(predicate: u =>
-                    u.Username == authInput.Username && u.CanLogIn);
+                    u.Username == authInput.Username && u.IsVerified && u.IsActive == true);
                 var result = _authService.VerifyHashedPassword(user, authInput.Password);
 
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
