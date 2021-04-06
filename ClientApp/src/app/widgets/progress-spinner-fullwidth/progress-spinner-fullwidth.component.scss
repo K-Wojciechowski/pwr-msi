@@ -1,15 +1,13 @@
 @import "~load-awesome/css/line-spin-clockwise-fade.css";
 
-.progress-spinner-overlay {
-    background: rgba(0, 0, 0, 0.8);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
+.progress-spinner-fullwidth {
     height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1200;
 }
 
+.progress-spinner-fullwidth .spinner {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}

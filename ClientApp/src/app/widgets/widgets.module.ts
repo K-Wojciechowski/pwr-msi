@@ -5,6 +5,8 @@ import {DashboardAppBoxComponent} from "./dashboard-app-box/dashboard-app-box.co
 import {FormInputComponent} from "./form-input/form-input.component";
 import {HeadingButtonsComponent} from "./heading-buttons/heading-buttons.component";
 import {ProgressSpinnerComponent} from './progress-spinner/progress-spinner.component';
+import {ProgressSpinnerContentComponent} from './progress-spinner-content/progress-spinner-content.component';
+import {ProgressSpinnerFullwidthComponent} from './progress-spinner-fullwidth/progress-spinner-fullwidth.component';
 import {ProgressSpinnerOverlayComponent} from './progress-spinner-overlay/progress-spinner-overlay.component';
 import {ToastsComponent} from "./toasts/toasts.component";
 import {StandardButtonComponent} from "./standard-button/standard-button.component";
@@ -22,6 +24,8 @@ const components = [
     HeadingButtonsComponent,
     PagerComponent,
     ProgressSpinnerComponent,
+    ProgressSpinnerContentComponent,
+    ProgressSpinnerFullwidthComponent,
     ProgressSpinnerOverlayComponent,
     ToastsComponent,
     StandardButtonComponent,

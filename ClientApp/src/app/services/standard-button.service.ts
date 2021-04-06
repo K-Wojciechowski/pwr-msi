@@ -11,13 +11,17 @@ export class StandardButtonService {
     getButton(buttonType: string): StandardButton {
         switch (buttonType) {
             case "add":
-                return {buttonClass: "success", iconName: "plus-circle-fill", text: "Add"};
+                return {buttonClass: "success", iconName: "plus-circle", text: "Add"};
             case "edit":
-                return {buttonClass: "info", iconName: "pencil-fill", text: "Edit"};
+                return {buttonClass: "info", iconName: "pencil", text: "Edit"};
             case "delete":
-                return {buttonClass: "danger", iconName: "trash-fill", text: "Delete"};
+                return {buttonClass: "danger", iconName: "trash", text: "Delete"};
             case "show":
-                return {buttonClass: "primary", iconName: "arrow-right-circle-fill", text: "Show"};
+                return {buttonClass: "primary", iconName: "arrow-right-circle", text: "Show"};
+            case "save":
+                return {buttonClass: "success", iconName: "check-circle", text: "Save"};
+            case "cancel":
+                return {buttonClass: "dark", iconName: "x-circle", text: "Cancel"};
             default:
                 return {buttonClass: "dark", iconName: "question-diamond-fill", text: "Unknown"};
         }

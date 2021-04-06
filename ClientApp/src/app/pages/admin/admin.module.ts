@@ -11,13 +11,16 @@ import {RestaurantsAddComponent} from './restaurants-add/restaurants-add.compone
 import {RestaurantsEditorComponent} from './restaurants-editor/restaurants-editor.component';
 import {RouterModule} from "@angular/router";
 import {WidgetsModule} from "../../widgets/widgets.module";
+import {CuisinesListComponent} from './cuisines-list/cuisines-list.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
-    declarations: [UsersListComponent, UsersEditComponent, RestaurantsListComponent, RestaurantsEditComponent, UsersRestaurantsEditorComponent, UsersAddComponent, UsersEditorComponent, RestaurantsAddComponent, RestaurantsEditorComponent],
+    declarations: [UsersListComponent, UsersEditComponent, RestaurantsListComponent, RestaurantsEditComponent, UsersRestaurantsEditorComponent, UsersAddComponent, UsersEditorComponent, RestaurantsAddComponent, RestaurantsEditorComponent, CuisinesListComponent],
     imports: [
         CommonModule,
         RouterModule,
         WidgetsModule,
+        FormsModule,
     ]
 })
 export class AdminModule {

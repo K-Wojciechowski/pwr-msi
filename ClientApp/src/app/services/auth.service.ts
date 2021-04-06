@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from "rxjs";
-import {UserProfile} from "../models/user-profile";
+import {Observable} from "rxjs";
 import {UserAccess} from "../models/user-access";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {AuthResult} from "../models/auth-result";
@@ -22,7 +21,6 @@ export class AuthService {
     }
 
     private updateAccess(): Observable<UserAccess> {
-        console.log("UA");
         const access$ = this.http.get<UserAccess>("/api/auth/access/");
         return access$.pipe(
             tap(

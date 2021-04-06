@@ -12,6 +12,7 @@ import {UsersEditComponent} from "./pages/admin/users-edit/users-edit.component"
 import {RestaurantsListComponent} from "./pages/admin/restaurants-list/restaurants-list.component";
 import {RestaurantsAddComponent} from "./pages/admin/restaurants-add/restaurants-add.component";
 import {RestaurantsEditComponent} from "./pages/admin/restaurants-edit/restaurants-edit.component";
+import {CuisinesListComponent} from "./pages/admin/cuisines-list/cuisines-list.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -28,6 +29,7 @@ const routes: Routes = [
     {path: "admin/restaurants", component: RestaurantsListComponent, data: {sidebar: "admin"}},
     {path: "admin/restaurants/add", component: RestaurantsAddComponent, data: {sidebar: "admin"}},
     {path: "admin/restaurants/:id", component: RestaurantsEditComponent, data: {sidebar: "admin"}},
+    {path: "admin/cuisines", component: CuisinesListComponent, data: {sidebar: "admin"}},
 ];
 
 @NgModule({

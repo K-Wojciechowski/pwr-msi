@@ -1,14 +1,13 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {StandardButtonService} from "../../services/standard-button.service";
 
 @Component({
-  selector: 'app-standard-button',
+  selector: '[standardButton]',
   templateUrl: './standard-button.component.html',
   styleUrls: ['./standard-button.component.scss']
 })
 export class StandardButtonComponent implements OnInit, OnChanges {
-    @Input("routerLink") routerLink!: string;
-    @Input("type") buttonType!: string;
+    @Input("btnType") buttonType!: string;
     @Input("btnStyle") buttonStyle!: string;
     @Input("text") userText!: string;
 
@@ -16,7 +15,7 @@ export class StandardButtonComponent implements OnInit, OnChanges {
     iconName: string = "";
     text: string = "";
 
-    constructor(private standardButtonService: StandardButtonService) {
+    constructor(private el: ElementRef, private standardButtonService: StandardButtonService) {
     }
 
     ngOnInit(): void {
@@ -46,5 +45,6 @@ export class StandardButtonComponent implements OnInit, OnChanges {
         if (this.userText !== "" && this.userText !== undefined) {
             this.text = this.userText;
         }
+        this.el.nativeElement.className = this.buttonClasses;
     }
 }
