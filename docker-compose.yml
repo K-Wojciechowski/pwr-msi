@@ -8,7 +8,9 @@ services:
             - redis
             - mailhog
         environment:
+            - ASPNETCORE_ENVIRONMENT
             - MSI_DB_CONNECTION_STRING
+            - MSI_SERVER_ADDRESS
             - MSI_REDIS_HOST="redis"
             - MSI_SMTP_HOST="mailhog"
     nginx:
