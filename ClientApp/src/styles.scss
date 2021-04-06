@@ -1,0 +1,35 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap';
+
+.center-contents-vh {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center-contents-vh-fullscreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+
+.msi-mini-card {
+    max-width: 400px;
+
+    .card-header {
+        font-weight: 200;
+        font-size: 2rem;
+    }
+
+    .btn-box {
+        @extend .center-contents-vh;
+    }
+
+    .btn {
+        margin: 0 auto;
+    }
+}

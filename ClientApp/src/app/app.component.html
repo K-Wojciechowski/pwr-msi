@@ -1,6 +1,35 @@
-<body>
-  <app-nav-menu></app-nav-menu>
-  <div class="container">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark static-top" id="navbar" *ngIf="showNavbar">
+    <a class="navbar-brand" routerLink="/">MSI</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <a class="nav-link" routerLink="/">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav navbar-right">
+            <li class="nav-item" routerLinkActive="active" *ngIf="!isLoggedIn">
+                <a class="nav-link" routerLink="/auth/login">Log in</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active" *ngIf="isLoggedIn">
+                <a class="nav-link" routerLink="/auth/profile">{{userName}}</a>
+            </li>
+            <li class="nav-item" *ngIf="isLoggedIn">
+                <a class="nav-link" routerLink="/" (click)="handleLogOut()">Log out</a>
+            </li>
+        </ul>
+
+    </div>
+</nav>
+
+<main role="main" class="container" id="main-container">
     <router-outlet></router-outlet>
-  </div>
-</body>
+</main>
+<app-toasts aria-live="polite" aria-atomic="true"></app-toasts>

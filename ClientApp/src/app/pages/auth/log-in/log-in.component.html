@@ -1,0 +1,27 @@
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<div class="card login-card">
+    <div class="card-header">
+        Log in
+    </div>
+    <div class="card-body">
+        <form #f="ngForm" (ngSubmit)="submit(f)" ngNativeValidate>
+            <div class="form-group">
+                <label for="loginUsername">User name</label>
+                <input class="form-control" id="loginUsername" name="username" ngModel required="required">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" class="form-control" id="loginPassword" name="password" ngModel required="required">
+            </div>
+            <div class="btn-box">
+                <button type="submit" class="btn btn-lg btn-primary" [disabled]="!canSubmit(f)"><bs-icon name="key"></bs-icon> Log in</button>
+            </div>
+            <div class="btn-box">
+                <a routerLink="/auth/register">Don’t have an account?</a>
+            </div>
+            <div class="btn-box">
+                <a routerLink="/auth/forgot">Forgot password?</a>
+            </div>
+        </form>
+    </div>
+</div>

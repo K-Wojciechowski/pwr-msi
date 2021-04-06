@@ -4,9 +4,9 @@
         public int UserId { get; set; }
         public bool CanManage { get; set; }
         public bool CanAcceptOrders { get; set; }
-        public bool CanDeliverOrders {get; set; }
+        public bool CanDeliverOrders { get; set; }
 
-        public Restaurant Restaurant { get; set; }
-        public User User { get; set; }
+        public virtual Restaurant Restaurant { get; set; }
+        public virtual User User { get; set; }
     }
 }

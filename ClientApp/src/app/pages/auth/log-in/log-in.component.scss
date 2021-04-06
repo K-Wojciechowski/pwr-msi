@@ -1,0 +1,8 @@
+@import 'src/shared.scss';
+:host {
+    @extend .center-contents-vh-fullscreen;
+}
+
+.login-card {
+    @extend .msi-mini-card;
+}

@@ -1,0 +1,29 @@
+.center-contents-vh {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center-contents-vh-fullscreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.btn-box {
+    @extend .center-contents-vh;
+}
+
+.msi-mini-card {
+    max-width: 400px;
+
+    .card-header {
+        font-weight: 200;
+        font-size: 2rem;
+    }
+
+    .btn {
+        margin: 0 auto;
+    }
+}

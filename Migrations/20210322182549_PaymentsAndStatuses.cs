@@ -2,12 +2,9 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace pwr_msi.Migrations
-{
-    public partial class PaymentsAndStatuses : Migration
-    {
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
+namespace pwr_msi.Migrations {
+    public partial class PaymentsAndStatuses : Migration {
+        protected override void Up(MigrationBuilder migrationBuilder) {
             migrationBuilder.DropTable(
                 name: "OrderItemTasks");
 
@@ -27,19 +24,18 @@ namespace pwr_msi.Migrations
 
             migrationBuilder.CreateTable(
                 name: "BalanceRepayments",
-                columns: table => new
-                {
+                columns: table => new {
                     BalanceRepaymentId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation(name: "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ExternalRepaymentId = table.Column<string>(type: "text", nullable: true),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     ErrorMessage = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<int>(type: "integer", nullable: false)
+                    UserId = table.Column<int>(type: "integer", nullable: false),
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BalanceRepayments", x => x.BalanceRepaymentId);
+                constraints: table => {
+                    table.PrimaryKey(name: "PK_BalanceRepayments", columns: x => x.BalanceRepaymentId);
                     table.ForeignKey(
                         name: "FK_BalanceRepayments_Users_UserId",
                         column: x => x.UserId,
@@ -50,20 +46,19 @@ namespace pwr_msi.Migrations
 
             migrationBuilder.CreateTable(
                 name: "OrderTasks",
-                columns: table => new
-                {
+                columns: table => new {
                     OrderTaskId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation(name: "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Task = table.Column<int>(type: "integer", nullable: false),
                     DateCompleted = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     CompletedById = table.Column<int>(type: "integer", nullable: false),
                     AssigneeUserId = table.Column<int>(type: "integer", nullable: false),
                     AssigneeRestaurantId = table.Column<int>(type: "integer", nullable: false),
-                    AssigneeType = table.Column<int>(type: "integer", nullable: false)
+                    AssigneeType = table.Column<int>(type: "integer", nullable: false),
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderTasks", x => x.OrderTaskId);
+                constraints: table => {
+                    table.PrimaryKey(name: "PK_OrderTasks", columns: x => x.OrderTaskId);
                     table.ForeignKey(
                         name: "FK_OrderTasks_Restaurants_AssigneeRestaurantId",
                         column: x => x.AssigneeRestaurantId,
@@ -86,10 +81,10 @@ namespace pwr_msi.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Payments",
-                columns: table => new
-                {
+                columns: table => new {
                     PaymentId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation(name: "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ExternalPaymentId = table.Column<string>(type: "text", nullable: true),
                     IsReturn = table.Column<bool>(type: "boolean", nullable: false),
                     IsFromBalance = table.Column<bool>(type: "boolean", nullable: false),
@@ -97,11 +92,10 @@ namespace pwr_msi.Migrations
                     Status = table.Column<int>(type: "integer", nullable: false),
                     ErrorMessage = table.Column<string>(type: "text", nullable: true),
                     OrderId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: true)
+                    UserId = table.Column<int>(type: "integer", nullable: true),
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payments", x => x.PaymentId);
+                constraints: table => {
+                    table.PrimaryKey(name: "PK_Payments", columns: x => x.PaymentId);
                     table.ForeignKey(
                         name: "FK_Payments_Orders_OrderId",
                         column: x => x.OrderId,
@@ -147,8 +141,7 @@ namespace pwr_msi.Migrations
                 column: "UserId");
         }
 
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
+        protected override void Down(MigrationBuilder migrationBuilder) {
             migrationBuilder.DropTable(
                 name: "BalanceRepayments");
 
@@ -168,17 +161,16 @@ namespace pwr_msi.Migrations
 
             migrationBuilder.CreateTable(
                 name: "OrderItemTasks",
-                columns: table => new
-                {
+                columns: table => new {
                     OrderItemTaskId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation(name: "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CompletedById = table.Column<int>(type: "integer", nullable: false),
                     DateCompleted = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Task = table.Column<int>(type: "integer", nullable: false)
+                    Task = table.Column<int>(type: "integer", nullable: false),
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderItemTasks", x => x.OrderItemTaskId);
+                constraints: table => {
+                    table.PrimaryKey(name: "PK_OrderItemTasks", columns: x => x.OrderItemTaskId);
                     table.ForeignKey(
                         name: "FK_OrderItemTasks_Users_CompletedById",
                         column: x => x.CompletedById,

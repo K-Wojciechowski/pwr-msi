@@ -1,0 +1,9 @@
+$navbar-height: 50px;
+
+#navbar {
+    height: $navbar-height;
+}
+
+#main-container {
+    height: calc(100vh - #{$navbar-height});
+}

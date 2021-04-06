@@ -1,18 +1,31 @@
 version: "3.7"
 services:
     backend:
+        restart: unless-stopped
         build: .
         links:
             - nginx
             - redis
+            - mailhog
         environment:
             - ASPNETCORE_ENVIRONMENT
             - MSI_DB_CONNECTION_STRING
             - MSI_SERVER_ADDRESS
-            - MSI_REDIS_HOST="redis"
+            - MSI_JWT_KEY
+            - MSI_REDIS_HOST=redis
+            - MSI_SMTP_HOST=mailhog
     nginx:
+        restart: unless-stopped
         build: ClientApp
         ports:
             - "127.0.0.2:8674:80"
     redis:
+        restart: unless-stopped
         image: redis:alpine
+    mailhog:
+        restart: unless-stopped
+        image: mailhog/mailhog:latest
+        ports:
+            - "127.0.0.2:8025:8025"
+        environment:
+            - MH_UI_WEB_PATH=mailhog

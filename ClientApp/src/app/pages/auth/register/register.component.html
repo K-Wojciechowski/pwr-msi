@@ -1,0 +1,20 @@
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<div *ngIf="showSuccess">
+    <h1>Thank you!</h1>
+    <p>Registration succeeded. A <strong>verification code</strong> has been e-mailed to you. Please click on that link to enable your account.</p>
+</div>
+<div *ngIf="!showSuccess">
+<h1>Register</h1>
+<form #f="ngForm" (ngSubmit)="submit(f)" ngNativeValidate>
+    <app-form-input ngModel ngDefaultControl name="firstName" desc="First name" type="text" [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="lastName" desc="Last name" type="text" [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="username" desc="User name" type="text" [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="email" desc="E-mail" type="email" [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="password" desc="Password" type="password" [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="repeatPassword" desc="Repeat password" type="password" [required]="true"></app-form-input>
+
+    <div class="btn-box">
+        <button type="submit" class="btn btn-lg btn-primary" [disabled]="!canSubmit(f)"><bs-icon name="person-plus"></bs-icon> Register</button>
+    </div>
+</form>
+</div>
