@@ -127,7 +127,7 @@ namespace pwr_msi.Controllers {
 
         [Authorize]
         [Route(template: "profile/")]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<UserProfileDto>> UpdateProfile([FromBody] EditProfileDto changes) {
             var user = MsiUser;
             if (!string.IsNullOrEmpty(changes.Password))

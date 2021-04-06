@@ -49,7 +49,7 @@ namespace pwr_msi.Controllers {
         }
 
         [Route(template: "{id}/")]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<RestaurantAdminDto>> Update([FromRoute] int id,
             [FromBody] RestaurantAdminDto restaurantAdminDto) {
             var restaurant = await _dbContext.Restaurants.FindAsync(id);
@@ -60,20 +60,20 @@ namespace pwr_msi.Controllers {
         }
 
         [Route(template: "{id}/users/")]
-        public async Task<ActionResult<List<RestaurantUserDto>>> GetRestaurants([FromRoute] int restaurantId) {
+        public async Task<ActionResult<List<RestaurantUserDto>>> GetUsers([FromRoute] int restaurantId) {
             var query = _dbContext.RestaurantUsers.Where(ru => ru.RestaurantId == restaurantId);
             var ruList = await query.ToListAsync();
             return ruList.Select(ru => ru.AsDto()).ToList();
         }
 
         [Route(template: "{id}/users/")]
-        [HttpPost]
-        public async Task<ActionResult<List<RestaurantUserDto>>> UpdateRestaurants([FromRoute] int restaurantId,
+        [HttpPut]
+        public async Task<ActionResult<List<RestaurantUserDto>>> UpdateUsers([FromRoute] int restaurantId,
             [FromBody] List<RestaurantUserDto> ruDtos) {
             var incomingRestaurantUsers = ruDtos.Where(ru => ru.Restaurant.RestaruantId == restaurantId);
             await _adminCommonService.UpdateRestaurantUsers(incomingRestaurantUsers,
                 criteria: ru => ru.RestaurantId == restaurantId);
-            return await GetRestaurants(restaurantId);
+            return await GetUsers(restaurantId);
         }
 
         [Route(template: "typeahead/")]

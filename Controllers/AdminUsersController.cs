@@ -53,7 +53,7 @@ namespace pwr_msi.Controllers {
         }
 
         [Route(template: "{id}/")]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<UserAdminDto>> Update([FromRoute] int id, [FromBody] UserAdminDto userAdminDto) {
             var user = await _dbContext.Users.FindAsync(id);
             if (user == null) return NotFound();
@@ -80,7 +80,7 @@ namespace pwr_msi.Controllers {
         }
 
         [Route(template: "{id}/restaurants/")]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<List<RestaurantUserDto>>> UpdateRestaurants([FromRoute] int userId,
             [FromBody] List<RestaurantUserDto> ruDtos) {
             var incomingRestaurantUsers = ruDtos.Where(ru => ru.User.UserId == userId);
