@@ -21,6 +21,7 @@ const routes: Routes = [
     {path: "auth/forgot", component: ForgotPasswordComponent, data: {hideNavbar: true, sidebar: null}},
     {path: "auth/reset/:token", component: ResetPasswordComponent, data: {hideNavbar: true, sidebar: null}},
     {path: "admin", redirectTo: "/admin/users", pathMatch: "full"},
+    // TODO https://medium.com/@ryanchenkie_40935/angular-authentication-using-route-guards-bf7a4ca13ae3
     {path: "admin/users", component: UsersListComponent, data: {sidebar: "admin"}},
     {path: "admin/users/add", component: UsersAddComponent, data: {sidebar: "admin"}},
     {path: "admin/users/:id", component: UsersEditComponent, data: {sidebar: "admin"}},

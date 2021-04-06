@@ -1,1 +1,25 @@
-<p>users-list works!</p>
+<app-heading-buttons name="Users">
+    <app-standard-button btnStyle="heading" routerLink="/admin/users/add" type="add" text="Create"></app-standard-button>
+</app-heading-buttons>
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Username</th>
+        <th scope="col">Full name</th>
+        <th scope="col">E-mail</th>
+        <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of items">
+        <th scope="row"><a routerLink="/admin/users/{{user.userId}}">{{user.userId}}</a></th>
+        <td><a routerLink="/admin/users/{{user.userId}}">{{user.username}}</a> </td>
+        <td>{{user.firstName}} {{user.lastName}}</td>
+        <td>{{user.email}}</td>
+        <td><app-standard-button btnStyle="table" type="edit"></app-standard-button></td>
+    </tr>
+    </tbody>
+</table>
+TODO PAGER BROKEN
+<app-pager [page]="pageNumber" (pageChange)="goToPage($event)" [totalItems]="totalItems"></app-pager>

@@ -9,12 +9,15 @@ import {UsersAddComponent} from './users-add/users-add.component';
 import {UsersEditorComponent} from './users-editor/users-editor.component';
 import {RestaurantsAddComponent} from './restaurants-add/restaurants-add.component';
 import {RestaurantsEditorComponent} from './restaurants-editor/restaurants-editor.component';
-
+import {RouterModule} from "@angular/router";
+import {WidgetsModule} from "../../widgets/widgets.module";
 
 @NgModule({
     declarations: [UsersListComponent, UsersEditComponent, RestaurantsListComponent, RestaurantsEditComponent, UsersRestaurantsEditorComponent, UsersAddComponent, UsersEditorComponent, RestaurantsAddComponent, RestaurantsEditorComponent],
     imports: [
-        CommonModule
+        CommonModule,
+        RouterModule,
+        WidgetsModule,
     ]
 })
 export class AdminModule {

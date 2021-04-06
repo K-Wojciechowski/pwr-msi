@@ -7,6 +7,8 @@ namespace pwr_msi.Models.Dto {
 
         [JsonProperty(propertyName: "page")] public int PageNumber { get; set; }
 
-        public int Max { get; set; }
+        public int MaxPage { get; set; }
+
+        public int ItemCount { get; set; }
     }
 }

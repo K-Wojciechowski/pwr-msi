@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using pwr_msi.AuthPolicies;
-using pwr_msi.Controllers;
 using pwr_msi.Models;
 
 namespace pwr_msi.Services {
