@@ -21,11 +21,11 @@ namespace pwr_msi.Controllers {
     [AdminAuthorize]
     [ApiController]
     [Route(template: "api/restaurant/")]
-    public class ManageRestaurantMenuController : MsiControllerBase {
+    public class RestaurantMenuController : MsiControllerBase {
         private readonly AdminCommonService _adminCommonService;
         private readonly MsiDbContext _dbContext;
         
-        public ManageRestaurantMenuController(MsiDbContext dbContext, AdminCommonService adminCommonService) {
+        public RestaurantMenuController(MsiDbContext dbContext, AdminCommonService adminCommonService) {
             _dbContext = dbContext;
             _adminCommonService = adminCommonService;
         }
