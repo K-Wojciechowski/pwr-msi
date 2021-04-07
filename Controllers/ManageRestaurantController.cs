@@ -32,14 +32,25 @@ namespace pwr_msi.Controllers {
         
         [Route(template: "{id}/menu/")]
         public async Task<ActionResult<List<RestaurantMenuDto>>> GetMenu([FromRoute] int id) {
-            var query = _dbContext.MenuCategories.Where(mc => mc.RestaurantId == id);
+            var query = _dbContext.MenuCategories.Where(mc =>( mc.RestaurantId == id)
+                                                             && ((ZonedDateTime.Comparer.Local.Compare(mc.ValidUntil, new ZonedDateTime()) > 0)
+                                                                 && (ZonedDateTime.Comparer.Local.Compare(new ZonedDateTime(), mc.ValidFrom) > 0)));
             var mcList = await query.ToListAsync();
             return mcList.Select(mc => mc.AsManageMenuDto()).ToList();
         }
 
         [Route(template: "{id}/menu/categories/")]
-        public async Task<ActionResult<List<RestaurantMenuCategoryDto>>> GetCategories([FromRoute] int id) {
-            var query = _dbContext.MenuCategories.Where(mc => mc.RestaurantId == id);
+        public async Task<ActionResult<List<RestaurantMenuCategoryDto>>> GetCategories([FromRoute] int id, [FromQuery] bool showAll) {
+            var query = (IQueryable<MenuCategory>)null;
+            if (showAll) {
+                query = _dbContext.MenuCategories.Where(mc => (mc.RestaurantId == id));
+            } else {
+                query = _dbContext.MenuCategories.Where(mc => (mc.RestaurantId == id)
+                                                              && ((ZonedDateTime.Comparer.Local.Compare(mc.ValidUntil,
+                                                                      new ZonedDateTime()) > 0)
+                                                                  && (ZonedDateTime.Comparer.Local.Compare(
+                                                                      new ZonedDateTime(), mc.ValidFrom) > 0)));
+            }
             var mcList = await query.ToListAsync();
             return mcList.Select(mc => mc.AsManageCategoryDto()).ToList();
         }
@@ -84,8 +95,18 @@ namespace pwr_msi.Controllers {
         
 
         [Route(template: "{id}/menu/items/")]
-        public async Task<ActionResult<List<RestaurantMenuItemDto>>> GetItems([FromRoute] int id) {
-            var query = _dbContext.MenuItems.Where(mi => mi.MenuCategory.RestaurantId == id);
+        public async Task<ActionResult<List<RestaurantMenuItemDto>>> GetItems([FromRoute] int id, [FromQuery] bool showAll) {
+            var query = (IQueryable<MenuItem>)null;
+            if (showAll) {
+                query = _dbContext.MenuItems.Where(mi => (mi.MenuCategory.RestaurantId == id));
+            } 
+            else 
+            {
+                query = _dbContext.MenuItems.Where(mi => (mi.MenuCategory.RestaurantId == id) 
+                                                             && ((ZonedDateTime.Comparer.Local.Compare(mi.ValidUntil, new ZonedDateTime()) > 0) 
+                                                                 && (ZonedDateTime.Comparer.Local.Compare(new ZonedDateTime(), mi.ValidFrom) > 0)));
+            }
+            
             var miList = await query.ToListAsync();
             return miList.Select(mi => mi.AsManageItemDto()).ToList();
         }
@@ -118,7 +139,7 @@ namespace pwr_msi.Controllers {
         }
         [Route(template: "{id}/menu/items/{itemId}/")]
         [HttpDelete]
-        public async Task<ActionResult<RestaurantMenuItemDto>> DeleteItem( [FromRoute] int itemId) {
+        public async Task<ActionResult<RestaurantMenuItemDto>> DeleteItem([FromRoute] int itemId) {
             var menuItem = await _dbContext.MenuItems.FindAsync(itemId);
             if (menuItem == null) return NotFound();
             menuItem.MakeMenuItemNonValid();
