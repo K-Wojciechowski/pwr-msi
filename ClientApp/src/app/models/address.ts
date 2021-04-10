@@ -1,5 +1,5 @@
 export interface Address {
-    addressId: number;
+    addressId?: number;
     addressee: string;
     firstLine: string;
     secondLine: string;

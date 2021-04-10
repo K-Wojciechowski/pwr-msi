@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto.Auth;
 using pwr_msi.Services;
@@ -20,13 +21,15 @@ namespace pwr_msi.Controllers {
         private readonly AppConfig _appConfig;
         private readonly AuthService _authService;
         private readonly MsiDbContext _dbContext;
+        private readonly ILogger<AuthController> _logger;
 
         public AuthController(AppConfig appConfig, MsiDbContext dbContext, AuthService authService,
-            AccountEmailService accountEmailService) {
+            AccountEmailService accountEmailService, ILogger<AuthController> logger) {
             _appConfig = appConfig;
             _dbContext = dbContext;
             _authService = authService;
             _accountEmailService = accountEmailService;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -53,7 +56,8 @@ namespace pwr_msi.Controllers {
                     RefreshAt = _authService.GetExpiryDate(authToken),
                     RefreshToken = refreshToken,
                 };
-            } catch (InvalidOperationException) {
+            } catch (InvalidOperationException e) {
+                _logger.LogDebug(e.StackTrace);
                 return BadRequest();
             }
         }

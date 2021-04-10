@@ -1,7 +1,7 @@
 import {Address} from "./address";
 
 export interface UserAdmin {
-    userId: number;
+    userId?: number;
     username: string;
     email: string;
     firstName: string;
@@ -10,5 +10,10 @@ export interface UserAdmin {
     isActive: boolean;
     isAdmin: boolean;
     isVerified: boolean;
-    billingAddress: Address;
+    billingAddress: Address | null;
+}
+
+export interface UserCreateAdmin extends UserAdmin {
+    password: string;
+    repeatPassword: string;
 }

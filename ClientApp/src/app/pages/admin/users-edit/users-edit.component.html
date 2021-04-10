@@ -1,1 +1,3 @@
-<p>users-edit works!</p>
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<h1>Edit User {{user?.username}}</h1>
+<app-users-editor [isAdding]="false" [user]="user" (userSubmit)="editUser($event)" (reset)="resetPassword($event)"></app-users-editor>

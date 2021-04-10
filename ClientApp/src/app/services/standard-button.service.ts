@@ -17,6 +17,7 @@ export class StandardButtonService {
             case "delete":
                 return {buttonClass: "danger", iconName: "trash", text: "Delete"};
             case "show":
+            case "generic":
                 return {buttonClass: "primary", iconName: "arrow-right-circle", text: "Show"};
             case "save":
                 return {buttonClass: "success", iconName: "check-circle", text: "Save"};

@@ -17,15 +17,21 @@ namespace pwr_msi.Controllers {
     [ApiController]
     [Route(template: "api/admin/users/")]
     public class AdminUsersController : MsiControllerBase {
+        private readonly AccountEmailService _accountEmailService;
         private readonly AdminCommonService _adminCommonService;
         private readonly AuthService _authService;
         private readonly MsiDbContext _dbContext;
 
-        public AdminUsersController(MsiDbContext dbContext, AdminCommonService adminCommonService,
-            AuthService authService) {
-            _dbContext = dbContext;
+        public AdminUsersController(
+            AccountEmailService accountEmailService,
+            AdminCommonService adminCommonService,
+            AuthService authService,
+            MsiDbContext dbContext
+        ) {
+            _accountEmailService = accountEmailService;
             _adminCommonService = adminCommonService;
             _authService = authService;
+            _dbContext = dbContext;
         }
 
         [Route(template: "")]
@@ -39,10 +45,15 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "")]
         [HttpPost]
-        public async Task<ActionResult<UserAdminDto>> Create([FromBody] UserAdminDto userAdminDto) {
-            var user = userAdminDto.AsNewUser();
+        public async Task<ActionResult<UserAdminDto>> Create([FromBody] UserAdminCreateDto userAdminCreateDto) {
+            var user = userAdminCreateDto.AsNewUser();
+            user.Password = _authService.HashPassword(user, userAdminCreateDto.Password);
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
+            if (!user.IsVerified) {
+                await _accountEmailService.SendVerificationEmail(user);
+            }
+
             return user.AsAdminDto();
         }
 

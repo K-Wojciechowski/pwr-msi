@@ -28,4 +28,14 @@ namespace pwr_msi.Models.Dto.Admin {
             };
         }
     }
+
+    public class UserAdminCreateDto : UserAdminDto {
+        [Required]
+        [Compare(otherProperty: "RepeatPassword")]
+        public string Password { get; set; }
+
+        [Required]
+        [Compare(otherProperty: "Password")]
+        public string RepeatPassword { get; set; }
+    }
 }

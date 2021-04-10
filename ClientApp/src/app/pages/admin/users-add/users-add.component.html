@@ -1,1 +1,3 @@
-<p>users-add works!</p>
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<h1>Add User</h1>
+<app-users-editor [isAdding]="true" [user]="defaultUser" (userSubmit)="addUser($event)"></app-users-editor>

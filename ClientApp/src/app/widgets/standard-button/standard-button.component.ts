@@ -36,6 +36,9 @@ export class StandardButtonComponent implements OnInit, OnChanges {
             case "table":
                 btnClassBase = "btn btn-sm btn-outline-";
                 break;
+            case "form":
+                btnClassBase = "btn btn-lg btn-";
+                break;
             default:
                 btnClassBase = "btn btn-";
         }

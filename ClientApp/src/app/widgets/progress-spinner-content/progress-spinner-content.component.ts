@@ -26,7 +26,6 @@ export class ProgressSpinnerContentComponent implements OnInit, OnChanges {
     }
 
     startAnimation() {
-        console.log("START");
         if (this.timeout !== null) {
             window.clearTimeout(this.timeout);
             this.timeout = null;
@@ -38,7 +37,6 @@ export class ProgressSpinnerContentComponent implements OnInit, OnChanges {
     }
 
     updateHideSpinner() {
-        console.log("HIDE");
         this.showGone = false;
         this.showSpinner = this.showLoading;
     }
