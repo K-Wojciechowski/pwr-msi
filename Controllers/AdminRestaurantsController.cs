@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using pwr_msi.AuthPolicies;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.Admin;
 using pwr_msi.Services;
@@ -77,9 +75,10 @@ namespace pwr_msi.Controllers {
         }
 
         [Route(template: "typeahead/")]
-        public async Task<ActionResult<List<RestaurantAdminDto>>> RestaurantsTypeAhead(string query) {
+        public async Task<ActionResult<List<RestaurantAdminDto>>> RestaurantsTypeAhead([FromQuery(Name = "q")] string query) {
+            var likeQuery = $"{query}%";
             var restaurants =
-                _dbContext.Restaurants.Where(r => r.Name.StartsWith(query, StringComparison.OrdinalIgnoreCase));
+                _dbContext.Restaurants.Where(r => EF.Functions.ILike(r.Name, likeQuery));
             return (await restaurants.ToListAsync()).Select(r => r.AsAdminDto()).ToList();
         }
     }

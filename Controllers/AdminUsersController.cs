@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using pwr_msi.AuthPolicies;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.Admin;
 using pwr_msi.Models.Dto.Auth;
@@ -101,11 +99,12 @@ namespace pwr_msi.Controllers {
         }
 
         [Route(template: "typeahead/")]
-        public async Task<ActionResult<List<UserAdminDto>>> UsersTypeAhead(string query) {
+        public async Task<ActionResult<List<UserAdminDto>>> UsersTypeAhead([FromQuery(Name = "q")] string query) {
+            var likeQuery = $"{query}%";
             var users = _dbContext.Users.Where(r =>
-                r.Username.StartsWith(query, StringComparison.OrdinalIgnoreCase) ||
-                r.FirstName.StartsWith(query, StringComparison.OrdinalIgnoreCase) ||
-                r.LastName.StartsWith(query, StringComparison.OrdinalIgnoreCase)
+                EF.Functions.ILike(r.Username, likeQuery) ||
+                EF.Functions.ILike(r.FirstName,likeQuery) ||
+                EF.Functions.ILike(r.LastName,likeQuery)
             );
             return (await users.ToListAsync()).Select(u => u.AsAdminDto()).ToList();
         }
