@@ -32,6 +32,19 @@ services:
         image: mailhog/mailhog:latest
         ports:
             - "8025:8025"
+    minio:
+        image: minio/minio:latest
+        ports:
+            - "9000:9000"
+        environment:
+            - MINIO_ROOT_USER=msi
+            - MINIO_ROOT_PASSWORD=msi
+            - MINIO_ACCESS_KEY=msi_s3_access
+            - MINIO_SECRET_KEY=msi_s3_secret
+        volumes:
+            - miniodata:/data
+
 
 volumes:
     pgdata:
+    miniodata:

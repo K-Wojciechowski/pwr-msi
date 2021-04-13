@@ -7,6 +7,7 @@ services:
             - nginx
             - redis
             - mailhog
+            - minio
         environment:
             - ASPNETCORE_ENVIRONMENT
             - MSI_DB_CONNECTION_STRING
@@ -14,6 +15,7 @@ services:
             - MSI_JWT_KEY
             - MSI_REDIS_HOST=redis
             - MSI_SMTP_HOST=mailhog
+            - MSI_S3_URL=http://minio:9000/
     nginx:
         restart: unless-stopped
         build: ClientApp
@@ -29,3 +31,18 @@ services:
             - "127.0.0.2:8025:8025"
         environment:
             - MH_UI_WEB_PATH=mailhog
+
+    minio:
+        restart: unless-stopped
+        image: minio/minio:latest
+        environment:
+            - MINIO_ROOT_USER=msi
+            - MINIO_ROOT_PASSWORD=msi
+            - MINIO_ACCESS_KEY=msi_s3_access
+            - MINIO_SECRET_KEY=msi_s3_secret
+        volumes:
+            - miniodata:/data
+
+
+volumes:
+    miniodata:
