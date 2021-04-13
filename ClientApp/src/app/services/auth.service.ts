@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {UserAccess} from "../models/user-access";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {AuthResult} from "../models/auth-result";
@@ -17,7 +17,13 @@ export class AuthService {
     private static REFRESH_TOKEN_BEFORE = Duration.fromMillis(10000);
 
     constructor(private http: HttpClient, private authStore: AuthStoreService) {
-        this.updateAccess().subscribe(() => null);
+    }
+
+    initialize() {
+        if (this.authStore.refreshAt !== null) {
+            this.scheduleRefresh(this.authStore.refreshAt);
+        }
+        this.updateAccess().subscribe(() => {});
     }
 
     private updateAccess(): Observable<UserAccess> {
@@ -50,8 +56,12 @@ export class AuthService {
     }
 
     public refresh(): Observable<boolean> {
+        const refreshToken = this.authStore.refreshToken;
+        if (refreshToken === null) {
+            return of(false);
+        }
         const headers = new HttpHeaders(SKIP_AUTH_HEADER_AUTH_REFRESH);
-        const req = this.http.post<RefreshResult>("/api/auth/refresh/", {refreshToken: this.authStore.refreshToken}, {headers});
+        const req = this.http.post<RefreshResult>("/api/auth/refresh/", {refreshToken}, {headers});
         return req.pipe(
             map((res) => {
                 this.authStore.saveTokenFromRefresh(res);
@@ -66,7 +76,9 @@ export class AuthService {
             window.clearTimeout(this.refreshTimeout);
         }
         const timeToRefresh = DateTime.fromISO(refreshDate).diffNow("milliseconds").minus(AuthService.REFRESH_TOKEN_BEFORE).get("milliseconds");
-        this.refreshTimeout = window.setTimeout(() => this.refresh(), timeToRefresh);
+        this.refreshTimeout = window.setTimeout(() => {
+            this.refresh().subscribe(() => {});
+        }, timeToRefresh);
     }
 
     ensureAuthReady() {

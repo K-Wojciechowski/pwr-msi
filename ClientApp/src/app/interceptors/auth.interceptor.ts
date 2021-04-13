@@ -16,12 +16,7 @@ export class AuthInterceptor implements HttpInterceptor {
     public static AUTH_HEADER_KEY = "Authorization";
     public static AUTH_HEADER_VALUE_BEFORE = "Bearer ";
 
-    private authService!: AuthService;
-
-    constructor(private injector: Injector, private authStore: AuthStoreService) {
-        setTimeout(() => {
-            this.authService = injector.get(AuthService);
-        });
+    constructor(private authService: AuthService, private authStore: AuthStoreService) {
     }
 
     private setAuthHeader(request: HttpRequest<unknown>): HttpRequest<unknown> {
@@ -50,20 +45,22 @@ export class AuthInterceptor implements HttpInterceptor {
         return next.handle(authReq)
             .pipe(
                 catchError((err: HttpErrorResponse) => {
-                    if (err.status === 401 && (skipAuthHeaderValue & SKIP_AUTH_HEADER_VALUE_REFRESH) != 0) {
+                    if (err.status === 401 && (skipAuthHeaderValue & SKIP_AUTH_HEADER_VALUE_REFRESH) === 0) {
                         // Try to refresh the token.
                         return this.authService.refresh().pipe(
                             switchMap(() => {
                                 const noRefreshHeaders: any = {};
                                 noRefreshHeaders[SKIP_AUTH_HEADER_NAME] = (skipAuthHeaderValue | SKIP_AUTH_HEADER_VALUE_REFRESH).toString();
-                                const authReqNoRefresh = authReq.clone({
+                                const reqNoRefresh = authReq.clone({
                                     setHeaders: noRefreshHeaders
                                 });
+                                const authReqNoRefresh = this.setAuthHeader(reqNoRefresh);
                                 return next.handle(authReqNoRefresh);
                             })
                         );
+                    } else {
+                        return throwError(err);
                     }
-                    return throwError(err);
                 })
             );
     }

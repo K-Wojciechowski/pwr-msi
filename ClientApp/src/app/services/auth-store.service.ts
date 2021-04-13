@@ -15,6 +15,7 @@ export class AuthStoreService {
 
     public authToken: string | null = null;
     refreshToken: string | null = null;
+    refreshAt: string | null = null;
 
     constructor() {
         this.loadTokens();
@@ -24,12 +25,14 @@ export class AuthStoreService {
     private loadTokens() {
         this.authToken = localStorage.getItem("authToken");
         this.refreshToken = localStorage.getItem("refreshToken");
+        this.refreshAt = localStorage.getItem("refreshAt");
     }
 
 
     private saveTokens() {
         AuthStoreService.setLocalStorage("authToken", this.authToken);
         AuthStoreService.setLocalStorage("refreshToken", this.refreshToken);
+        AuthStoreService.setLocalStorage("refreshAt", this.refreshAt);
     }
 
     private static setLocalStorage(key: string, value: string | null) {
@@ -49,18 +52,20 @@ export class AuthStoreService {
     saveTokensFromAuth(authRes: AuthResult) {
         this.authToken = authRes.authToken;
         this.refreshToken = authRes.refreshToken;
+        this.refreshAt = authRes.refreshAt;
         this.saveTokens();
     }
 
     saveTokenFromRefresh(res: RefreshResult) {
         this.authToken = res.authToken;
+        this.refreshAt = res.refreshAt;
         this.saveTokens();
     }
-
 
     handleLogOut() {
         this.authToken = null;
         this.refreshToken = null;
+        this.refreshAt = null;
         this.saveTokens();
         this.user.next(null);
         this.access.next(null);
