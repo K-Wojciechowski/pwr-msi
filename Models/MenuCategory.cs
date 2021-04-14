@@ -7,7 +7,7 @@ namespace pwr_msi.Models {
         public int MenuCategoryId { get; set; }
         public string Name { get; set; }
         public ZonedDateTime ValidFrom { get; set; }
-        public ZonedDateTime ValidUntil { get; set; }
+        public ZonedDateTime? ValidUntil { get; set; }
 
         public int RestaurantId { get; set; }
         public virtual Restaurant Restaurant { get; set; }

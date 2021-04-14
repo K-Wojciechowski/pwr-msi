@@ -8,8 +8,8 @@ namespace pwr_msi.Models.Dto {
         public decimal Price { get; set; }
         public decimal Amount { get; set; }
         public AmountUnit AmountUnit { get; set; }
-        public ZonedDateTime? ValidFrom { get; set; }
-        public ZonedDateTime ValidUntil { get; set; }
+        public ZonedDateTime ValidFrom { get; set; }
+        public ZonedDateTime? ValidUntil { get; set; }
         public virtual MenuCategory MenuCategory { get; set; }
 
         public virtual ICollection<MenuItemOptionList> Options { get; set; }
@@ -20,7 +20,7 @@ namespace pwr_msi.Models.Dto {
             Price = Price,
             Amount = Amount,
             AmountUnit = AmountUnit,
-            ValidFrom = ValidFrom ?? new ZonedDateTime(),
+            ValidFrom = ValidFrom,
             Options = Options,
         };
     }

@@ -12,7 +12,7 @@ namespace pwr_msi.Models {
         public decimal Amount { get; set; }
         public AmountUnit AmountUnit { get; set; }
         public ZonedDateTime ValidFrom { get; set; }
-        public ZonedDateTime ValidUntil { get; set; }
+        public ZonedDateTime? ValidUntil { get; set; }
         public int MenuOrder { get; set; }
 
         public int MenuCategoryId { get; set; }
@@ -31,16 +31,12 @@ namespace pwr_msi.Models {
             Options = Options,
         };
         public void UpdateWithRestaurantMenuItemDto(RestaurantMenuItemDto mcDto) {
-            Name = mcDto.Name;
-            Description = mcDto.Description;
-            Price = mcDto.Price;
-            Amount = mcDto.Amount;
-            AmountUnit = mcDto.AmountUnit;
-            ValidUntil = mcDto.ValidFrom ?? new ZonedDateTime();
-            Options = mcDto.Options;
+            ValidUntil = mcDto.ValidFrom;
         }
         public void MakeMenuItemNonValid() {
             ValidUntil = new ZonedDateTime();
         }
+
+ 
     }
 }
