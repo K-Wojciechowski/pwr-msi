@@ -146,5 +146,65 @@ namespace pwr_msi.Controllers {
             await _dbContext.SaveChangesAsync();
             return menuItem.AsManageItemDto();
         }
+        [Route(template: "{id}/menu/items/{itemId}/options/")]
+        [HttpPost]
+        public async Task<ActionResult<RestaurantMenuItemOptionListDto>> CreateMenuItemOptionList([FromBody] RestaurantMenuItemOptionListDto miolDto, [FromRoute] int itemId) {
+            var optionList = miolDto.AsNewMenuItemOptionList(itemId);
+            await _dbContext.MenuItemOptionLists.AddAsync(optionList);
+            await _dbContext.SaveChangesAsync();
+            return optionList.AsManageOptionListDto();
+        }
+        [Route(template: "{id}/menu/items/{itemId}/options/{listId}/")]
+        [HttpDelete]
+        public async Task<ActionResult<RestaurantMenuItemOptionListDto>> DeleteOptionList([FromRoute] int listId) {
+            var optionList = await _dbContext.MenuItemOptionLists.FindAsync(listId);
+            if (optionList == null) return NotFound();
+            var query = _dbContext.MenuItemOptionItems.Where(mioi => mioi.MenuItemOptionListId == listId);
+            var optionItems = await query.ToListAsync();
+            foreach (var item in optionItems) {
+                _dbContext.MenuItemOptionItems.Remove(item);
+            }
+            _dbContext.MenuItemOptionLists.Remove(optionList);
+            await _dbContext.SaveChangesAsync();
+            return optionList.AsManageOptionListDto();
+        }
+        
+        [Route(template: "{id}/menu/items/{itemId}/options/{listId}/")]
+        [HttpPost]
+        public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> CreateMenuItemOptionItem([FromBody] RestaurantMenuItemOptionItemDto mioiDto, [FromRoute] int listId) {
+            var optionItem = mioiDto.AsNewMenuItemOptionItem(listId);
+            await _dbContext.MenuItemOptionItems.AddAsync(optionItem);
+            await _dbContext.SaveChangesAsync();
+            return optionItem.AsManageOptionItemDto();
+        }
+        
+        [Route(template: "{id}/menu/items/{itemId}/options/{listId}/{oId}/")]
+        [HttpDelete]
+        public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> DeleteOptionItem([FromRoute] int oId) {
+            var optionItem = await _dbContext.MenuItemOptionItems.FindAsync(oId);
+            if (optionItem == null) return NotFound();
+            _dbContext.MenuItemOptionItems.Remove(optionItem);
+            await _dbContext.SaveChangesAsync();
+            return optionItem.AsManageOptionItemDto();
+        }
+        
+        [Route(template: "{id}/menu/items/{itemId}/options/{listId}/{oId}/")]
+        [HttpPut]
+        public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> UpdateOptionItem([FromRoute] int itemId,
+            [FromBody] RestaurantMenuItemOptionItemDto mioiDto) {
+            var newOptionItem = mioiDto.AsNewMenuItemOptionItem(mioiDto.MenuItemOptionListId);
+            await _dbContext.MenuItemOptionItems.AddAsync(newOptionItem);
+            var oldOptionItem = await _dbContext.MenuItemOptionItems.FindAsync(itemId);
+            if (oldOptionItem == null) return NotFound();
+            oldOptionItem.UpdateWithRestaurantMenuItemOptionItemDto(mioiDto);
+            await _dbContext.SaveChangesAsync();
+            return newOptionItem.AsManageOptionItemDto();
+        }
+        
+        [Route(template: "{id}/menu/items/{itemId}/options/{listId}/{oId}/")]
+        public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> GetOptionItem([FromRoute] int oId) {
+            var optionItem = await _dbContext.MenuItemOptionItems.FindAsync(oId);
+            return optionItem  == null ? NotFound() : optionItem .AsManageOptionItemDto();
+        }
     }
 }

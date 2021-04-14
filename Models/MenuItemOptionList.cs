@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using pwr_msi.Models.Dto;
 
 namespace pwr_msi.Models {
     public class MenuItemOptionList {
@@ -9,5 +10,12 @@ namespace pwr_msi.Models {
         public virtual MenuItem MenuItem { get; set; }
 
         public virtual ICollection<MenuItemOptionItem> Items { get; set; }
+        
+        public RestaurantMenuItemOptionListDto AsManageOptionListDto() => new () {
+            MenuItemOptionListId = MenuItemOptionListId,
+            Name = Name,
+            IsMultipleChoice= IsMultipleChoice,
+            MenuItemId = MenuItemId
+        };
     }
 }
