@@ -1,1 +1,24 @@
-<p>restaurants-list works!</p>
+<app-heading-buttons name="Restaurants">
+    <a standardButton btnStyle="heading" routerLink="/admin/restaurants/add" btnType="add" text="Create"></a>
+</app-heading-buttons>
+<app-progress-spinner-content [showLoading]="showLoading">
+    <app-empty-state [empty]="!showLoading && items.length === 0">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let restaurant of items">
+                <th scope="row"><a routerLink="/admin/restaurants/{{restaurant.restaurantId}}">{{restaurant.restaurantId}}</a></th>
+                <td><a routerLink="/admin/restaurants/{{restaurant.restaurantId}}">{{restaurant.name}}</a> </td>
+                <td><a standardButton routerLink="/admin/restaurants/{{restaurant.restaurantId}}" btnStyle="table" btnType="edit"></a></td>
+            </tr>
+            </tbody>
+        </table>
+    </app-empty-state>
+</app-progress-spinner-content>
+<app-pager [page]="pageNumber" (pageChange)="goToPage($event)" [totalItems]="totalItems"></app-pager>

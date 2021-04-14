@@ -13,6 +13,7 @@ import {RouterModule} from "@angular/router";
 import {WidgetsModule} from "../../widgets/widgets.module";
 import {CuisinesListComponent} from './cuisines-list/cuisines-list.component';
 import {FormsModule} from "@angular/forms";
+import {NgbTypeaheadModule} from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
     declarations: [UsersListComponent, UsersEditComponent, RestaurantsListComponent, RestaurantsEditComponent, UsersRestaurantsEditorComponent, UsersAddComponent, UsersEditorComponent, RestaurantsAddComponent, RestaurantsEditorComponent, CuisinesListComponent],
@@ -21,6 +22,7 @@ import {FormsModule} from "@angular/forms";
         RouterModule,
         WidgetsModule,
         FormsModule,
+        NgbTypeaheadModule,
     ]
 })
 export class AdminModule {

@@ -2,25 +2,27 @@
     <a standardButton btnStyle="heading" routerLink="/admin/users/add" btnType="add" text="Create"></a>
 </app-heading-buttons>
 <app-progress-spinner-content [showLoading]="showLoading">
-<table class="table table-hover">
-    <thead>
-    <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Username</th>
-        <th scope="col">Full name</th>
-        <th scope="col">E-mail</th>
-        <th scope="col">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let user of items">
-        <th scope="row"><a routerLink="/admin/users/{{user.userId}}">{{user.userId}}</a></th>
-        <td><a routerLink="/admin/users/{{user.userId}}">{{user.username}}</a> </td>
-        <td>{{user.firstName}} {{user.lastName}}</td>
-        <td>{{user.email}}</td>
-        <td><a standardButton routerLink="/admin/users/{{user.userId}}" btnStyle="table" btnType="edit"></a></td>
-    </tr>
-    </tbody>
-</table>
+    <app-empty-state [empty]="!showLoading && items.length === 0">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Full name</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let user of items">
+                <th scope="row"><a routerLink="/admin/users/{{user.userId}}">{{user.userId}}</a></th>
+                <td><a routerLink="/admin/users/{{user.userId}}">{{user.username}}</a> </td>
+                <td>{{user.firstName}} {{user.lastName}}</td>
+                <td>{{user.email}}</td>
+                <td><a standardButton routerLink="/admin/users/{{user.userId}}" btnStyle="table" btnType="edit"></a></td>
+            </tr>
+            </tbody>
+        </table>
+    </app-empty-state>
 </app-progress-spinner-content>
 <app-pager [page]="pageNumber" (pageChange)="goToPage($event)" [totalItems]="totalItems"></app-pager>

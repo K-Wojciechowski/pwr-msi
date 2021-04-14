@@ -1,7 +1,7 @@
 import {Address} from "./address";
 
 export interface RestaurantAdmin {
-    restaurantId: number;
+    restaurantId?: number;
     name: string;
     website: string;
     description: string;

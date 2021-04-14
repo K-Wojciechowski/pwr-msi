@@ -15,12 +15,16 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AppRoutingModule} from "../app-routing.module";
 import {PagerComponent} from "./pager/pager.component";
 import {AddressEditorComponent} from "./address-editor/address-editor.component";
+import {EmptyStateComponent} from "./empty-state/empty-state.component";
+import {FormTextareaComponent} from "./form-textarea/form-textarea.component";
 
 const components = [
     AddressEditorComponent,
     BsIconComponent,
     DashboardAppBoxComponent,
+    EmptyStateComponent,
     FormInputComponent,
+    FormTextareaComponent,
     HeadingButtonsComponent,
     PagerComponent,
     ProgressSpinnerComponent,

@@ -47,6 +47,9 @@
         </div>
     </div>
 
+    <h2>Permissions</h2>
+    <app-users-restaurants-editor #ruEditor given="user" [restaurantUsersInput]="restaurantUsersInput"></app-users-restaurants-editor>
+
     <div class="btn-box">
         <button type="submit" standardButton btnStyle="form" btnType="save" [disabled]="!f.valid"></button>
     </div>

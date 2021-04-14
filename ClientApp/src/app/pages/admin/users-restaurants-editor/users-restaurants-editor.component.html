@@ -1,1 +1,38 @@
-<p>users-restaurants-editor works!</p>
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th *ngIf="givenUser">Restaurant</th>
+        <th *ngIf="givenRestaurant">User</th>
+        <th class="td-center">Can deliver orders</th>
+        <th class="td-center">Can accept orders</th>
+        <th class="td-center">Can manage restaurant</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tr *ngFor="let ru of restaurantUsers">
+        <td *ngIf="givenUser">{{ru.restaurant.name}}</td>
+        <td *ngIf="givenRestaurant">{{ru.user.firstName}} {{ru.user.lastName}}</td>
+        <td class="td-center"><input type="checkbox" [(ngModel)]="ru.canDeliverOrders"></td>
+        <td class="td-center"><input type="checkbox" [(ngModel)]="ru.canAcceptOrders"></td>
+        <td class="td-center"><input type="checkbox" [(ngModel)]="ru.canManage"></td>
+        <td><button type="button" standardButton btnType="delete" btnStyle="table"></button></td>
+    </tr>
+    <tr>
+        <td *ngIf="givenRestaurant">
+            <input type="text" class="form-control" [(ngModel)]="newRu.user" [ngbTypeahead]="typeahead" [resultTemplate]="userRt" [inputFormatter]="userInputFormatter" [editable]="false">
+            <ng-template #userRt let-r="result">
+                {{r.username}} ({{r.firstName}} {{r.lastName}})
+            </ng-template>
+        </td>
+        <td *ngIf="givenUser">
+            <input type="text" class="form-control" [(ngModel)]="newRu.restaurant" [ngbTypeahead]="typeahead" [resultTemplate]="restaurantRt" [inputFormatter]="restaurantInputFormatter" [editable]="false">
+            <ng-template #restaurantRt let-r="result">
+                {{r.name}}
+            </ng-template>
+        </td>
+        <td class="td-center"><input class="table-checkbox" type="checkbox" [(ngModel)]="newRu.canDeliverOrders"></td>
+        <td class="td-center"><input class="table-checkbox" type="checkbox" [(ngModel)]="newRu.canAcceptOrders"></td>
+        <td class="td-center"><input class="table-checkbox" type="checkbox" [(ngModel)]="newRu.canManage"></td>
+        <td><button type="button" standardButton btnType="add" btnStyle="table"></button></td>
+    </tr>
+</table>

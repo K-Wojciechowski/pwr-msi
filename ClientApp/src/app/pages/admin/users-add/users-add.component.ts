@@ -3,6 +3,9 @@ import {UserAdmin, UserCreateAdmin} from "../../../models/user-admin";
 import {HttpClient} from "@angular/common/http";
 import {ToastService} from "../../../services/toast.service";
 import {Router} from "@angular/router";
+import {UserEditorOutput} from "../../../models/user-editor-output";
+import {RestaurantUser} from "../../../models/restaurant-user";
+import {UsersRestaurantsEditorComponent} from "../users-restaurants-editor/users-restaurants-editor.component";
 
 @Component({
     selector: 'app-users-add',
@@ -34,12 +37,24 @@ export class UsersAddComponent implements OnInit {
     ngOnInit(): void {
     }
 
-    addUser(user: UserAdmin) {
+    addUser(userEditorOutput: UserEditorOutput) {
+        const {user, restaurantUsers} = userEditorOutput;
         this.showLoading = true;
         this.http.post<UserAdmin>("/api/admin/users/", user).subscribe(async newUser => {
-            this.showLoading = false;
             this.toastService.showSuccess(`User ${newUser.username} created.`);
-            await this.router.navigate(["admin", "users", newUser.userId]);
+            this.saveRestaurantUsers(newUser, restaurantUsers);
+        }, error => {
+            this.showLoading = false;
+            this.toastService.handleHttpError(error);
+        });
+    }
+
+    saveRestaurantUsers(user: UserAdmin, restaurantUsers: RestaurantUser[]) {
+        const updatedRestaurantUsers = UsersRestaurantsEditorComponent.updateWithUser(restaurantUsers, user);
+        this.http.post<RestaurantUser[]>(`/api/admin/users/${user.userId}/restaurants/`, updatedRestaurantUsers).subscribe(async () => {
+            this.toastService.showSuccess(`Permissions for ${user.username} saved.`);
+            this.showLoading = false;
+            await this.router.navigate(["admin", "users", user.userId]);
         }, error => {
             this.showLoading = false;
             this.toastService.handleHttpError(error);

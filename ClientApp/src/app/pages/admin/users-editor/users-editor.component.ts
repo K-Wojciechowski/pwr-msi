@@ -1,9 +1,12 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {NgForm, ValidationErrors} from "@angular/forms";
+import {NgForm} from "@angular/forms";
 import {UserAdmin, UserCreateAdmin} from "../../../models/user-admin";
 import {Address} from "../../../models/address";
 import {PasswordResetInput} from "../../../models/password-reset-input";
 import {setFormValues} from "../../../../utils";
+import {UserEditorOutput} from "../../../models/user-editor-output";
+import {RestaurantUser} from "../../../models/restaurant-user";
+import {UsersRestaurantsEditorComponent} from "../users-restaurants-editor/users-restaurants-editor.component";
 
 @Component({
     selector: 'app-users-editor',
@@ -12,9 +15,11 @@ import {setFormValues} from "../../../../utils";
 })
 export class UsersEditorComponent implements OnInit, OnChanges {
     @ViewChild("f", {static: true}) form!: NgForm;
+    @ViewChild("ruEditor", {static: true}) ruEditor!: UsersRestaurantsEditorComponent;
     @Input("isAdding") isAdding!: boolean;
     @Input("user") userInput!: UserAdmin | UserCreateAdmin | undefined;
-    @Output("userSubmit") submitEvent = new EventEmitter<UserAdmin>();
+    @Input("restarantUsers") restaurantUsersInput!: RestaurantUser[] | undefined;
+    @Output("userSubmit") submitEvent = new EventEmitter<UserEditorOutput>();
     @Output("reset") resetEvent = new EventEmitter<PasswordResetInput>();
     billingAddress!: Address | undefined;
     billingAddressId!: number | undefined;
@@ -24,7 +29,9 @@ export class UsersEditorComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {
-        setTimeout(() => this.loadUserInput(), 0);
+        setTimeout(() => {
+            this.loadUserInput();
+        }, 0);
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -45,14 +52,15 @@ export class UsersEditorComponent implements OnInit, OnChanges {
     }
 
     submit(f: NgForm) {
-        const data = {
+        const user = {
             ...f.value,
             isActive: !!f.value.isActive,
             isVerified: !!f.value.isVerified,
             isAdmin: !!f.value.isAdmin,
             billingAddress: this.hasBillingAddress ? this.billingAddress : null
         };
-        this.submitEvent.emit(data);
+        const restaurantUsers = this.ruEditor.restaurantUsers;
+        this.submitEvent.emit({user, restaurantUsers});
     }
 
     reset(f: NgForm) {

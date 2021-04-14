@@ -1,1 +1,3 @@
-<p>restaurants-add works!</p>
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<h1>Add Restaurant</h1>
+<app-restaurants-editor [restaurant]="defaultRestaurant" (restaurantSubmit)="addRestaurant($event)"></app-restaurants-editor>
