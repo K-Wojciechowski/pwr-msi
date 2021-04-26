@@ -1,20 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using pwr_msi.AuthPolicies;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto;
-using pwr_msi.Models.Dto.Admin;
-using pwr_msi.Models.Dto.Auth;
-using pwr_msi.Services;
 
 namespace pwr_msi.Controllers {
     [Authorize]
@@ -22,12 +14,10 @@ namespace pwr_msi.Controllers {
     [ApiController]
     [Route(template: "api/restaurant/")]
     public class RestaurantMenuController : MsiControllerBase {
-        private readonly AdminCommonService _adminCommonService;
         private readonly MsiDbContext _dbContext;
         
-        public RestaurantMenuController(MsiDbContext dbContext, AdminCommonService adminCommonService) {
+        public RestaurantMenuController(MsiDbContext dbContext) {
             _dbContext = dbContext;
-            _adminCommonService = adminCommonService;
         }
         
         [Route(template: "{id}/menu/")]
@@ -43,7 +33,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/menu/categories/")]
         public async Task<ActionResult<List<RestaurantMenuCategoryDto>>> GetCategories([FromRoute] int id, [FromQuery] bool showAll) {
             ZonedDateTime now = new ZonedDateTime();
-            var query = (IQueryable<MenuCategory>)null;
+            IQueryable<MenuCategory> query;
             if (showAll) {
                 query = _dbContext.MenuCategories.Where(mc => (mc.RestaurantId == id));
             } else {
@@ -97,7 +87,7 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "{id}/menu/items/")]
         public async Task<ActionResult<List<RestaurantMenuItemDto>>> GetItems([FromRoute] int id, [FromQuery] bool showAll) {
-            var query = (IQueryable<MenuItem>)null;
+            IQueryable<MenuItem> query;
             ZonedDateTime now = new ZonedDateTime();
             if (showAll) {
                 query = _dbContext.MenuItems.Where(mi => (mi.MenuCategory.RestaurantId == id));
