@@ -1,0 +1,3 @@
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<h1>Edit Restaurant {{restaurant?.name}}</h1>
+<app-restaurants-editor [restaurant]="restaurant" (userSubmit)="editRestaurant($event)"></app-restaurants-editor>

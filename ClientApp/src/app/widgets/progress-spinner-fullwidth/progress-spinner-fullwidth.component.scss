@@ -1,0 +1,13 @@
+@import "~load-awesome/css/line-spin-clockwise-fade.css";
+
+.progress-spinner-fullwidth {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-spinner-fullwidth .spinner {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}

@@ -1,0 +1,68 @@
+<form #f="ngForm" (ngSubmit)="submit(f)" ngNativeValidate>
+    <app-form-input ngModel ngDefaultControl name="firstName" desc="First name" type="text"
+                    [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="lastName" desc="Last name" type="text"
+                    [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="username" desc="User name" type="text"
+                    [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="email" desc="E-mail" type="email" [required]="true"></app-form-input>
+    <div *ngIf="isAdding">
+        <app-form-input ngModel ngDefaultControl name="password" desc="Password" type="password"
+                        [required]="true"></app-form-input>
+        <app-form-input ngModel ngDefaultControl name="repeatPassword" desc="Repeat password" type="password"
+                        [required]="true"></app-form-input>
+    </div>
+
+    <div class="form-group row">
+        <label for="hasBillingAddress" class="col-sm-2 col-form-label">Billing Address</label>
+        <div class="col-sm-10">
+            <label class="msi-form-check">
+                <input id="hasBillingAddress" [(ngModel)]="hasBillingAddress" [ngModelOptions]="{standalone: true}"
+                       type="checkbox">
+                User has billing address
+            </label>
+            <div style="max-width: 500px;" *ngIf="hasBillingAddress">
+                <app-address-editor [required]="hasBillingAddress" [addressId]="billingAddressId"
+                                    [(address)]="billingAddress"></app-address-editor>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Options</label>
+        <div class="col-sm-10">
+            <label class="msi-form-check">
+                <input ngModel name="isActive" type="checkbox">
+                User is active
+            </label>
+            <label class="msi-form-check">
+                <input ngModel name="isVerified" type="checkbox">
+                User’s e-mail address is verified
+            </label>
+
+            <label class="msi-form-check">
+                <input ngModel name="isAdmin" type="checkbox">
+                User is an administrator
+            </label>
+        </div>
+    </div>
+
+    <h2>Permissions</h2>
+    <app-users-restaurants-editor #ruEditor given="user" [restaurantUsersInput]="restaurantUsersInput"></app-users-restaurants-editor>
+
+    <div class="btn-box">
+        <button type="submit" standardButton btnStyle="form" btnType="save" [disabled]="!f.valid"></button>
+    </div>
+</form>
+<form #resetForm="ngForm" (ngSubmit)="reset(resetForm)" ngNativeValidate *ngIf="!isAdding">
+    <h2>Reset Password</h2>
+    <app-form-input ngModel ngDefaultControl name="password" desc="New password" type="password"
+                    [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="repeatPassword" desc="Repeat password" type="password"
+                    [required]="true"></app-form-input>
+
+    <div class="btn-box">
+        <button type="submit" standardButton btnStyle="form" btnType="generic" text="Reset"
+                [disabled]="!resetForm.valid"></button>
+    </div>
+</form>

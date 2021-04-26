@@ -24,6 +24,8 @@ namespace pwr_msi {
         public DbSet<VerificationToken> VerificationTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            modelBuilder.Entity<User>().Property(u => u.IsActive).HasDefaultValue(true);
+
             modelBuilder.Entity<User>().HasMany(navigationExpression: u => u.Addresses)
                 .WithMany(navigationExpression: a => a.Users);
             modelBuilder.Entity<User>().HasOne(navigationExpression: u => u.BillingAddress);

@@ -1,0 +1,30 @@
+<h1>Cuisines</h1>
+<app-progress-spinner-content [showLoading]="showLoading">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th style="width: 80%" scope="col">Cuisine</th>
+            <th style="width: 20%" scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let cuisine of items">
+            <td *ngIf="!cuisine.isEditing">{{cuisine.name}}</td>
+            <td *ngIf="cuisine.isEditing"><input class="form-control" [(ngModel)]="cuisine.newName"></td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Cuisine actions">
+                    <button type="button" standardButton *ngIf="!cuisine.isEditing" btnStyle="table" btnType="edit" (click)="startEditing(cuisine)"></button>
+                    <button type="button" standardButton *ngIf="cuisine.isEditing" btnStyle="table" btnType="save" (click)="save(cuisine)"></button>
+                    <button type="button" standardButton *ngIf="cuisine.isEditing" btnStyle="table" btnType="cancel" (click)="cancelEditing(cuisine)"></button>
+                    <button type="button" standardButton btnStyle="table" btnType="delete" (click)="delete(cuisine)"></button>
+                </div>
+        </tr>
+        <tr>
+            <td><input class="form-control" [(ngModel)]="newCuisine"></td>
+            <td>
+                <button type="button" standardButton btnStyle="table" btnType="add" (click)="createNew()"></button>
+        </tr>
+        </tbody>
+    </table>
+</app-progress-spinner-content>
+<app-pager [page]="pageNumber" (pageChange)="goToPage($event)" [totalItems]="totalItems"></app-pager>

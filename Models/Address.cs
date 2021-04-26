@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace pwr_msi.Models {
     public class Address {
@@ -10,6 +11,7 @@ namespace pwr_msi.Models {
         public string City { get; set; }
         public string Country { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<User> Users { get; set; }
     }
 }

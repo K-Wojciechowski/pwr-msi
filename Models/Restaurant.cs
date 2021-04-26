@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using pwr_msi.Models.Dto;
+using pwr_msi.Models.Dto.Admin;
 
 namespace pwr_msi.Models {
     public class Restaurant {
@@ -17,5 +18,20 @@ namespace pwr_msi.Models {
         public virtual List<RestaurantUser> RestaurantUsers { get; set; }
 
         public RestaurantBasicDto AsBasicDto() => new() {RestaruantId = RestaurantId, Name = Name};
+
+        public RestaurantAdminDto AsAdminDto() => new () {
+            RestaurantId = RestaurantId,
+            Name = Name,
+            Website = Website,
+            Description = Description,
+            Address = Address,
+        };
+
+        public void UpdateWithAdminDto(RestaurantAdminDto raDto) {
+            Name = raDto.Name;
+            Website = raDto.Website;
+            Description = raDto.Description;
+            Address = raDto.Address;
+        }
     }
 }

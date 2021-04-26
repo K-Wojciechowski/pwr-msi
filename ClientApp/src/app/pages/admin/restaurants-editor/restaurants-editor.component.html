@@ -1,0 +1,25 @@
+<form #f="ngForm" (ngSubmit)="submit(f)" ngNativeValidate>
+    <app-form-input ngModel ngDefaultControl name="name" desc="Name" type="text"
+                    [required]="true"></app-form-input>
+    <app-form-input ngModel ngDefaultControl name="website" desc="Website" type="text"
+                    [required]="true"></app-form-input>
+    <app-form-textarea ngModel ngDefaultControl name="description" desc="Description" type="text"
+                    [required]="true"></app-form-textarea>
+
+    <div class="form-group row">
+        <label for="addressBox" class="col-sm-2 col-form-label">Address</label>
+        <div class="col-sm-10">
+            <div style="max-width: 500px;" id="addressBox">
+                <app-address-editor [required]="true" [addressId]="addressId"
+                                    [(address)]="address"></app-address-editor>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-box">
+        <button type="submit" standardButton btnStyle="form" btnType="save" [disabled]="!f.valid"></button>
+    </div>
+</form>
+
+<h2>Permissions</h2>
+<app-users-restaurants-editor #ruEditor given="restaurant" [restaurantUsersInput]="restaurantUsersInput"></app-users-restaurants-editor>

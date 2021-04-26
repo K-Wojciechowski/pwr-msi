@@ -35,4 +35,8 @@ export class ToastService {
     remove(toast: Toast) {
         this.toasts = this.toasts.filter(t => t != toast);
     }
+
+    handleHttpError(error: any) {
+        this.showError("Operation failed! Error: " + error.message);
+    }
 }

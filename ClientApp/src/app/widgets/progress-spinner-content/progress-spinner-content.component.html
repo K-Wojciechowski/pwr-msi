@@ -1,0 +1,15 @@
+<div class="progress-spinner-content">
+    <div class="progress-spinner-content-overlay" [class.gone]="showGone" *ngIf="showSpinner">
+        <div class="la-dark la-line-spin-clockwise-fade la-3x">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <ng-content></ng-content>
+</div>

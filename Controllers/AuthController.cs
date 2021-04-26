@@ -8,32 +8,36 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto.Auth;
 using pwr_msi.Services;
 
 namespace pwr_msi.Controllers {
     [ApiController]
-    [Route(template: "api/[controller]")]
+    [Route(template: "api/auth/")]
     public class AuthController : MsiControllerBase {
         private readonly AccountEmailService _accountEmailService;
         private readonly AppConfig _appConfig;
         private readonly AuthService _authService;
         private readonly MsiDbContext _dbContext;
+        private readonly ILogger<AuthController> _logger;
 
         public AuthController(AppConfig appConfig, MsiDbContext dbContext, AuthService authService,
-            AccountEmailService accountEmailService) {
+            AccountEmailService accountEmailService, ILogger<AuthController> logger) {
             _appConfig = appConfig;
             _dbContext = dbContext;
             _authService = authService;
             _accountEmailService = accountEmailService;
+            _logger = logger;
         }
 
         [HttpPost]
         [Route(template: "")]
         public async Task<ActionResult<AuthResult>> Authenticate([FromBody] AuthInput authInput) {
             try {
-                var user = await _dbContext.Users.SingleAsync(predicate: u => u.Username == authInput.Username && u.IsVerified);
+                var user = await _dbContext.Users.SingleAsync(predicate: u =>
+                    u.Username == authInput.Username && u.IsVerified && u.IsActive == true);
                 var result = _authService.VerifyHashedPassword(user, authInput.Password);
 
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
@@ -52,7 +56,8 @@ namespace pwr_msi.Controllers {
                     RefreshAt = _authService.GetExpiryDate(authToken),
                     RefreshToken = refreshToken,
                 };
-            } catch (InvalidOperationException) {
+            } catch (InvalidOperationException e) {
+                _logger.LogDebug(e.StackTrace);
                 return BadRequest();
             }
         }
@@ -66,10 +71,7 @@ namespace pwr_msi.Controllers {
             // ReSharper disable once InvertIf
             if (_authService.IsRefreshToken(token) && userId != null) {
                 var authToken = _authService.GenerateJwtToken(userId.Value, _appConfig.AuthTokenLifetime);
-                return new RefreshResult {
-                    AuthToken = authToken,
-                    RefreshAt = _authService.GetExpiryDate(authToken),
-                };
+                return new RefreshResult {AuthToken = authToken, RefreshAt = _authService.GetExpiryDate(authToken)};
             }
 
             return BadRequest();
@@ -83,6 +85,7 @@ namespace pwr_msi.Controllers {
                 Email = newUser.Email,
                 FirstName = newUser.FirstName,
                 LastName = newUser.LastName,
+                IsActive = true,
                 IsAdmin = false,
                 IsVerified = false,
                 Balance = 0,
@@ -107,16 +110,16 @@ namespace pwr_msi.Controllers {
         [Authorize]
         [Route(template: "access/")]
         public async Task<ActionResult<UserAccessDto>> GetAccess() {
-            var userPermissions = _dbContext.RestaurantUsers.Where(ru => ru.UserId == MsiUserId);
-            var manage = await userPermissions.Where(ru => ru.CanManage).ToListAsync();
-            var accept = await userPermissions.Where(ru => ru.CanManage).ToListAsync();
-            var deliver = await userPermissions.Where(ru => ru.CanManage).ToListAsync();
+            var userPermissions = _dbContext.RestaurantUsers.Where(predicate: ru => ru.UserId == MsiUserId);
+            var manage = await userPermissions.Where(predicate: ru => ru.CanManage).ToListAsync();
+            var accept = await userPermissions.Where(predicate: ru => ru.CanManage).ToListAsync();
+            var deliver = await userPermissions.Where(predicate: ru => ru.CanManage).ToListAsync();
             return new UserAccessDto {
                 Profile = MsiUser.AsProfile(),
                 Admin = MsiUser.IsAdmin,
-                Manage = manage.Select(ru => ru.Restaurant.AsBasicDto()),
-                Accept = accept.Select(ru => ru.Restaurant.AsBasicDto()),
-                Deliver = deliver.Select(ru => ru.Restaurant.AsBasicDto()),
+                Manage = manage.Select(selector: ru => ru.Restaurant.AsBasicDto()),
+                Accept = accept.Select(selector: ru => ru.Restaurant.AsBasicDto()),
+                Deliver = deliver.Select(selector: ru => ru.Restaurant.AsBasicDto()),
             };
         }
 
@@ -128,7 +131,7 @@ namespace pwr_msi.Controllers {
 
         [Authorize]
         [Route(template: "profile/")]
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<UserProfileDto>> UpdateProfile([FromBody] EditProfileDto changes) {
             var user = MsiUser;
             if (!string.IsNullOrEmpty(changes.Password))

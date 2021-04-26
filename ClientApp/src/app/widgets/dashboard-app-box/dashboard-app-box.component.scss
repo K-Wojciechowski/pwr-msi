@@ -1,0 +1,20 @@
+@import '~bootstrap/scss/_functions.scss';
+@import '~bootstrap/scss/_variables.scss';
+
+a, a:hover {
+    text-decoration: none;
+}
+
+.card {
+    width: 20rem;
+}
+
+.card-img-top {
+    color: white;
+    text-align: center;
+    font-size: 4rem;
+}
+
+.card-body {
+    color: $body-color;
+}

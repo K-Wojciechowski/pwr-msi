@@ -30,6 +30,7 @@ namespace pwr_msi {
 
             services.AddScoped<AuthService, AuthService>();
             services.AddScoped<AccountEmailService, AccountEmailService>();
+            services.AddScoped<AdminCommonService, AdminCommonService>();
 
             services.AddLocalization(setupAction: options => options.ResourcesPath = "Resources");
 

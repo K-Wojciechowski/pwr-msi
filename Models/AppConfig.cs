@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Amazon;
 
 namespace pwr_msi.Models {
     public class AppConfig {
@@ -16,6 +17,10 @@ namespace pwr_msi.Models {
             SmtpHost = "localhost",
             SmtpPort = 1025,
             SmtpAuthenticate = false,
+            S3Url = "http://localhost:9000/",
+            S3Region = RegionEndpoint.EUCentral1,
+            S3AccessKey = "msi_s3_access",
+            S3SecretKey = "msi_s3_secret",
         };
 
         public byte[] JwtKey { get; set; }
@@ -31,7 +36,10 @@ namespace pwr_msi.Models {
         public bool SmtpAuthenticate { get; set; }
         public string SmtpUsername { get; set; }
         public string SmtpPassword { get; set; }
-
+        public string S3Url { get; set; }
+        public RegionEndpoint S3Region { get; set; }
+        public string S3AccessKey { get; set; }
+        public string S3SecretKey { get; set; }
 
         private static byte[] GetJwtKey(IConfiguration configuration) {
             var jwtKeyString = configuration.GetString(key: "JWT_KEY", defaultValue: null);
@@ -46,6 +54,9 @@ namespace pwr_msi.Models {
         public static AppConfig FromConfiguration(IConfiguration configuration) {
             var jwtKey = GetJwtKey(configuration);
             var serverAddress = configuration.GetString(key: "SERVER_ADDRESS", DefaultSource.ServerAddress);
+
+            var s3RegionName = configuration.GetString(key: "S3_REGION", defaultValue: null);
+            var s3Region = s3RegionName == null ? DefaultSource.S3Region : RegionEndpoint.GetBySystemName(s3RegionName);
 
             return new AppConfig {
                 AuthTokenLifetime =
@@ -62,6 +73,10 @@ namespace pwr_msi.Models {
                 SmtpAuthenticate = configuration.GetBoolean(key: "SMTP_AUTHENTIATE", DefaultSource.SmtpAuthenticate),
                 SmtpUsername = configuration.GetString(key: "SMTP_USERNAME", DefaultSource.SmtpUsername),
                 SmtpPassword = configuration.GetString(key: "SMTP_PASSWORD", DefaultSource.SmtpPassword),
+                S3Url = configuration.GetString(key: "S3_URL", DefaultSource.S3Url),
+                S3Region = s3Region,
+                S3AccessKey = configuration.GetString(key: "S3_ACCESS_KEY", DefaultSource.S3AccessKey),
+                S3SecretKey = configuration.GetString(key: "S3_SECRET_KEY", DefaultSource.S3SecretKey),
                 JwtKey = jwtKey,
                 JwtValidationParameters = new TokenValidationParameters {
                     IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
