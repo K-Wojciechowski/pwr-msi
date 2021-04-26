@@ -6,9 +6,9 @@ services:
         ports:
             - "5007:5007"
         environment:
-            - MSIPAY_DB_CONNECTION_STRING
-            - MSIPAY_CALLBACK_ADDRESS
-            - MSIPAY_SERVER_ADDRESS
+            - MSIPAY_DB_CONNECTION_STRING=postgres://msi:msi@postgres/msi
+            - MSIPAY_CALLBACK_ADDRESS=http://172.17.0.1:5000/
+            - MSIPAY_SERVER_ADDRESS=http://localhost:5007/
     postgres:
         image: postgres:alpine
         environment:

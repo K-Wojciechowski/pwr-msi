@@ -1,3 +1,8 @@
+import urllib.parse
+import uuid
+
+from typing import Optional
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -14,7 +19,7 @@ templates = Jinja2Templates(directory="templates")
 @app.on_event("startup")
 async def startup():
     await db.connect()
-    await db.create_db()
+    await db.prepare_db()
 
 
 @app.on_event("shutdown")
@@ -31,11 +36,10 @@ async def index(request: Request):
 async def new_payment(
     payment_id: uuid.UUID,
 ) -> models.Payment:
-    payment = await db.get_payment(payment)
+    payment = await db.get_payment(payment_id)
     if payment is None:
         raise HTTPException(status_code=404)
     return payment
-
 
 
 @app.post("/api/new/")
@@ -54,25 +58,24 @@ async def new_payment(
 
 
 @app.get("/pay/{payment_id}/", response_class=HTMLResponse)
-async def pay_get(payment_id: uuid.UUID, next: str):
+async def pay_get(request: Request, payment_id: uuid.UUID, next: str):
     # TODO return url
-    payment = await db.get_payment(payment)
+    payment = await db.get_payment(payment_id)
     if not payment or payment.status != models.PaymentStatus.REQUESTED:
-        return templates.TemplateResponse("pay_error.html", {"request":
-            request, "payment": payment})
-    return templates.TemplateResponse("pay.html", {"request": request,
-        "payment": payment, "next": next})
+        return templates.TemplateResponse("pay_error.html", {"request": request, "payment": payment})
+    return templates.TemplateResponse("pay.html", {"request": request, "payment": payment, "next": next})
+
 
 @app.post("/pay/{payment_id}/", response_class=HTMLResponse)
-async def pay_get(payment_id: uuid.UUID, new_status: models.PaymentStatus,
-        new_error: Optional[str], next: str):
-    payment = await db.get_payment(payment)
+async def pay_post(
+    request: Request, payment_id: uuid.UUID, new_status: models.PaymentStatus, new_error: Optional[str], next: str
+):
+    payment = await db.get_payment(payment_id)
     if not payment or payment.status != models.PaymentStatus.REQUESTED:
-        return templates.TemplateResponse("pay_error.html", {"request":
-            request, "payment": payment})
+        return templates.TemplateResponse("pay_error.html", {"request": request, "payment": payment})
 
     payment.status = new_status
     payment.error = new_error
     await db.update_payment_status(payment)
 
-    return RedirectResponse(url = next, status_code=302)
+    return RedirectResponse(url=next, status_code=302)

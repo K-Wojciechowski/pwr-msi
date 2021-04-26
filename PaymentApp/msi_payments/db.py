@@ -1,8 +1,8 @@
 import asyncpg
-import os
+import asyncpg.prepared_stmt
 import uuid
 import typing
-from .models import Payment, PaymentStatus
+from .models import Payment
 from msi_payments.settings import settings
 
 GET_SQL = """
@@ -43,17 +43,15 @@ class Database:
     _get_stmt: asyncpg.prepared_stmt.PreparedStatement
     _insert_stmt: asyncpg.prepared_stmt.PreparedStatement
     _update_stmt: asyncpg.prepared_stmt.PreparedStatement
-    _create_db_stmt: asyncpg.prepared_stmt.PreparedStatement
 
     async def connect(self):
         self.conn = await asyncpg.connect(settings.db_connection_string)
+
+    async def prepare_db(self):
+        await self.conn.execute(CREATE_DB_SQL)
         self._get_stmt = await self.conn.prepare(GET_SQL)
         self._insert_stmt = await self.conn.prepare(INSERT_SQL)
         self._update_stmt = await self.conn.prepare(UPDATE_SQL)
-        self._create_db_stmt = await self.conn.prepare(CREATE_DB_SQL)
-
-    async def create_db(self):
-        await self._create_db_stmt.execute()
 
     async def disconnect(self):
         await self.conn.close()
