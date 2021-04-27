@@ -17,7 +17,7 @@ export class UsersRestaurantsEditorComponent implements OnInit, OnChanges {
     @Input("given") given!: string;
     @Input("user") user!: UserBasic | undefined;
     @Input("restaurant") restaurant!: RestaurantBasic | undefined;
-    @Input("restaurantUsersInput") restaurantUsersInput!: RestaurantUser[];
+    @Input("restaurantUsersInput") restaurantUsersInput!: RestaurantUser[] | undefined;
     restaurantUsers: RestaurantUser[] = [];
 
     searchFailed: boolean = false;

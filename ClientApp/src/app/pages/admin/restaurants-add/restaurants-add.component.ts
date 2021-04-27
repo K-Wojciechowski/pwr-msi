@@ -15,13 +15,6 @@ import {UsersRestaurantsEditorComponent} from "../users-restaurants-editor/users
 export class RestaurantsAddComponent implements OnInit {
     showLoading: boolean = false;
 
-    defaultRestaurant = {
-        name: "",
-        website: "",
-        description: "",
-    };
-
-
     constructor(private http: HttpClient, private toastService: ToastService, private router: Router) {
     }
 

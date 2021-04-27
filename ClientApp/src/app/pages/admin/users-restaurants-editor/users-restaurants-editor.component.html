@@ -10,8 +10,8 @@
     </tr>
     </thead>
     <tr *ngFor="let ru of restaurantUsers">
-        <td *ngIf="givenUser">{{ru.restaurant.name}}</td>
-        <td *ngIf="givenRestaurant">{{ru.user.firstName}} {{ru.user.lastName}}</td>
+        <td *ngIf="givenUser">{{ru.restaurant?.name}}</td>
+        <td *ngIf="givenRestaurant">{{ru.user?.firstName}} {{ru.user?.lastName}}</td>
         <td class="td-center"><input type="checkbox" [(ngModel)]="ru.canDeliverOrders"></td>
         <td class="td-center"><input type="checkbox" [(ngModel)]="ru.canAcceptOrders"></td>
         <td class="td-center"><input type="checkbox" [(ngModel)]="ru.canManage"></td>
