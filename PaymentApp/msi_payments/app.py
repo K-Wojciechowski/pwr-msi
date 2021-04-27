@@ -3,7 +3,7 @@ import uuid
 
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
@@ -33,23 +33,29 @@ async def index(request: Request):
 
 
 @app.get("/api/{payment_id}/")
-async def new_payment(
+async def get_payment(
     payment_id: uuid.UUID,
-) -> models.Payment:
+) -> models.PaymentInfoResponse:
     payment = await db.get_payment(payment_id)
     if payment is None:
         raise HTTPException(status_code=404)
-    return payment
+    url = urllib.parse.urljoin(settings.server_address, f"/pay/{payment.id}/")
+    res = models.PaymentInfoResponse(
+        id=payment.id,
+        url=url,
+        payment=payment,
+    )
+    return res
 
 
 @app.post("/api/new/")
 async def new_payment(
     payment_request: models.PaymentRequest,
-) -> models.PaymentAcceptedResponse:
+) -> models.PaymentInfoResponse:
     payment: models.Payment = models.Payment.from_request(payment_request)
     await db.insert_payment(payment)
     url = urllib.parse.urljoin(settings.server_address, f"/pay/{payment.id}/")
-    res = models.PaymentAcceptedResponse(
+    res = models.PaymentInfoResponse(
         id=payment.id,
         url=url,
         payment=payment,
@@ -58,17 +64,21 @@ async def new_payment(
 
 
 @app.get("/pay/{payment_id}/", response_class=HTMLResponse)
-async def pay_get(request: Request, payment_id: uuid.UUID, next: str):
-    # TODO return url
+async def pay_get(request: Request, payment_id: uuid.UUID, next: Optional[str] = None):
     payment = await db.get_payment(payment_id)
     if not payment or payment.status != models.PaymentStatus.REQUESTED:
         return templates.TemplateResponse("pay_error.html", {"request": request, "payment": payment})
-    return templates.TemplateResponse("pay.html", {"request": request, "payment": payment, "next": next})
+    next_str = next if next else ""
+    return templates.TemplateResponse("pay.html", {"request": request, "payment": payment, "next": next_str})
 
 
 @app.post("/pay/{payment_id}/", response_class=HTMLResponse)
 async def pay_post(
-    request: Request, payment_id: uuid.UUID, new_status: models.PaymentStatus, new_error: Optional[str], next: str
+    request: Request,
+    payment_id: uuid.UUID,
+    new_status: models.PaymentStatus = Form(...),
+    new_error: Optional[str] = Form(None),
+    next: Optional[str] = Form(None),
 ):
     payment = await db.get_payment(payment_id)
     if not payment or payment.status != models.PaymentStatus.REQUESTED:
@@ -78,4 +88,7 @@ async def pay_post(
     payment.error = new_error
     await db.update_payment_status(payment)
 
-    return RedirectResponse(url=next, status_code=302)
+    if next:
+        return RedirectResponse(url=next, status_code=302)
+    else:
+        return templates.TemplateResponse("pay_success.html", {"request": request, "payment": payment})

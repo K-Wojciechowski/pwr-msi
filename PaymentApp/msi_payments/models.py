@@ -46,9 +46,9 @@ class Payment(BaseModel):
     @property
     def amount_str(self) -> str:
         if self.currency == "PLN":
-            return f"{self.amount:0.2d}\xa0zł"
+            return f"{self.amount:0.2f}\xa0zł"
         else:
-            return f"{self.amount:0.2d}\xa0{self.currency}"
+            return f"{self.amount:0.2f}\xa0{self.currency}"
 
 
 class PaymentRequest(BaseModel):
@@ -61,7 +61,7 @@ class PaymentRequest(BaseModel):
     is_return: bool
 
 
-class PaymentAcceptedResponse(BaseModel):
+class PaymentInfoResponse(BaseModel):
     id: uuid.UUID
     url: str
     payment: Payment
