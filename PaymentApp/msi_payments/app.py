@@ -32,14 +32,17 @@ async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.get("/api/{payment_id}/")
+@app.get("/api/payment/{payment_id}/")
 async def get_payment(
     payment_id: uuid.UUID,
 ) -> models.PaymentInfoResponse:
     payment = await db.get_payment(payment_id)
     if payment is None:
         raise HTTPException(status_code=404)
-    url = urllib.parse.urljoin(settings.server_address, f"/pay/{payment.id}/")
+    if payment.can_pay:
+        url = urllib.parse.urljoin(settings.server_address, f"/pay/{payment.id}/")
+    else:
+        url = None
     res = models.PaymentInfoResponse(
         id=payment.id,
         url=url,
@@ -66,7 +69,7 @@ async def new_payment(
 @app.get("/pay/{payment_id}/", response_class=HTMLResponse)
 async def pay_get(request: Request, payment_id: uuid.UUID, next: Optional[str] = None):
     payment = await db.get_payment(payment_id)
-    if not payment or payment.status != models.PaymentStatus.REQUESTED:
+    if not payment or not payment.can_pay:
         return templates.TemplateResponse("pay_error.html", {"request": request, "payment": payment})
     next_str = next if next else ""
     return templates.TemplateResponse("pay.html", {"request": request, "payment": payment, "next": next_str})
@@ -81,7 +84,7 @@ async def pay_post(
     next: Optional[str] = Form(None),
 ):
     payment = await db.get_payment(payment_id)
-    if not payment or payment.status != models.PaymentStatus.REQUESTED:
+    if not payment or not payment.can_pay:
         return templates.TemplateResponse("pay_error.html", {"request": request, "payment": payment})
 
     payment.status = new_status

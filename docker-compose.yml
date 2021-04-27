@@ -14,7 +14,7 @@ services:
             - MSI_SERVER_ADDRESS
             - MSI_REDIS_HOST=redis
             - MSI_SMTP_HOST=mailhog
-            - MSI_PAY_HOST=http://msipay:5007/
+            - MSI_PAY_URL=http://msipay:5007/
     msipay:
         restart: unless-stopped
         build: PaymentApp

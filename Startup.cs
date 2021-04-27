@@ -31,8 +31,11 @@ namespace pwr_msi {
             services.AddScoped<AuthService, AuthService>();
             services.AddScoped<AccountEmailService, AccountEmailService>();
             services.AddScoped<AdminCommonService, AdminCommonService>();
+            services.AddScoped<OrderTaskService, OrderTaskService>();
+            services.AddScoped<PaymentService, PaymentService>();
 
             services.AddLocalization(setupAction: options => options.ResourcesPath = "Resources");
+            services.AddHttpClient();
 
             services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization().AddNewtonsoftJson(s =>

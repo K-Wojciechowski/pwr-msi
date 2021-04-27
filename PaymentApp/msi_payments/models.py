@@ -50,6 +50,10 @@ class Payment(BaseModel):
         else:
             return f"{self.amount:0.2f}\xa0{self.currency}"
 
+    @property
+    def can_pay(self) -> bool:
+        return self.status == PaymentStatus.REQUESTED
+
 
 class PaymentRequest(BaseModel):
     amount: Decimal
@@ -69,6 +73,6 @@ class PaymentInfoResponse(BaseModel):
 
 class PaymentCallback(BaseModel):
     id: uuid.UUID
-    external_id: Optional[str]
+    external: Optional[str]
     status: PaymentStatus
     error: Optional[str]

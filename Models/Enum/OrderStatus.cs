@@ -1,4 +1,4 @@
-﻿namespace pwr_msi.Models {
+﻿namespace pwr_msi.Models.Enum {
     public enum OrderStatus {
         CREATED,
         PAID,
@@ -7,5 +7,6 @@
         PREPARED,
         DELIVERED,
         COMPLETED,
+        CANCELLED
     }
 }
