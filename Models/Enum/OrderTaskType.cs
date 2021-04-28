@@ -5,6 +5,7 @@ namespace pwr_msi.Models.Enum {
     public enum OrderTaskType {
         CREATE,
         PAY,
+        DECIDE,
         ACCEPT,
         REJECT,
         PREPARE,
@@ -24,7 +25,8 @@ namespace pwr_msi.Models.Enum {
         public readonly static ImmutableDictionary<OrderTaskType, List<OrderTaskType>> allowedTransitions =
             new Dictionary<OrderTaskType, List<OrderTaskType>>() {
                 {OrderTaskType.CREATE, new List<OrderTaskType> {OrderTaskType.PAY, OrderTaskType.CANCEL}},
-                {OrderTaskType.PAY, new List<OrderTaskType> {OrderTaskType.ACCEPT, OrderTaskType.REJECT}},
+                {OrderTaskType.PAY, new List<OrderTaskType> {OrderTaskType.DECIDE}},
+                {OrderTaskType.DECIDE, new List<OrderTaskType> {OrderTaskType.ACCEPT, OrderTaskType.REJECT}},
                 {OrderTaskType.ACCEPT, new List<OrderTaskType> {OrderTaskType.PREPARE}},
                 {OrderTaskType.PREPARE, new List<OrderTaskType> {OrderTaskType.DELIVER}},
                 {OrderTaskType.DELIVER, new List<OrderTaskType> {OrderTaskType.COMPLETE}},
@@ -33,6 +35,7 @@ namespace pwr_msi.Models.Enum {
         public readonly static ImmutableDictionary<OrderTaskType, List<OrderTaskPerformer>> allowedPerformers = new Dictionary<OrderTaskType, List<OrderTaskPerformer>> {
             {OrderTaskType.CREATE, new List<OrderTaskPerformer> {OrderTaskPerformer.CUSTOMER}},
             {OrderTaskType.PAY, new List<OrderTaskPerformer> {OrderTaskPerformer.CUSTOMER}},
+            {OrderTaskType.DECIDE, new List<OrderTaskPerformer> {OrderTaskPerformer.ACCEPTOR}},
             {OrderTaskType.ACCEPT, new List<OrderTaskPerformer> {OrderTaskPerformer.ACCEPTOR}},
             {OrderTaskType.REJECT, new List<OrderTaskPerformer> {OrderTaskPerformer.ACCEPTOR}},
             {OrderTaskType.PREPARE, new List<OrderTaskPerformer> {OrderTaskPerformer.ACCEPTOR}},
@@ -44,6 +47,7 @@ namespace pwr_msi.Models.Enum {
         public readonly static ImmutableDictionary<OrderTaskType, OrderStatus> statusByTaskType = new Dictionary<OrderTaskType, OrderStatus> {
             {OrderTaskType.CREATE, OrderStatus.CREATED},
             {OrderTaskType.PAY, OrderStatus.PAID},
+            {OrderTaskType.DECIDE, OrderStatus.DECIDED},
             {OrderTaskType.ACCEPT, OrderStatus.ACCEPTED},
             {OrderTaskType.REJECT, OrderStatus.REJECTED},
             {OrderTaskType.PREPARE, OrderStatus.PREPARED},

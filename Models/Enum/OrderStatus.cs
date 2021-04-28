@@ -2,6 +2,7 @@
     public enum OrderStatus {
         CREATED,
         PAID,
+        DECIDED,
         ACCEPTED,
         REJECTED,
         PREPARED,

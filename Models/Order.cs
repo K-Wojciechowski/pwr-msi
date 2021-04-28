@@ -1,4 +1,6 @@
-﻿using pwr_msi.Models.Enum;
+﻿using NodaTime;
+using pwr_msi.Models.Dto;
+using pwr_msi.Models.Enum;
 
 namespace pwr_msi.Models {
     public class Order {
@@ -11,11 +13,28 @@ namespace pwr_msi.Models {
         public string DeliveryNotes { get; set; }
         public OrderStatus Status { get; set; }
 
+        public ZonedDateTime Created { get; set; }
+        public ZonedDateTime Updated { get; set; }
+        public ZonedDateTime? Delivered { get; set; }
+
         public virtual Restaurant Restaurant { get; set; }
         public virtual User Customer { get; set; }
         public virtual User DeliveryPerson { get; set; }
         public virtual Address Address { get; set; }
 
         public OrderTaskType LastTaskType => OrderTaskTypeSettings.taskTypeByStatus[Status];
+
+        public OrderBasicDto AsBasicDto() => new() {
+            OrderId = OrderId,
+            Restaurant = Restaurant.AsBasicDto(),
+            Customer = Customer.AsBasicDto(),
+            Address = Address,
+            Status = Status,
+            TotalPrice = TotalPrice,
+            DeliveryNotes = DeliveryNotes,
+            Created = Created,
+            Updated = Updated,
+            Delivered = Delivered,
+        };
     }
 }
