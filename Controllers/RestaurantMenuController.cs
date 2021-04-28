@@ -20,6 +20,7 @@ namespace pwr_msi.Controllers {
             _dbContext = dbContext;
         }
         
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/")]
         public async Task<ActionResult<List<RestaurantMenuDto>>> GetMenu([FromRoute] int id) {
             ZonedDateTime now = new ZonedDateTime();
@@ -30,6 +31,7 @@ namespace pwr_msi.Controllers {
             return mcList.Select(mc => mc.AsManageMenuDto()).ToList();
         }
 
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/categories/")]
         public async Task<ActionResult<List<RestaurantMenuCategoryDto>>> GetCategories([FromRoute] int id, [FromQuery] bool showAll) {
             ZonedDateTime now = new ZonedDateTime();
@@ -46,6 +48,7 @@ namespace pwr_msi.Controllers {
             return mcList.Select(mc => mc.AsManageCategoryDto()).ToList();
         }
 
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/categories/")]
         [HttpPost]
         public async Task<ActionResult<RestaurantMenuCategoryDto>> CreateCategory([FromRoute] int id,
@@ -56,35 +59,39 @@ namespace pwr_msi.Controllers {
             return menuCategory.AsManageCategoryDto();
         }
         
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/categories/{catId}/")]
-        public async Task<ActionResult<RestaurantMenuCategoryDto>> GetCategory([FromRoute] int catId) {
-            var category = await _dbContext.MenuCategories.FindAsync(catId);
+        public async Task<ActionResult<RestaurantMenuCategoryDto>> GetCategory([FromRoute] int catId, [FromRoute] int id) {
+            var category = await _dbContext.MenuCategories.Where(cat => cat.RestaurantId == id && cat.MenuCategoryId == catId).FirstOrDefaultAsync();
             return category == null ? NotFound() : category.AsManageCategoryDto();
         }
         
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/categories/{catId}/")]
         [HttpPut]
         public async Task<ActionResult<RestaurantMenuCategoryDto>> UpdateCategory([FromRoute] int id, [FromRoute] int catId,
             [FromBody] RestaurantMenuCategoryDto mcDto) {
+            var menuCategory = await _dbContext.MenuCategories.Where(cat => cat.RestaurantId == id && cat.MenuCategoryId == catId).FirstOrDefaultAsync();
             var newMenuCategory = mcDto.AsNewMenuCategory(id);
             await _dbContext.MenuCategories.AddAsync(newMenuCategory);
-            var menuCategory = await _dbContext.MenuCategories.FindAsync(catId);
             if (menuCategory == null) return NotFound();
             menuCategory.UpdateWithRestaurantMenuCategoryDto(mcDto);
             await _dbContext.SaveChangesAsync();
             return newMenuCategory.AsManageCategoryDto();
         }
+        
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/categories/{catId}/")]
         [HttpDelete]
-        public async Task<ActionResult<RestaurantMenuCategoryDto>> DeleteCategory( [FromRoute] int catId) {
-            var menuCategory = await _dbContext.MenuCategories.FindAsync(catId);
+        public async Task<ActionResult<RestaurantMenuCategoryDto>> DeleteCategory( [FromRoute] int catId, [FromRoute] int id) {
+            var menuCategory = await _dbContext.MenuCategories.Where(cat => cat.RestaurantId == id && cat.MenuCategoryId == catId).FirstOrDefaultAsync();
             if (menuCategory == null) return NotFound();
             menuCategory.MakeMenuCategoryNonValid();
             await _dbContext.SaveChangesAsync();
             return menuCategory.AsManageCategoryDto();
         }
         
-
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/")]
         public async Task<ActionResult<List<RestaurantMenuItemDto>>> GetItems([FromRoute] int id, [FromQuery] bool showAll) {
             IQueryable<MenuItem> query;
@@ -103,12 +110,14 @@ namespace pwr_msi.Controllers {
             return miList.Select(mi => mi.AsManageItemDto()).ToList();
         }
         
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/{itemId}/")]
-        public async Task<ActionResult<RestaurantMenuItemDto>> GetItem([FromRoute] int itemId) {
-            var menuItem = await _dbContext.MenuItems.FindAsync(itemId);
+        public async Task<ActionResult<RestaurantMenuItemDto>> GetItem([FromRoute] int itemId, [FromRoute] int id) {
+            var menuItem = await _dbContext.MenuItems.Where(mi => mi.MenuCategory.RestaurantId == id && mi.MenuItemId == itemId).FirstOrDefaultAsync();
             return menuItem  == null ? NotFound() : menuItem .AsManageItemDto();
         }
         
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/")]
         [HttpPost]
         public async Task<ActionResult<RestaurantMenuItemDto>> CreateMenuItem([FromBody] RestaurantMenuItemDto miDto) {
@@ -117,27 +126,33 @@ namespace pwr_msi.Controllers {
             await _dbContext.SaveChangesAsync();
             return menuItem.AsManageItemDto();
         }
+        
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/{itemId}/")]
         [HttpPut]
-        public async Task<ActionResult<RestaurantMenuItemDto>> UpdateItem([FromRoute] int itemId,
+        public async Task<ActionResult<RestaurantMenuItemDto>> UpdateItem([FromRoute] int itemId, [FromRoute] int id,
             [FromBody] RestaurantMenuItemDto miDto) {
             var newMenuItem = miDto.AsNewMenuItem();
             await _dbContext.MenuItems.AddAsync(newMenuItem);
-            var oldMenuItem = await _dbContext.MenuItems.FindAsync(itemId);
+            var oldMenuItem = await _dbContext.MenuItems.Where(mi => mi.MenuCategory.RestaurantId == id && mi.MenuItemId == itemId).FirstOrDefaultAsync();
             if (oldMenuItem == null) return NotFound();
             oldMenuItem.UpdateWithRestaurantMenuItemDto(miDto);
             await _dbContext.SaveChangesAsync();
             return newMenuItem.AsManageItemDto();
         }
+        
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/{itemId}/")]
         [HttpDelete]
-        public async Task<ActionResult<RestaurantMenuItemDto>> DeleteItem([FromRoute] int itemId) {
-            var menuItem = await _dbContext.MenuItems.FindAsync(itemId);
+        public async Task<ActionResult<RestaurantMenuItemDto>> DeleteItem([FromRoute] int itemId, [FromRoute] int id) {
+            var menuItem = await _dbContext.MenuItems.Where(mi => mi.MenuCategory.RestaurantId == id && mi.MenuItemId == itemId).FirstOrDefaultAsync();
             if (menuItem == null) return NotFound();
             menuItem.MakeMenuItemNonValid();
             await _dbContext.SaveChangesAsync();
             return menuItem.AsManageItemDto();
         }
+        
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/{itemId}/options/")]
         [HttpPost]
         public async Task<ActionResult<RestaurantMenuItemOptionListDto>> CreateMenuItemOptionList([FromBody] RestaurantMenuItemOptionListDto miolDto, [FromRoute] int itemId) {
@@ -146,6 +161,8 @@ namespace pwr_msi.Controllers {
             await _dbContext.SaveChangesAsync();
             return optionList.AsManageOptionListDto();
         }
+        
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/")]
         [HttpDelete]
         public async Task<ActionResult<RestaurantMenuItemOptionListDto>> DeleteOptionList([FromRoute] int listId) {
@@ -161,6 +178,7 @@ namespace pwr_msi.Controllers {
             return optionList.AsManageOptionListDto();
         }
         
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/")]
         [HttpPost]
         public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> CreateMenuItemOptionItem([FromBody] RestaurantMenuItemOptionItemDto mioiDto, [FromRoute] int listId) {
@@ -170,6 +188,7 @@ namespace pwr_msi.Controllers {
             return optionItem.AsManageOptionItemDto();
         }
         
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/{oId}/")]
         [HttpDelete]
         public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> DeleteOptionItem([FromRoute] int oId) {
@@ -180,6 +199,7 @@ namespace pwr_msi.Controllers {
             return optionItem.AsManageOptionItemDto();
         }
         
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/{oId}/")]
         [HttpPut]
         public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> UpdateOptionItem([FromRoute] int itemId,
@@ -193,6 +213,7 @@ namespace pwr_msi.Controllers {
             return newOptionItem.AsManageOptionItemDto();
         }
         
+        [ManageRestaurantAuthorize("id")]
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/{oId}/")]
         public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> GetOptionItem([FromRoute] int oId) {
             var optionItem = await _dbContext.MenuItemOptionItems.FindAsync(oId);
