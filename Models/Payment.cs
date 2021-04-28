@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.PaymentGateway;
 
 namespace pwr_msi.Models {
@@ -29,5 +30,15 @@ namespace pwr_msi.Models {
             Status = apiPayment.Status;
             ErrorMessage = apiPayment.Error;
         }
+
+        public PaymentDto AsDto() => new() {
+            PaymentId = PaymentId,
+            IsReturn = IsReturn,
+            IsFromBalance = IsFromBalance,
+            Amount = Amount,
+            Status = Status,
+            ErrorMessage = ErrorMessage,
+            Order = Order.AsBasicDto(),
+        };
     }
 }

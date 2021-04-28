@@ -3,15 +3,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using pwr_msi.Models.Dto.PaymentGateway;
+using pwr_msi.Services;
 
 namespace pwr_msi.Controllers {
     [ApiController]
     [Route(template: "api/paymentgateway/")]
     public class PaymentGatewayController : MsiControllerBase {
         private readonly MsiDbContext _dbContext;
+        private readonly PaymentService _paymentService;
 
-        public PaymentGatewayController(MsiDbContext dbContext) {
+        public PaymentGatewayController(MsiDbContext dbContext, PaymentService paymentService) {
             _dbContext = dbContext;
+            _paymentService = paymentService;
         }
 
         [Route("callback/")]
@@ -23,9 +26,7 @@ namespace pwr_msi.Controllers {
                 return NotFound();
             }
 
-            payment.Status = paymentCallbackDto.Status;
-            payment.ErrorMessage = paymentCallbackDto.Error;
-            await _dbContext.SaveChangesAsync();
+            await _paymentService.HandlePaymentCallback(payment, paymentCallbackDto.Status, paymentCallbackDto.Error);
             return Ok();
         }
     }
