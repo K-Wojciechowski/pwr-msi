@@ -10,6 +10,7 @@ export class StandardButtonComponent implements OnInit, OnChanges {
     @Input("btnType") buttonType!: string;
     @Input("btnStyle") buttonStyle!: string;
     @Input("text") userText!: string;
+    @Input("icon") userIcon!: string;
 
     buttonClasses: string = "btn";
     iconName: string = "";
@@ -34,10 +35,18 @@ export class StandardButtonComponent implements OnInit, OnChanges {
                 btnClassBase = "btn btn-";
                 break;
             case "table":
+            case "minor":
                 btnClassBase = "btn btn-sm btn-outline-";
                 break;
+            case "xminor":
+                btnClassBase = "btn btn-xs btn-outline-";
+                break;
             case "form":
+            case "large":
                 btnClassBase = "btn btn-lg btn-";
+                break;
+            case "outline-large":
+                btnClassBase = "btn btn-lg btn-outline-";
                 break;
             default:
                 btnClassBase = "btn btn-";
@@ -47,6 +56,9 @@ export class StandardButtonComponent implements OnInit, OnChanges {
         this.iconName = standardButton.iconName;
         if (this.userText !== "" && this.userText !== undefined) {
             this.text = this.userText;
+        }
+        if (this.userIcon !== "" && this.userIcon !== undefined) {
+            this.iconName = this.userIcon;
         }
         this.el.nativeElement.className = this.buttonClasses;
     }

@@ -67,7 +67,7 @@ class PaymentRequest(BaseModel):
 
 class PaymentInfoResponse(BaseModel):
     id: uuid.UUID
-    url: str
+    url: Optional[str]
     payment: Payment
 
 

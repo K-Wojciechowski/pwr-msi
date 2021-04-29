@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.Admin;
@@ -33,7 +32,6 @@ namespace pwr_msi.Models {
         public virtual ICollection<Address> Addresses { get; set; }
         public virtual ICollection<Restaurant> Restaurants { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
-        public virtual ICollection<BalanceRepayment> BalanceRepayments { get; set; }
         public virtual List<RestaurantUser> RestaurantUsers { get; set; }
 
         public string FullName => FirstName + " " + LastName;

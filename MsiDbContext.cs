@@ -7,7 +7,6 @@ namespace pwr_msi {
         }
 
         public DbSet<Address> Addresses { get; set; }
-        public DbSet<BalanceRepayment> BalanceRepayments { get; set; }
         public DbSet<Cuisine> Cuisines { get; set; }
         public DbSet<MenuCategory> MenuCategories { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }

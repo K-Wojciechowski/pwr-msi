@@ -25,7 +25,7 @@ namespace pwr_msi.Services {
                 if (userId.HasValue) {
                     user = await dbContext.Users.FindAsync(userId);
                     context.Items[key: "User"] = user;
-                    context.Items[key: "UserID"] = userId;
+                    context.Items[key: "UserId"] = userId;
                 }
             }
 

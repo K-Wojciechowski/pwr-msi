@@ -1,0 +1,22 @@
+<div *ngIf="showLoading" class="payments-check-box">
+    <div class="payments-check-box-icon"><app-progress-spinner-fullwidth></app-progress-spinner-fullwidth></div>
+    <div class="payments-check-box-text">Processing your payment…</div>
+    <div *ngIf="showTimeWarning" class="paymets-check-box-text text-warning">This seems to be taking a while. If this persists, please contact support.</div>
+</div>
+<div *ngIf="showSuccess" class="payments-check-box payments-check-box-success">
+    <div class="payments-check-box-icon"><bs-icon name="check-circle-fill"></bs-icon></div>
+    <div class="payments-check-box-text" *ngIf="showThankYou">Thank you for your payment!</div>
+    <div class="payments-check-box-text" *ngIf="!showThankYou">Payment processed successfully.</div>
+    <div class="payments-check-box-buttons">
+        <a *ngIf="showGoToOrder" routerLink="/orders/{{orderId}}" standardButton btnStyle="large" btnType="primary" text="Go to Order Page"></a>
+        <a class="ml-2 mr-2" routerLink="/orders/payments/{{paymentId}}" standardButton btnStyle="outline-large" btnType="undefined" icon="cash" text="Go to Payment Page"></a>
+    </div>
+</div>
+<div *ngIf="showFailure" class="payments-check-box payments-check-box-failure">
+    <div class="payments-check-box-icon"><bs-icon name="x-circle-fill"></bs-icon></div>
+    <div class="payments-check-box-text">Payment failed.</div>
+    <div class="payments-check-box-buttons">
+        <a *ngIf="showGoToOrder" routerLink="/orders/{{orderId}}" standardButton btnStyle="large" btnType="primary" text="Go to Order Page"></a>
+        <a class="ml-2 mr-2" routerLink="/orders/payments/{{paymentId}}" standardButton btnStyle="outline-large" btnType="undefined" icon="cash" text="Go to Payment Page"></a>
+    </div>
+</div>

@@ -13,7 +13,13 @@ import {RestaurantsListComponent} from "./pages/admin/restaurants-list/restauran
 import {RestaurantsAddComponent} from "./pages/admin/restaurants-add/restaurants-add.component";
 import {RestaurantsEditComponent} from "./pages/admin/restaurants-edit/restaurants-edit.component";
 import {CuisinesListComponent} from "./pages/admin/cuisines-list/cuisines-list.component";
-import {AuthType} from "./models/auth-type";
+import {AuthType} from "./models/enum/auth-type";
+import {OrdersOverviewComponent} from "./pages/orders/orders-overview/orders-overview.component";
+import {OrdersInfoComponent} from "./pages/orders/orders-info/orders-info.component";
+import {PaymentsOverviewComponent} from "./pages/orders/payments-overview/payments-overview.component";
+import {PaymentsInfoComponent} from "./pages/orders/payments-info/payments-info.component";
+import {PaymentsMakeComponent} from "./pages/orders/payments-make/payments-make.component";
+import {PaymentsCheckComponent} from "./pages/orders/payments-check/payments-check.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -30,6 +36,14 @@ const routes: Routes = [
     {path: "admin/restaurants/add", component: RestaurantsAddComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/restaurants/:id", component: RestaurantsEditComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/cuisines", component: CuisinesListComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
+    {path: "orders", redirectTo: "/orders/list", pathMatch: "full"},
+    {path: "orders/payments", component: PaymentsOverviewComponent, data: {sidebar: "orders"}},
+    {path: "orders/payments/repay", component: PaymentsMakeComponent, data: {sidebar: "orders", isBalanceRepayment: true}},
+    {path: "orders/payments/:id", component: PaymentsInfoComponent, data: {sidebar: "orders"}},
+    {path: "orders/payments/:id/make", component: PaymentsMakeComponent, data: {sidebar: "orders"}},
+    {path: "orders/payments/:id/check", component: PaymentsCheckComponent, data: {sidebar: "orders"}},
+    {path: "orders/list", component: OrdersOverviewComponent, data: {sidebar: "orders"}},
+    {path: "orders/:id", component: OrdersInfoComponent, data: {sidebar: "orders"}},
 ];
 
 @NgModule({

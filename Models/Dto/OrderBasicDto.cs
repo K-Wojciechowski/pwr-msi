@@ -10,7 +10,7 @@ namespace pwr_msi.Models.Dto {
         public virtual Address Address { get; set; } = null!;
         public OrderStatus Status { get; set; }
         public decimal TotalPrice { get; set; }
-        public string DeliveryNotes { get; set; } = null!;
+        public string? DeliveryNotes { get; set; }
 
         public ZonedDateTime Created { get; set; }
         public ZonedDateTime Updated { get; set; }

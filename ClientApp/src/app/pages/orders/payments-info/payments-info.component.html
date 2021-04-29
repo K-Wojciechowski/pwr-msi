@@ -1,0 +1,40 @@
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<ng-template #confirmModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-confirm-title">Confirm cancellation</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to cancel this payment?</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-dark" (click)="modal.dismiss()">No</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close()">Yes</button>
+    </div>
+</ng-template>
+<app-heading-buttons name="Payment details">
+    <a class="mr-2" [routerLink]="makePaymentLink" *ngIf="!!payment && payment.canPay" standardButton btnStyle="heading" btnType="makepayment"></a>
+    <button *ngIf="!!payment && payment.canPay" standardButton btnStyle="heading" btnType="cancel" (click)="openConfirmModal(confirmModal)"></button>
+</app-heading-buttons>
+<app-empty-state [empty]="!showLoading && !payment">
+<dl class="row">
+    <dt class="col-sm-3">Payment ID</dt>
+    <dd class="col-sm-9">{{payment?.v?.paymentId}}</dd>
+    <dt class="col-sm-3">Payment amount</dt>
+    <dd class="col-sm-9">{{payment?.v?.amount|currency}}</dd>
+    <dt class="col-sm-3">Payment type</dt>
+    <dd class="col-sm-9">{{payment?.typeText}}</dd>
+    <dt class="col-sm-3">Payment status</dt>
+    <dd class="col-sm-9">{{payment?.statusText}} <ng-container *ngIf="payment?.canPay"><button type="button" standardButton btnStyle="minor" btnType="refresh" (click)="loadPayment()"></button></ng-container></dd>
+    <ng-container *ngIf="!!payment?.v?.order">
+    <dt class="col-sm-3">Order ID</dt>
+    <dd class="col-sm-9"><a [routerLink]="'/orders/' + payment?.v?.order?.orderId">{{payment?.v?.order?.orderId}}</a></dd>
+        <dt class="col-sm-3">Order Total</dt>
+        <dd class="col-sm-9">{{payment?.v?.order?.totalPrice}}</dd>
+        <dt class="col-sm-3">Restaurant</dt>
+        <dd class="col-sm-9">{{payment?.v?.order?.restaurant?.name}}</dd>
+    </ng-container>
+</dl>
+</app-empty-state>

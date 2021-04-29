@@ -1,3 +1,4 @@
+#nullable enable
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace pwr_msi.Controllers {
                 return NotFound();
             }
 
-            await _paymentService.HandlePaymentCallback(payment, paymentCallbackDto.Status, paymentCallbackDto.Error);
+            await _paymentService.HandlePaymentCallback(payment.PaymentId, paymentCallbackDto.Status, paymentCallbackDto.Error);
             return Ok();
         }
     }
