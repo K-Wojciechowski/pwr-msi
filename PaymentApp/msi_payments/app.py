@@ -16,12 +16,13 @@ from msi_payments.settings import settings
 
 app = FastAPI()
 db = Database()
-callback_queue = asyncio.Queue()
-callback_task: asyncio.Task = None
+callback_queue: asyncio.Queue = asyncio.Queue()
+callback_task: asyncio.Task
 templates = Jinja2Templates(directory="templates")
-logging.basicConfig(format='%(asctime)-15s %(name)s %(levelname)-8s: %(message)s', level=logging.DEBUG)
+logging.basicConfig(format="%(asctime)-15s %(name)s %(levelname)-8s: %(message)s", level=logging.DEBUG)
 callback_logger = logging.getLogger("msipay_callback")
 callback_logger.setLevel(logging.DEBUG)
+
 
 async def callback_worker():
     callback_logger.debug("Callback worker started.")
@@ -82,6 +83,7 @@ async def get_payment(
     payment = await db.get_payment(payment_id)
     if payment is None:
         raise HTTPException(status_code=404)
+    url: Optional[str]
     if payment.can_pay:
         url = urllib.parse.urljoin(settings.server_address, f"/pay/{payment.id}/")
     else:
