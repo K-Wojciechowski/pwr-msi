@@ -66,11 +66,29 @@ namespace pwr_msi.Controllers {
             await _dbContext.SaveChangesAsync();
             return order.AsBasicDto();
         }
-
         [AcceptOrdersRestaurantAuthorize("id")]
-        [Route(template: "{id}/orders/{orderId}/")]
+        [Route(template: "{id}/orders/{orderId}/delivery/")]
+        public async Task<ActionResult<List<DelivererDto>>> GetDeliverers([FromRoute] int orderId, [FromRoute] int id) {
+            var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
+            if (order == null) return NotFound();
+            var deliverers = _dbContext.RestaurantUsers.Where(ru => ru.RestaurantId == id && ru.CanDeliverOrders);
+            Dictionary<RestaurantUser, int> activeTasks = new Dictionary<RestaurantUser, int>();
+            ZonedDateTime now = new ZonedDateTime();
+            foreach (var deliverer in deliverers) {
+                var count = await _dbContext.OrderTasks.CountAsync(ot => ot.AssigneeUserId == deliverer.UserId 
+                                                                         && ot.AssigneeType.Equals(AssigneeType.DELIVERY)
+                                                                         && (ZonedDateTime.Comparer.Local.Compare((ZonedDateTime)ot.DateCompleted, now) >= 0));
+                activeTasks.Add(deliverer, count);
+            }
+            var unbusyDeliverers = activeTasks.ToList();
+            unbusyDeliverers.Sort((pair1,pair2) => pair1.Value.CompareTo(pair2.Value));
+            return unbusyDeliverers.Select(d => d.Key.AsDelivererDto(d.Value)).ToList();;
+        }
+        
+        [AcceptOrdersRestaurantAuthorize("id")]
+        [Route(template: "{id}/orders/{orderId}/delivery/")]
         [HttpPut]
-        public async Task<ActionResult<OrderDetailsDto>> AssignOrder([FromRoute] int orderId, [FromRoute] int id, [FromQuery] string assign) {
+        public async Task<ActionResult<OrderDetailsDto>> AssignOrder([FromRoute] int orderId, [FromRoute] int id, [FromQuery] string assign, [FromBody] int deliverId) {
             var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
             if (order == null) return NotFound();
             OrderTask orderTask =
@@ -93,12 +111,13 @@ namespace pwr_msi.Controllers {
                     break;
                 case("specified") :
                     orderTask.AssigneeType = AssigneeType.DELIVERY;
+                    orderTask.AssigneeUserId = deliverId;
                     break;
                 case("unassigned") :
                     orderTask.AssigneeType = AssigneeType.RESTAURANT;
                     break;
             }
-            
+            await _dbContext.OrderTasks.AddAsync(orderTask);
             var query = _dbContext.OrderItems.Where(oi => oi.OrderId == orderId);
             ICollection<OrderItem> items = await query.ToListAsync(); 
             await _dbContext.SaveChangesAsync();
