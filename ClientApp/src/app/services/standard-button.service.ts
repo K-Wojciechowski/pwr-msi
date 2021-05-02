@@ -23,6 +23,12 @@ export class StandardButtonService {
                 return {buttonClass: "success", iconName: "check-circle", text: "Save"};
             case "cancel":
                 return {buttonClass: "dark", iconName: "x-circle", text: "Cancel"};
+            case "pay":
+                return {buttonClass: "success", iconName: "cash", text: "Pay"};
+            case "makepayment":
+                return {buttonClass: "primary", iconName: "cash", text: "Make Payment"};
+            case "refresh":
+                return {buttonClass: "dark", iconName: "refresh", text: "Refresh"};
             default:
                 return {buttonClass: "dark", iconName: "question-diamond-fill", text: "Unknown"};
         }

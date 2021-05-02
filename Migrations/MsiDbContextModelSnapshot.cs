@@ -80,35 +80,6 @@ namespace pwr_msi.Migrations
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("pwr_msi.Models.BalanceRepayment", b =>
-                {
-                    b.Property<int>("BalanceRepaymentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ExternalRepaymentId")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("BalanceRepaymentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BalanceRepayments");
-                });
-
             modelBuilder.Entity("pwr_msi.Models.Cuisine", b =>
                 {
                     b.Property<int>("CuisineId")
@@ -140,7 +111,7 @@ namespace pwr_msi.Migrations
                     b.Property<ZonedDateTime>("ValidFrom")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<ZonedDateTime>("ValidUntil")
+                    b.Property<ZonedDateTime?>("ValidUntil")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("MenuCategoryId");
@@ -181,7 +152,7 @@ namespace pwr_msi.Migrations
                     b.Property<ZonedDateTime>("ValidFrom")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<ZonedDateTime>("ValidUntil")
+                    b.Property<ZonedDateTime?>("ValidUntil")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("MenuItemId");
@@ -247,8 +218,14 @@ namespace pwr_msi.Migrations
                     b.Property<int>("AddressId")
                         .HasColumnType("integer");
 
+                    b.Property<ZonedDateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
+
+                    b.Property<ZonedDateTime?>("Delivered")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeliveryNotes")
                         .HasColumnType("text");
@@ -264,6 +241,9 @@ namespace pwr_msi.Migrations
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric");
+
+                    b.Property<ZonedDateTime>("Updated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("OrderId");
 
@@ -335,20 +315,23 @@ namespace pwr_msi.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("AssigneeRestaurantId")
+                    b.Property<int?>("AssigneeRestaurantId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("AssigneeType")
+                    b.Property<int?>("AssigneeType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("AssigneeUserId")
+                    b.Property<int?>("AssigneeUserId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CompletedById")
+                    b.Property<int?>("CompletedById")
                         .HasColumnType("integer");
 
-                    b.Property<ZonedDateTime>("DateCompleted")
+                    b.Property<ZonedDateTime?>("DateCompleted")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Task")
                         .HasColumnType("integer");
@@ -360,6 +343,8 @@ namespace pwr_msi.Migrations
                     b.HasIndex("AssigneeUserId");
 
                     b.HasIndex("CompletedById");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("OrderTasks");
                 });
@@ -374,23 +359,32 @@ namespace pwr_msi.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
+                    b.Property<ZonedDateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ErrorMessage")
                         .HasColumnType("text");
 
                     b.Property<string>("ExternalPaymentId")
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsFromBalance")
+                    b.Property<bool>("IsBalanceRepayment")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsReturn")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("OrderId")
+                    b.Property<bool>("IsTargettingBalance")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("OrderId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
+
+                    b.Property<ZonedDateTime>("Updated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("integer");
@@ -571,17 +565,6 @@ namespace pwr_msi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("pwr_msi.Models.BalanceRepayment", b =>
-                {
-                    b.HasOne("pwr_msi.Models.User", "User")
-                        .WithMany("BalanceRepayments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("pwr_msi.Models.MenuCategory", b =>
                 {
                     b.HasOne("pwr_msi.Models.Restaurant", "Restaurant")
@@ -701,19 +684,19 @@ namespace pwr_msi.Migrations
                 {
                     b.HasOne("pwr_msi.Models.Restaurant", "AssigneeRestaurant")
                         .WithMany()
-                        .HasForeignKey("AssigneeRestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AssigneeRestaurantId");
 
                     b.HasOne("pwr_msi.Models.User", "AssigneeUser")
                         .WithMany()
-                        .HasForeignKey("AssigneeUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AssigneeUserId");
 
                     b.HasOne("pwr_msi.Models.User", "CompletedBy")
                         .WithMany()
-                        .HasForeignKey("CompletedById")
+                        .HasForeignKey("CompletedById");
+
+                    b.HasOne("pwr_msi.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -722,21 +705,23 @@ namespace pwr_msi.Migrations
                     b.Navigation("AssigneeUser");
 
                     b.Navigation("CompletedBy");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("pwr_msi.Models.Payment", b =>
                 {
                     b.HasOne("pwr_msi.Models.Order", "Order")
                         .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrderId");
 
-                    b.HasOne("pwr_msi.Models.User", null)
+                    b.HasOne("pwr_msi.Models.User", "User")
                         .WithMany("Payments")
                         .HasForeignKey("UserId");
 
                     b.Navigation("Order");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("pwr_msi.Models.Restaurant", b =>
@@ -813,8 +798,6 @@ namespace pwr_msi.Migrations
 
             modelBuilder.Entity("pwr_msi.Models.User", b =>
                 {
-                    b.Navigation("BalanceRepayments");
-
                     b.Navigation("Payments");
 
                     b.Navigation("RestaurantUsers");

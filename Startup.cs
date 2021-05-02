@@ -9,8 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
+using pwr_msi.Internal;
 using pwr_msi.Models;
 using pwr_msi.Services;
 
@@ -31,12 +34,19 @@ namespace pwr_msi {
             services.AddScoped<AuthService, AuthService>();
             services.AddScoped<AccountEmailService, AccountEmailService>();
             services.AddScoped<AdminCommonService, AdminCommonService>();
+            services.AddScoped<OrderTaskService, OrderTaskService>();
+            services.AddScoped<PaymentService, PaymentService>();
 
             services.AddLocalization(setupAction: options => options.ResourcesPath = "Resources");
+            services.AddHttpClient();
 
             services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization().AddNewtonsoftJson(s =>
-                    s.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
+                .AddDataAnnotationsLocalization().AddNewtonsoftJson(s => {
+                    s.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+                    s.SerializerSettings.Converters.Add(
+                        new StringEnumConverter(new UpperSnakeCaseNamingStrategy(), allowIntegerValues: false)
+                    );
+                });
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration: configuration => { configuration.RootPath = "ClientApp/dist"; });
@@ -76,9 +86,9 @@ namespace pwr_msi {
 
             app.UseStaticFiles();
 
-            app.UseRouting();
-
             app.UseAuthentication();
+
+            app.UseRouting();
 
             app.UseAuthorization();
 

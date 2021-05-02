@@ -1,0 +1,5 @@
+black==21.4b0
+mypy==0.812
+typing-extensions==3.7.4.3
+git+https://github.com/bryanforbes/asyncpg-stubs.git
+typed-ast==1.4.3

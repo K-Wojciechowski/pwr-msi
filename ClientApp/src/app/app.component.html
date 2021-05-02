@@ -56,6 +56,23 @@
                     </li>
                 </ul>
             </ng-container>
+            <ng-container *ngSwitchCase="'orders'">
+                <h1>Orders</h1>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/orders/list">
+                            <bs-icon name="bag"></bs-icon>
+                            Orders
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/orders/payments">
+                            <bs-icon name="cash"></bs-icon>
+                            Payments
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
         </div>
         <div [class.col-main-sidebar]="sidebar != null" [class.col-main-full]="sidebar == null">
             <router-outlet></router-outlet>

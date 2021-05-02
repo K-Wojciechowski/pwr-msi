@@ -12,6 +12,7 @@ namespace pwr_msi.Models {
             RefreshTokenLifetime = TimeSpan.FromDays(value: 7),
             ServerAddress = "http://localhost:5000/",
             DbConnectionString = "Host=localhost;Database=msi;Username=msi;Password=msi",
+            PayUrl = "http://localhost:5007/",
             EmailFromAddress = "noreply@msi.local",
             EmailFromName = "MSI",
             SmtpHost = "localhost",
@@ -29,6 +30,7 @@ namespace pwr_msi.Models {
         public string DbConnectionString { get; set; }
         public string ServerAddress { get; set; }
         public TokenValidationParameters JwtValidationParameters { get; set; }
+        public string PayUrl { get; set; }
         public string EmailFromName { get; set; }
         public string EmailFromAddress { get; set; }
         public string SmtpHost { get; set; }
@@ -66,6 +68,7 @@ namespace pwr_msi.Models {
                 ServerAddress = serverAddress,
                 DbConnectionString =
                     configuration.GetString(key: "DB_CONNECTION_STRING", DefaultSource.DbConnectionString),
+                PayUrl = configuration.GetString(key: "PAY_URL", DefaultSource.PayUrl),
                 EmailFromAddress = configuration.GetString(key: "EMAIL_FROM_ADDRESS", DefaultSource.EmailFromAddress),
                 EmailFromName = configuration.GetString(key: "EMAIL_FROM_NAME", DefaultSource.EmailFromName),
                 SmtpHost = configuration.GetString(key: "SMTP_HOST", DefaultSource.SmtpHost),

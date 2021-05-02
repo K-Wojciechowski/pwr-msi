@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {DEFAULT_CURRENCY_CODE, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -23,6 +23,7 @@ import {WidgetsModule} from "./widgets/widgets.module";
     ],
     providers: [
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+        {provide: DEFAULT_CURRENCY_CODE, useValue: "PLN"}
     ],
     exports: [
     ],

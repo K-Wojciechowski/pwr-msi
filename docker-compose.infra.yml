@@ -1,5 +1,13 @@
 version: "3.7"
 services:
+    msipay:
+        build: PaymentApp
+        ports:
+            - "5007:5007"
+        environment:
+            - MSIPAY_DB_CONNECTION_STRING=postgres://msi:msi@postgres/msi
+            - MSIPAY_CALLBACK_URL=http://172.17.0.1:5000/api/paymentgateway/callback/
+            - MSIPAY_SERVER_ADDRESS=http://localhost:5007/
     postgres:
         image: postgres:alpine
         environment:

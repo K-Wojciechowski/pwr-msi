@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if payment.is_return %}
+    <h1>Receive {{ payment.amount_str }} in return</h1>
+    {% else %}
+    <h1>Pay {{ payment.amount_str }}</h1>
+    {% endif %}
+    <h2>Payment details</h2>
+    <dl class="row">
+        <dt class="col-sm-3">Payment from</dt>
+        <dd class="col-sm-9">{{ payment.payer }}</dd>
+        <dt class="col-sm-3">Payment to</dt>
+        <dd class="col-sm-9">{{ payment.payee }}</dd>
+        <dt class="col-sm-3">Amount</dt>
+        <dd class="col-sm-9">{{ payment.amount_str }}</dd>
+        <dt class="col-sm-3">Description</dt>
+        <dd class="col-sm-9">{{ payment.description }}</dd>
+        {% if payment.is_return %}
+            <dt class="col-sm-3">Return payment</dt>
+            <dd class="col-sm-9">Yes</dd>
+        {% endif %}
+    </dl>
+    <h2>Action</h2>
+    <form method="POST">
+        <div class="form-group">
+            <div class="d-block">Status</div>
+            <label class="d-block"><input name="new_status" type="radio" value="COMPLETED" checked> Mark as COMPLETED</label>
+            <label class="d-block"><input name="new_status" type="radio" value="CANCELLED"> Mark as CANCELLED</label>
+            <label class="d-block"><input name="new_status" type="radio" value="FAILED"> Mark as FAILED</label>
+        </div>
+
+        <div class="form-group">
+            <label for="new_error">Error message (optional)</label>
+            <input type="text" class="form-control" id="new_error" name="new_error">
+        </div>
+
+        <input type="hidden" name="next" value="{{ next }}">
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-lg btn-primary">Continue with payment</button>
+        </div>
+    </form>
+{% endblock %}

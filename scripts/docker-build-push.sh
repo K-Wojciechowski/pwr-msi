@@ -7,5 +7,7 @@ read confirm
 docker-compose -f docker-compose.prod.yml build
 docker tag pwr-msi_nginx:latest localhost:5000/pwr-msi_nginx:latest
 docker tag pwr-msi_backend:latest localhost:5000/pwr-msi_backend:latest
+docker tag pwr-msi_msipay:latest localhost:5000/pwr-msi_msipay:latest
 docker push localhost:5000/pwr-msi_nginx:latest
 docker push localhost:5000/pwr-msi_backend:latest
+docker push localhost:5000/pwr-msi_msipay:latest

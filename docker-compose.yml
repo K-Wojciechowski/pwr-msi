@@ -7,16 +7,27 @@ services:
             - postgres
             - redis
             - mailhog
+            - msipay
         environment:
             - ASPNETCORE_ENVIRONMENT
             - MSI_DB_CONNECTION_STRING
             - MSI_SERVER_ADDRESS
-            - MSI_REDIS_HOST="redis"
-            - MSI_SMTP_HOST="mailhog"
+            - MSI_REDIS_HOST=redis
+            - MSI_SMTP_HOST=mailhog
+            - MSI_PAY_URL=http://msipay:5007/
+    msipay:
+        build: PaymentApp
+        links:
+            - nginx
+        environment:
+            - MSIPAY_DB_CONNECTION_STRING
+            - MSIPAY_CALLBACK_URL
+            - MSIPAY_SERVER_ADDRESS
     nginx:
         build: ClientApp
         ports:
             - "8080:80"
+            - "8081:81"
     postgres:
         image: postgres:alpine
         environment:
