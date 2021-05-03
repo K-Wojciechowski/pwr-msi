@@ -3,6 +3,7 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 RUN apt-get update && apt-get install -y build-essential
 RUN python -m venv venv
+RUN venv/bin/python -m pip install -U pip setuptools wheel
 RUN venv/bin/pip install --no-cache-dir -r requirements.txt
 
 FROM build-env AS test-env
