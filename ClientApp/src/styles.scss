@@ -45,3 +45,13 @@
     line-height: $input-line-height;
     display: block;
 }
+
+@include media-breakpoint-down(sm) {
+    .table-hidden-sm {
+        display: none;
+    }
+}
+
+.btn-singleline {
+    white-space: nowrap;
+}

@@ -16,6 +16,6 @@
 
 <h2 *ngIf="pendingPayments.length > 0">Payment history</h2>
 
-<app-payments-table [showLoading]="showLoading > 0" [payments]="paymentHistory"></app-payments-table>
+<app-payments-table [showLoading]="showLoading > 0" [payments]="paymentHistory" [ngClass]="{'mt-2': pendingPayments.length == 0}"></app-payments-table>
 <app-pager [page]="historyPageNumber" (pageChange)="goToHistoryPage($event)" [totalItems]="historyTotalItems"></app-pager>
 </app-progress-spinner-content>
