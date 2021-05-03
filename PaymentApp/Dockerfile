@@ -18,7 +18,7 @@ RUN venv/bin/black --check msi_payments
 
 FROM python:3-slim
 WORKDIR /app
-COPY --from=build-env /app/venv /ap/venv
+COPY --from=build-env /app/venv /app/venv
 COPY msi_payments /app/msi_payments
 COPY templates /app/templates
 ENTRYPOINT ["venv/bin/uvicorn", "--port=5007", "--host=0.0.0.0", "msi_payments.app:app"]
