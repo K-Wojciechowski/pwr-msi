@@ -18,6 +18,9 @@ export class AppComponent implements OnInit {
     public userName = "?";
     public showNavbar: boolean = true;
     public sidebar: string | null = null;
+    public canDeliver: boolean = false;
+    public canManage: boolean = false;
+    public isAdmin: boolean = false;
 
     constructor(private authService: AuthService, private authStore: AuthStoreService, private toastService: ToastService, private router: Router, private activatedRoute: ActivatedRoute) {
     }
@@ -38,6 +41,12 @@ export class AppComponent implements OnInit {
         this.authStore.user.subscribe(user => {
             this.isLoggedIn = user !== null;
             this.userName = user === null ? "?" : user.firstName + " " + user.lastName;
+        });
+
+        this.authStore.access.subscribe(access => {
+            this.canDeliver = access !== null && access !== undefined && access.deliver.length > 0;
+            this.canManage = access !== null && access !== undefined && (access.manage.length > 0 || access.accept.length > 0);
+            this.isAdmin = !!access?.admin;
         });
     }
 

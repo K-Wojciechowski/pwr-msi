@@ -20,6 +20,7 @@ import {PaymentsOverviewComponent} from "./pages/orders/payments-overview/paymen
 import {PaymentsInfoComponent} from "./pages/orders/payments-info/payments-info.component";
 import {PaymentsMakeComponent} from "./pages/orders/payments-make/payments-make.component";
 import {PaymentsCheckComponent} from "./pages/orders/payments-check/payments-check.component";
+import {AuthGuardService} from "./services/auth-guard.service";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -37,17 +38,23 @@ const routes: Routes = [
     {path: "admin/restaurants/:id", component: RestaurantsEditComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/cuisines", component: CuisinesListComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "orders", redirectTo: "/orders/list", pathMatch: "full"},
-    {path: "orders/payments", component: PaymentsOverviewComponent, data: {sidebar: "orders"}},
-    {path: "orders/payments/repay", component: PaymentsMakeComponent, data: {sidebar: "orders", isBalanceRepayment: true}},
-    {path: "orders/payments/:id", component: PaymentsInfoComponent, data: {sidebar: "orders"}},
-    {path: "orders/payments/:id/make", component: PaymentsMakeComponent, data: {sidebar: "orders"}},
-    {path: "orders/payments/:id/check", component: PaymentsCheckComponent, data: {sidebar: "orders"}},
-    {path: "orders/list", component: OrdersOverviewComponent, data: {sidebar: "orders"}},
-    {path: "orders/:id", component: OrdersInfoComponent, data: {sidebar: "orders"}},
+    {path: "orders/payments", component: PaymentsOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "orders/payments/repay", component: PaymentsMakeComponent, data: {sidebar: "orders", isBalanceRepayment: true, auth: AuthType.USER}},
+    {path: "orders/payments/:id", component: PaymentsInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "orders/payments/:id/make", component: PaymentsMakeComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "orders/payments/:id/check", component: PaymentsCheckComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "orders/list", component: OrdersOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "orders/:id", component: OrdersInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
 ];
 
+const routesWithActivators = routes.map(route => {
+    return (route.redirectTo !== undefined) ? route : {
+    ...route,
+    canActivate: [AuthGuardService]
+}});
+
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {enableTracing: true})],
+  imports: [RouterModule.forRoot(routesWithActivators)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

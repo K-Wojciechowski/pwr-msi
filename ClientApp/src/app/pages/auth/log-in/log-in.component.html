@@ -4,6 +4,7 @@
         Log in
     </div>
     <div class="card-body">
+        <div *ngIf="!!nextUrl" class="alert alert-warning">Log in to continue.</div>
         <form #f="ngForm" (ngSubmit)="submit(f)" ngNativeValidate>
             <div class="form-group">
                 <label for="loginUsername">User name</label>
