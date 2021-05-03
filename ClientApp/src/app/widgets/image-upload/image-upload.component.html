@@ -1,0 +1,15 @@
+<div class="card">
+    <img *ngIf="!!imageUrl && !showLoading" [src]="imageUrl" class="card-img-top card-img-real" [alt]="imageAlt">
+    <div class="card-img-top card-img-icon" style="line-height: 1; padding: 1rem" *ngIf="!imageUrl && !showLoading" title="Image missing, click to upload" (click)="upload()">
+        <bs-icon name="camera-fill" style="font-size: 2rem"></bs-icon>
+    </div>
+    <div class="card-img-top card-img-icon" style="line-height: 1; padding: 1rem" *ngIf="showLoading">
+        <app-progress-spinner [lightBackground]="true"></app-progress-spinner>
+    </div>
+    <div class="btn-group">
+        <button (click)="upload()" [disabled]="showLoading" type="button" class="btn btn-outline-secondary" title="Upload an image"><bs-icon name="upload"></bs-icon> Upload</button>
+        <button (click)="delete()" [disabled]="showLoading" *ngIf="!!imageUrl" type="button" class="btn btn-outline-danger"
+                title="Delete image"><bs-icon name="trash"></bs-icon><span class="sr-only"> Delete</span></button>
+    </div>
+    <input type="file" accept="image/png,image/jpeg" class="d-none" (change)="handleFile($event)" #fileInput>
+</div>

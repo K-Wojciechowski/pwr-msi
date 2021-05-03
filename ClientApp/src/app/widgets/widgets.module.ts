@@ -17,6 +17,7 @@ import {PagerComponent} from "./pager/pager.component";
 import {AddressEditorComponent} from "./address-editor/address-editor.component";
 import {EmptyStateComponent} from "./empty-state/empty-state.component";
 import {FormTextareaComponent} from "./form-textarea/form-textarea.component";
+import {ImageUploadComponent} from "./image-upload/image-upload.component";
 
 const components = [
     AddressEditorComponent,
@@ -26,6 +27,7 @@ const components = [
     FormInputComponent,
     FormTextareaComponent,
     HeadingButtonsComponent,
+    ImageUploadComponent,
     PagerComponent,
     ProgressSpinnerComponent,
     ProgressSpinnerContentComponent,

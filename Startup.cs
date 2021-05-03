@@ -36,6 +36,7 @@ namespace pwr_msi {
             services.AddScoped<AdminCommonService, AdminCommonService>();
             services.AddScoped<OrderTaskService, OrderTaskService>();
             services.AddScoped<PaymentService, PaymentService>();
+            services.AddScoped<S3Service, S3Service>();
 
             services.AddLocalization(setupAction: options => options.ResourcesPath = "Resources");
             services.AddHttpClient();
@@ -53,7 +54,7 @@ namespace pwr_msi {
             services.AddDbContext<MsiDbContext>(optionsAction: options =>
                 options
                     .UseLazyLoadingProxies()
-                    .UseNpgsql(appConfig.DbConnectionString, npgsqlOptionsAction: o => o.UseNodaTime())
+                    .UseNpgsql(appConfig.DbConnectionString, npgsqlOptionsAction: o => o.UseNodaTime().EnableRetryOnFailure())
             );
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(configureOptions: o => {
