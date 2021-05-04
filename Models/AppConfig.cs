@@ -18,10 +18,11 @@ namespace pwr_msi.Models {
             SmtpHost = "localhost",
             SmtpPort = 1025,
             SmtpAuthenticate = false,
+            S3BucketName = "msiuploads",
             S3Url = "http://localhost:9000/",
-            S3Region = RegionEndpoint.EUCentral1,
-            S3AccessKey = "msi_s3_access",
-            S3SecretKey = "msi_s3_secret",
+            S3Region = RegionEndpoint.USEast1,
+            S3AccessKey = "msi_s3_root_user",
+            S3SecretKey = "msi_s3_root_password",
         };
 
         public byte[] JwtKey { get; set; }
@@ -38,6 +39,7 @@ namespace pwr_msi.Models {
         public bool SmtpAuthenticate { get; set; }
         public string SmtpUsername { get; set; }
         public string SmtpPassword { get; set; }
+        public string S3BucketName { get; set; }
         public string S3Url { get; set; }
         public RegionEndpoint S3Region { get; set; }
         public string S3AccessKey { get; set; }
@@ -76,6 +78,7 @@ namespace pwr_msi.Models {
                 SmtpAuthenticate = configuration.GetBoolean(key: "SMTP_AUTHENTIATE", DefaultSource.SmtpAuthenticate),
                 SmtpUsername = configuration.GetString(key: "SMTP_USERNAME", DefaultSource.SmtpUsername),
                 SmtpPassword = configuration.GetString(key: "SMTP_PASSWORD", DefaultSource.SmtpPassword),
+                S3BucketName = configuration.GetString(key: "S3_BUCKET_NAME", DefaultSource.S3BucketName),
                 S3Url = configuration.GetString(key: "S3_URL", DefaultSource.S3Url),
                 S3Region = s3Region,
                 S3AccessKey = configuration.GetString(key: "S3_ACCESS_KEY", DefaultSource.S3AccessKey),

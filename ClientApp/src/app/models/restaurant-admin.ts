@@ -6,4 +6,6 @@ export interface RestaurantAdmin {
     website: string;
     description: string;
     address: Address;
+    logo: string | null;
+    isActive: boolean;
 }

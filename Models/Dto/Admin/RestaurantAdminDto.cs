@@ -4,10 +4,12 @@
         public string Name { get; init; }
         public string Website { get; init; }
         public string Description { get; init; }
+        public string Logo { get; init; }
         public Address Address { get; init; }
+        public bool IsActive { get; init; }
 
         public Restaurant AsNewRestaurant() => new() {
-            Name = Name, Website = Website, Description = Description, Address = Address,
+            Name = Name, Website = Website, Description = Description, Logo = Logo, Address = Address, IsActive = IsActive,
         };
     }
 }

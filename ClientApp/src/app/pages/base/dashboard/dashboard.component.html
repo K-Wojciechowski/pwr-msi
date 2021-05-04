@@ -14,11 +14,20 @@
         name="Orders"
         description="View orders and payments history."
     ></app-dashboard-app-box>
+
+    <app-dashboard-app-box
+        routerLink="/account"
+        background="var(--yellow)"
+        icon="person"
+        name="Account"
+        description="Manage your account and addresses."
+    ></app-dashboard-app-box>
 </div>
 
 <div class="dashboard-items">
     <app-dashboard-app-box
-        routerLink="/orders"
+        *ngIf="canDeliver"
+        routerLink="/deliver"
         background="var(--teal)"
         icon="bicycle"
         name="Deliver"
@@ -26,6 +35,7 @@
     ></app-dashboard-app-box>
 
     <app-dashboard-app-box
+        *ngIf="canManage"
         routerLink="/manage"
         background="var(--red)"
         icon="shop"
@@ -35,6 +45,7 @@
 
 
     <app-dashboard-app-box
+        *ngIf="isAdmin"
         routerLink="/admin"
         background="var(--dark)"
         icon="gear"

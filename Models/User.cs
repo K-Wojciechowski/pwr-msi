@@ -20,7 +20,7 @@ namespace pwr_msi.Models {
 
         [Required] public decimal Balance { get; set; }
 
-        [Required] public bool? IsActive { get; set; }
+        [Required] public bool IsActive { get; set; }
 
         [Required] public bool IsAdmin { get; set; }
 
@@ -54,7 +54,7 @@ namespace pwr_msi.Models {
             LastName = LastName,
             Balance = Balance,
             BillingAddress = BillingAddress,
-            IsActive = IsActive.GetValueOrDefault(false),
+            IsActive = IsActive,
             IsAdmin = IsAdmin,
             IsVerified = IsVerified,
         };

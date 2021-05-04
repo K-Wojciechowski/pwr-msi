@@ -10,6 +10,7 @@ import {setFormValues} from "../../../utils";
 })
 export class AddressEditorComponent implements OnInit, OnChanges {
     @Input("required") required: boolean = false;
+    @Input("showAddressee") showAddressee: boolean = true;
     @Input("addressId") addressId: number | undefined = undefined;
     @Input("address") addressInput!: Address | undefined;
     @Output("addressChange") addressChange = new EventEmitter<Address>();
