@@ -14,14 +14,18 @@ import {NgbPaginationModule, NgbToastModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AppRoutingModule} from "../app-routing.module";
 import {PagerComponent} from "./pager/pager.component";
+import {AddressDisplayComponent} from "./address-display/address-display.component";
 import {AddressEditorComponent} from "./address-editor/address-editor.component";
 import {EmptyStateComponent} from "./empty-state/empty-state.component";
 import {FormTextareaComponent} from "./form-textarea/form-textarea.component";
 import {ImageUploadComponent} from "./image-upload/image-upload.component";
+import {ContextPickerComponent} from "./context-picker/context-picker.component";
 
 const components = [
+    AddressDisplayComponent,
     AddressEditorComponent,
     BsIconComponent,
+    ContextPickerComponent,
     DashboardAppBoxComponent,
     EmptyStateComponent,
     FormInputComponent,

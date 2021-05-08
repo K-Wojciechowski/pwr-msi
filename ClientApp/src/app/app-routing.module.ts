@@ -21,6 +21,8 @@ import {PaymentsInfoComponent} from "./pages/orders/payments-info/payments-info.
 import {PaymentsMakeComponent} from "./pages/orders/payments-make/payments-make.component";
 import {PaymentsCheckComponent} from "./pages/orders/payments-check/payments-check.component";
 import {AuthGuardService} from "./services/auth-guard.service";
+import {ManagePickContextComponent} from "./pages/manage/manage-pick-context/manage-pick-context.component";
+import {ManageIndexComponent} from "./pages/manage/manage-index/manage-index.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -37,14 +39,15 @@ const routes: Routes = [
     {path: "admin/restaurants/add", component: RestaurantsAddComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/restaurants/:id", component: RestaurantsEditComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/cuisines", component: CuisinesListComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
-    {path: "orders", redirectTo: "/orders/list", pathMatch: "full"},
-    {path: "orders/payments", component: PaymentsOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
-    {path: "orders/payments/repay", component: PaymentsMakeComponent, data: {sidebar: "orders", isBalanceRepayment: true, auth: AuthType.USER}},
-    {path: "orders/payments/:id", component: PaymentsInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
-    {path: "orders/payments/:id/make", component: PaymentsMakeComponent, data: {sidebar: "orders", auth: AuthType.USER}},
-    {path: "orders/payments/:id/check", component: PaymentsCheckComponent, data: {sidebar: "orders", auth: AuthType.USER}},
-    {path: "orders/list", component: OrdersOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "orders", component: OrdersOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "orders/:id", component: OrdersInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "payments", component: PaymentsOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "payments/repay", component: PaymentsMakeComponent, data: {sidebar: "orders", isBalanceRepayment: true, auth: AuthType.USER}},
+    {path: "payments/:id", component: PaymentsInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "payments/:id/make", component: PaymentsMakeComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "payments/:id/check", component: PaymentsCheckComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "manage", component: ManagePickContextComponent, data: {sidebar: null}},
+    {path: "manage/:restaurantId/start", component: ManageIndexComponent, data: {sidebar: "manage", auth: AuthType.ACCEPT_OR_MANAGE}},
 ];
 
 const routesWithActivators = routes.map(route => {

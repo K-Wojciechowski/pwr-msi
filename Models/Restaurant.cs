@@ -20,7 +20,7 @@ namespace pwr_msi.Models {
         public virtual ICollection<User> Users { get; set; } = null!;
         public virtual List<RestaurantUser> RestaurantUsers { get; set; } = null!;
 
-        public RestaurantBasicDto AsBasicDto() => new() {RestaruantId = RestaurantId, Name = Name};
+        public RestaurantBasicDto AsBasicDto() => new (RestaurantId, Name, Logo);
 
         public RestaurantAdminDto AsAdminDto() => new () {
             RestaurantId = RestaurantId,

@@ -75,15 +75,44 @@
                 <h1>Orders</h1>
                 <ul class="sidebar-nav">
                     <li class="sidebar-nav-item" routerLinkActive="active">
-                        <a class="sidebar-nav-link" routerLink="/orders/list">
+                        <a class="sidebar-nav-link" routerLink="/orders">
                             <bs-icon name="bag"></bs-icon>
                             <span>Orders</span>
                         </a>
                     </li>
                     <li class="sidebar-nav-item" routerLinkActive="active">
-                        <a class="sidebar-nav-link" routerLink="/orders/payments">
+                        <a class="sidebar-nav-link" routerLink="/payments">
                             <bs-icon name="cash"></bs-icon>
                             <span>Payments</span>
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
+            <ng-container *ngSwitchCase="'manage'">
+                <h1>Manage</h1>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item sidebar-context" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                        <a class="sidebar-nav-link" routerLink="/manage">
+                            <bs-icon name="shop"></bs-icon>
+                            <span>{{ currentRestaurantName }}</span>
+                        </a>
+                    </li>
+                    <li *ngIf="currentCanManageAccept" class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/manage/{{currentRestaurantIdValue}}/orders">
+                            <bs-icon name="bag"></bs-icon>
+                            <span>Orders</span>
+                        </a>
+                    </li>
+                    <li *ngIf="currentCanManageMenu" class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/manage/{{currentRestaurantIdValue}}/menucategories">
+                            <bs-icon name="tags"></bs-icon>
+                            <span>Menu Categories</span>
+                        </a>
+                    </li>
+                    <li *ngIf="currentCanManageMenu" class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/manage/{{currentRestaurantIdValue}}/menu">
+                            <bs-icon name="journal-text"></bs-icon>
+                            <span>Menu Items</span>
                         </a>
                     </li>
                 </ul>

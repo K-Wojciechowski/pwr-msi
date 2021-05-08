@@ -6,6 +6,7 @@ import {CommonModule} from '@angular/common';
 import {WidgetsModule} from "../widgets/widgets.module";
 import {BrowseModule} from "./browse/browse.module";
 import {OrdersModule} from "./orders/orders.module";
+import {ManageModule} from "./manage/manage.module";
 
 @NgModule({
     declarations: [],
@@ -14,6 +15,7 @@ import {OrdersModule} from "./orders/orders.module";
         AuthModule,
         BaseModule,
         BrowseModule,
+        ManageModule,
         OrdersModule
     ],
     imports: [
