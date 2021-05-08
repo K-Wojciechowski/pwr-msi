@@ -26,6 +26,13 @@ namespace pwr_msi.Models {
             Description = Description,
             Address = Address,
         };
+        public RestaurantDetailDto AsDetailDto() => new () {
+            Cuisines = Cuisines,
+            Name = Name,
+            Website = Website,
+            Description = Description,
+            Address = Address,
+        };
 
         public void UpdateWithAdminDto(RestaurantAdminDto raDto) {
             Name = raDto.Name;

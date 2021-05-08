@@ -19,6 +19,10 @@ namespace pwr_msi.Models {
             ValidUntil = ValidUntil,
             Items = Items,
         };
+        public ClientMenuDto AsClientMenuDto() => new () {
+            Name = Name,
+            Items = Items,
+        };
         public RestaurantMenuCategoryDto AsManageCategoryDto() => new () {
             MenuCategoryId = MenuCategoryId,
             Name = Name,
