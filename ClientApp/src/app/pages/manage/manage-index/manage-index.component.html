@@ -1,17 +1,19 @@
 <app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
 <div class="row" *ngIf="!!restaurant">
     <div class="col-md-9">
-<h1>{{restaurant.name}}</h1>
+        <h1>{{restaurant.name}}</h1>
         <div class="alert alert-warning" *ngIf="!restaurant.isActive">
             This restaurant is not active. Customers cannot see it.
         </div>
         <p>{{restaurant.description}}</p>
-        <p><strong>Website:</strong> <a class="d-block ml-2" href="{{restaurant.website}}">{{restaurant.website}}</a></p>
+        <p><strong>Website:</strong> <a class="d-block ml-2" href="{{restaurant.website}}">{{restaurant.website}}</a>
+        </p>
         <strong>Address:</strong>
-        <div class="ml-2"><app-address-display [address]="restaurant.address" [showAddressee]="false"></app-address-display></div>
+        <div class="ml-2">
+            <app-address-display [address]="restaurant.address" [showAddressee]="false"></app-address-display>
+        </div>
     </div>
     <div class="col-md-3">
         <img class="img-fluid" *ngIf="restaurant.logo" [src]="restaurant.logo" [alt]="restaurant.name">
     </div>
-
 </div>

@@ -8,6 +8,7 @@ import {BehaviorSubject, of, zip} from "rxjs";
 import {union} from "lodash";
 import {RestaurantBasic} from "./models/restaurant-basic";
 import {RestaurantContextHelperService} from "./services/restaurant-context-helper.service";
+import {UserAccess} from "./models/user-access";
 
 @Component({
     selector: 'app-root',
@@ -32,32 +33,40 @@ export class AppComponent implements OnInit {
     public currentRestaurantName: string = "?";
     public currentCanManageMenu: boolean = false;
     public currentCanManageAccept: boolean = false;
+    public accessValue: UserAccess | null | undefined = undefined;
 
     constructor(private authService: AuthService, private authStore: AuthStoreService, private toastService: ToastService, private router: Router, private activatedRoute: ActivatedRoute) {
+    }
+
+    private rootRoute(route: ActivatedRoute): ActivatedRoute {
+        while (route.firstChild) {
+            route = route.firstChild;
+        }
+        return route;
     }
 
     ngOnInit() {
         this.authService.initialize();
 
-        const routePipeline = this.router.events.pipe(
+        this.router.events.pipe(
             filter(event => event instanceof NavigationEnd),
-            map(() => this.activatedRoute),
-            map(route => route.firstChild)
-        );
-        routePipeline.pipe(
+            map(() => this.rootRoute(this.router.routerState.root)),
             switchMap(route => route === null ? of({}) : route.data))
             .subscribe((data: any) => {
                 this.showNavbar = !data.hideNavbar;
                 this.sidebar = data.sidebar;
             });
 
-        routePipeline.pipe(
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd),
+            map(() => this.rootRoute(this.router.routerState.root)),
             switchMap(route => route === null ? of(undefined) : route.params))
             .subscribe((params) => {
                 if (params === undefined) return;
                 const restaurantId = +params["restaurantId"];
                 this.currentRestaurantId.next(restaurantId);
                 this.currentRestaurantIdValue = restaurantId;
+                this.updateSidebarWithRestaurantAndAccess();
             });
 
         this.authStore.user.subscribe(user => {
@@ -71,16 +80,19 @@ export class AppComponent implements OnInit {
             this.canManageAccept = access !== null && access !== undefined && access.accept.length > 0;
             this.canManage = this.canManageMenu || this.canManageAccept;
             this.isAdmin = !!access?.admin;
+            this.accessValue = access;
+            this.updateSidebarWithRestaurantAndAccess();
         });
+    }
 
-        zip(this.currentRestaurantId, this.authStore.access).subscribe(zippedSubs => {
-            const [restaurantId, access] = zippedSubs;
-            const allAccess: RestaurantBasic[] = (access === null || access === undefined) ? [] : union(access.accept, access.manage, access.deliver);
-            const restaurant = allAccess.find(r => r.restaurantId == restaurantId);
-            this.currentRestaurantName = restaurant?.name ?? "Restaurant";
-            this.currentCanManageAccept = access?.accept.find(r => r.restaurantId == restaurantId) !== undefined;
-            this.currentCanManageMenu = access?.manage.find(r => r.restaurantId == restaurantId) !== undefined;
-        });
+    private updateSidebarWithRestaurantAndAccess() {
+        const access = this.accessValue;
+        const restaurantId = this.currentRestaurantIdValue;
+        const allAccess: RestaurantBasic[] = (access === null || access === undefined) ? [] : union(access.accept, access.manage, access.deliver);
+        const restaurant = allAccess.find(r => r.restaurantId == restaurantId);
+        this.currentRestaurantName = restaurant?.name ?? "Restaurant";
+        this.currentCanManageAccept = access?.accept.find(r => r.restaurantId == restaurantId) !== undefined;
+        this.currentCanManageMenu = access?.manage.find(r => r.restaurantId == restaurantId) !== undefined;
     }
 
     async handleLogOut() {

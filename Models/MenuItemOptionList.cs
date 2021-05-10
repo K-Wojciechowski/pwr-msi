@@ -17,5 +17,9 @@ namespace pwr_msi.Models {
             IsMultipleChoice= IsMultipleChoice,
             MenuItemId = MenuItemId
         };
+
+        public MenuItemOptionList CreateNewWithItem(int menuItemId) => new() {
+            Name = Name, IsMultipleChoice = IsMultipleChoice, MenuItemId = menuItemId,
+        };
     }
 }

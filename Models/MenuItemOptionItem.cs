@@ -18,6 +18,10 @@ namespace pwr_msi.Models {
             Name = mioiDto.Name;
             Price = mioiDto.Price;
         }
+
+        public MenuItemOptionItem CreateNewWithList(int optionListId) => new() {
+            Name = Name, Price = Price, MenuItemOptionListId = optionListId,
+        };
     }
     
 }

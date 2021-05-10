@@ -23,7 +23,6 @@ export class ManageIndexComponent implements OnInit {
 
     loadData() {
         this.route.params.pipe(this.contextHelper.getReq()).subscribe(restaurantId => {
-            console.log("Load " + restaurantId);
             this.showLoading = true;
             this.http.get<RestaurantAdmin>(`/api/restaurants/${restaurantId}/`).subscribe(ra => {
                 this.restaurant = ra;
