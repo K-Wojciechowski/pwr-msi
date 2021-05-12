@@ -1,4 +1,6 @@
-﻿namespace pwr_msi.Models {
+﻿using pwr_msi.Models.Dto;
+
+namespace pwr_msi.Models {
     public class OrderItem {
         public string Notes;
         public int OrderItemId { get; set; }
@@ -9,5 +11,12 @@
 
         public virtual Order Order { get; set; }
         public virtual MenuItem MenuItem { get; set; }
+
+        public OrderItemDto AsDto() => new OrderItemDto() {
+            Notes = Notes,
+            Amount = Amount,
+            TotalPrice = TotalPrice,
+            MenuItem = MenuItem
+        };
     }
 }

@@ -113,6 +113,7 @@ namespace pwr_msi.Services {
         }
 
         public async Task<PaymentInfoDto> GetPaymentInfoAndRefreshStatus(Payment payment) {
+            
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
             var httpClient = _httpClientFactory.CreateClient();
             Debug.Assert(payment.ExternalPaymentId != null, "payment.ExternalPaymentId != null");
