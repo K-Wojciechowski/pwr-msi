@@ -26,6 +26,7 @@ import {FormTextareaComponent} from "./form-textarea/form-textarea.component";
 import {ImageUploadComponent} from "./image-upload/image-upload.component";
 import {ContextPickerComponent} from "./context-picker/context-picker.component";
 import {SelectEditDateComponent} from "./select-edit-date/select-edit-date.component";
+import {MenuCategoryTabsComponent} from "./menu-category-tabs/menu-category-tabs.component";
 
 const components = [
     AddressDisplayComponent,
@@ -38,6 +39,7 @@ const components = [
     FormTextareaComponent,
     HeadingButtonsComponent,
     ImageUploadComponent,
+    MenuCategoryTabsComponent,
     PagerComponent,
     ProgressSpinnerComponent,
     ProgressSpinnerContentComponent,

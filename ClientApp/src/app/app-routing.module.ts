@@ -24,6 +24,7 @@ import {AuthGuardService} from "./services/auth-guard.service";
 import {ManagePickContextComponent} from "./pages/manage/manage-pick-context/manage-pick-context.component";
 import {ManageIndexComponent} from "./pages/manage/manage-index/manage-index.component";
 import {ManageMenuCategoriesComponent} from "./pages/manage/manage-menu-categories/manage-menu-categories.component";
+import {ManageMenuItemsComponent} from "./pages/manage/manage-menu-items/manage-menu-items.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -50,6 +51,7 @@ const routes: Routes = [
     {path: "manage", component: ManagePickContextComponent, data: {sidebar: null}},
     {path: "manage/:restaurantId/start", component: ManageIndexComponent, data: {sidebar: "manage", auth: AuthType.ACCEPT_OR_MANAGE}},
     {path: "manage/:restaurantId/menucategories", component: ManageMenuCategoriesComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
+    {path: "manage/:restaurantId/menu", component: ManageMenuItemsComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
 ];
 
 const routesWithActivators = routes.map(route => {

@@ -3,6 +3,7 @@ import { cloneDeep, isEqual } from "lodash";
 export class EditableWrapper<T> {
     oldValue: T | null;
     newValue: T | null;
+    isHighlighted: boolean = false;
 
     constructor(value: T | null) {
         this.oldValue = value;

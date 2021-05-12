@@ -63,7 +63,7 @@ namespace pwr_msi {
                 options
                     .UseLazyLoadingProxies()
                     .UseNpgsql(appConfig.DbConnectionString,
-                        npgsqlOptionsAction: o => o.UseNodaTime().EnableRetryOnFailure())
+                        npgsqlOptionsAction: o => o.UseNodaTime().EnableRetryOnFailure().UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
             );
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(configureOptions: o => {

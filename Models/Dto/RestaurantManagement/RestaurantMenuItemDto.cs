@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using NodaTime;
 
 namespace pwr_msi.Models.Dto.RestaurantManagement {
@@ -13,18 +14,21 @@ namespace pwr_msi.Models.Dto.RestaurantManagement {
         public AmountUnit AmountUnit { get; set; }
         public ZonedDateTime ValidFrom { get; set; }
         public ZonedDateTime? ValidUntil { get; set; }
-        public virtual MenuCategory MenuCategory { get; set; } = null!;
+        public int MenuCategoryId { get; set; }
+        public int MenuOrder { get; set; }
+        public ICollection<RestaurantMenuItemOptionListDto> Options { get; set; } = null!;
 
-        public virtual ICollection<MenuItemOptionList> Options { get; set; } = null!;
         public MenuItem AsNewMenuItem() => new() {
-            MenuCategoryId = MenuCategory.MenuCategoryId,
+            MenuCategoryId = MenuCategoryId,
             Name = Name,
             Description = Description,
             Price = Price,
             Amount = Amount,
             AmountUnit = AmountUnit,
             ValidFrom = ValidFrom,
-            Options = Options,
+            ValidUntil = ValidUntil,
+            MenuOrder = MenuOrder,
+            Options = Options.Select(mo => mo.AsNewMenuItemOptionList(-1)).ToList(),
         };
     }
 }

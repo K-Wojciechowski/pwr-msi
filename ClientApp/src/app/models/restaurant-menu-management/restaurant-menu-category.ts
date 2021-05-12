@@ -1,4 +1,4 @@
-export interface MenuCategory {
+export interface RestaurantMenuCategory {
     menuCategoryId: number;
     menuCategoryOrder: number;
     name: string;

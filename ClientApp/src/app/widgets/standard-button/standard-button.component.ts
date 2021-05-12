@@ -12,6 +12,7 @@ export class StandardButtonComponent implements OnInit, OnChanges {
     @Input("text") userText!: string;
     @Input("icon") userIcon!: string;
     @Input("noText") noText: boolean = false;
+    @Input("extraClass") extraClass: string = "";
 
     buttonClasses: string = "btn";
     iconName: string = "";
@@ -69,6 +70,6 @@ export class StandardButtonComponent implements OnInit, OnChanges {
         if (this.userIcon !== "" && this.userIcon !== undefined) {
             this.iconName = this.userIcon;
         }
-        this.el.nativeElement.className = this.buttonClasses;
+        this.el.nativeElement.className = this.buttonClasses + " " + this.extraClass;
     }
 }

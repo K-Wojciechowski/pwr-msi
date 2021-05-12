@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {max, sortBy} from "lodash";
 import {DateTime} from "luxon";
 import {EditableWrapper} from "../../../models/editable-wrapper";
-import {MenuCategory} from "../../../models/menu-category";
+import {RestaurantMenuCategory} from "../../../models/restaurant-menu-management/restaurant-menu-category";
 import {HttpClient} from "@angular/common/http";
 import {ToastService} from "../../../services/toast.service";
 import {RestaurantContextHelperService} from "../../../services/restaurant-context-helper.service";
@@ -17,7 +17,7 @@ import {BulkSaveDto} from "../../../models/bulk-save-dto";
 export class ManageMenuCategoriesComponent implements OnInit {
     public validFrom: DateTime | null = null;
     public showLoading: boolean = false;
-    public categories: EditableWrapper<MenuCategory>[] = [];
+    public categories: EditableWrapper<RestaurantMenuCategory>[] = [];
     public newItemName: string = "";
     private restaurantId!: number;
 
@@ -50,8 +50,8 @@ export class ManageMenuCategoriesComponent implements OnInit {
     loadData() {
         const reqOptions = {params: {validAt: this.validFrom?.toUTC().toISO() ?? ""}}
         this.showLoading = true;
-        this.http.get<MenuCategory[]>(this.getEndpoint, reqOptions).subscribe(cats => {
-            this.categories = cats.map(cat => new EditableWrapper<MenuCategory>(cat));
+        this.http.get<RestaurantMenuCategory[]>(this.getEndpoint, reqOptions).subscribe(cats => {
+            this.categories = cats.map(cat => new EditableWrapper<RestaurantMenuCategory>(cat));
             this.sortCategories();
             this.showLoading = false;
         }, error => {
@@ -70,7 +70,7 @@ export class ManageMenuCategoriesComponent implements OnInit {
     }
 
     addNewItem() {
-        const category: MenuCategory = {
+        const category: RestaurantMenuCategory = {
             menuCategoryId: 0,
             menuCategoryOrder: this.newItemOrder,
             name: this.newItemName,
@@ -103,12 +103,12 @@ export class ManageMenuCategoriesComponent implements OnInit {
         return i < (this.categories.length - 1) && !this.categories[i + 1].isDeleted;
     }
 
-    undoChanges(cat: EditableWrapper<MenuCategory>) {
+    undoChanges(cat: EditableWrapper<RestaurantMenuCategory>) {
         cat.undoChanges();
         this.sortCategories();
     }
 
-    delete(cat: EditableWrapper<MenuCategory>, i: number) {
+    delete(cat: EditableWrapper<RestaurantMenuCategory>, i: number) {
         if (cat.isAdded) {
             this.categories = this.categories.filter((_, index) => index != i);
         } else {
@@ -117,7 +117,7 @@ export class ManageMenuCategoriesComponent implements OnInit {
         this.sortCategories();
     }
 
-    filterMapCategories(predicate: (e: EditableWrapper<MenuCategory>) => boolean): MenuCategory[] {
+    filterMapCategories(predicate: (e: EditableWrapper<RestaurantMenuCategory>) => boolean): RestaurantMenuCategory[] {
         return this.categories.filter(predicate).map(e => e.newValue ?? e.oldValue!);
     }
 
@@ -128,14 +128,14 @@ export class ManageMenuCategoriesComponent implements OnInit {
             return;
         }
 
-        const bulkSaveDto: BulkSaveDto<MenuCategory> = {
+        this.showLoading = true;
+
+        const bulkSaveDto: BulkSaveDto<RestaurantMenuCategory> = {
             added: this.filterMapCategories(e => e.isAdded),
             edited: this.filterMapCategories(e => e.isEdited),
             deleted: this.filterMapCategories(e => e.isDeleted),
             validFrom: this.validFrom!.toISO()
         };
-
-        this.showLoading = true;
 
         this.http.post(this.bulkSaveEndpoint, bulkSaveDto).subscribe(
             () => {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NodaTime;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.RestaurantManagement;
@@ -15,12 +16,13 @@ namespace pwr_msi.Models {
         public virtual Restaurant Restaurant { get; set; }
 
         public virtual ICollection<MenuItem> Items { get; set; }
-        public RestaurantMenuDto AsManageMenuDto() => new () {
+        public RestaurantMenuCategoryWithItemsDto AsManageMenuDto() => new () {
+            MenuCategoryId = MenuCategoryId,
             Name = Name,
             MenuCategoryOrder = MenuCategoryOrder,
             ValidFrom = ValidFrom,
             ValidUntil = ValidUntil,
-            Items = Items,
+            Items = Items.Select(mi => mi.AsManageItemDto()).ToList(),
         };
         public RestaurantMenuCategoryDto AsManageCategoryDto() => new () {
             MenuCategoryId = MenuCategoryId,

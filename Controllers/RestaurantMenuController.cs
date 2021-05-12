@@ -31,10 +31,14 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "{id}/menu/")]
         [ManageRestaurantAuthorize("id")]
-        public async Task<ActionResult<List<RestaurantMenuDto>>>
+        public async Task<ActionResult<List<RestaurantMenuCategoryWithItemsDto>>>
             GetMenu([FromRoute] int id, [FromQuery] string validAt) {
             var validAtDt = parseValidAtDate(validAt);
-            var query = _dbContext.MenuCategories.Where(mc => (mc.RestaurantId == id)
+            var query = _dbContext.MenuCategories
+                .Include(mc => mc.Items)
+                .Include("Items.Options")
+                .Include("Items.Options.Items")
+                .Where(mc => (mc.RestaurantId == id)
                                                               && ((mc.ValidUntil == null) ||
                                                                   (ZonedDateTime.Comparer.Instant.Compare(
                                                                       (ZonedDateTime) mc.ValidUntil, validAtDt) > 0))
