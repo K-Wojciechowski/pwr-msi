@@ -35,7 +35,8 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/orders/")]
         public async Task<ActionResult<List<OrderBasicDto>>> GetOrders([FromRoute] int id, [FromQuery] string status) {
             OrderStatus parsedStatus;
-            var query = _dbContext.Orders.Where(o => o.RestaurantId == id && o.Status.Equals(Enum.TryParse(status.ToUpper(), out parsedStatus)));
+            Enum.TryParse(status.ToUpper(), out parsedStatus);
+            var query = _dbContext.Orders.Where(o => o.RestaurantId == id && o.Status.Equals(parsedStatus));
             var oList = await query.ToListAsync();
             return oList.Select(o => o.AsBasicDto()).ToList();
         }
