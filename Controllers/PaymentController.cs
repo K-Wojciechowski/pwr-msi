@@ -71,7 +71,7 @@ namespace pwr_msi.Controllers {
             if (!payment.CanPay) return BadRequest();
             payment.Status = PaymentStatus.CANCELLED;
             payment.ErrorMessage = "USER_CANCELLED";
-            payment.Updated = new ZonedDateTime();
+            payment.Updated = Utils.Now();
             await _dbContext.SaveChangesAsync();
             return Ok();
         }

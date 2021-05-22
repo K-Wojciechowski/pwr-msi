@@ -74,8 +74,8 @@ namespace pwr_msi.Services {
                         User = order.Customer,
                         Status = PaymentStatus.CREATED,
                         IsTargettingBalance = true,
-                        Created = new ZonedDateTime(),
-                        Updated = new ZonedDateTime()
+                        Created = Utils.Now(),
+                        Updated = Utils.Now()
                     };
                     await ProcessNewBalancePayment(balancePayment);
                 }
@@ -87,8 +87,8 @@ namespace pwr_msi.Services {
                         Order = order,
                         User = order.Customer,
                         Status = PaymentStatus.CREATED,
-                        Created = new ZonedDateTime(),
-                        Updated = new ZonedDateTime()
+                        Created = Utils.Now(),
+                        Updated = Utils.Now()
                     };
                     paymentLink = await ProcessNewExternalPayment(externalPayment);
                 }
@@ -168,8 +168,8 @@ namespace pwr_msi.Services {
                 User = order.Customer,
                 Status = PaymentStatus.CREATED,
                 IsTargettingBalance = true,
-                Created = new ZonedDateTime(),
-                Updated = new ZonedDateTime()
+                Created = Utils.Now(),
+                Updated = Utils.Now()
             };
             await ProcessNewBalancePayment(payment);
             await _dbContext.SaveChangesAsync();
@@ -192,8 +192,8 @@ namespace pwr_msi.Services {
                 User = user,
                 Status = PaymentStatus.CREATED,
                 IsBalanceRepayment = true,
-                Created = new ZonedDateTime(),
-                Updated = new ZonedDateTime()
+                Created = Utils.Now(),
+                Updated = Utils.Now()
             };
             var url = await ProcessNewExternalPayment(payment);
             await transaction.CommitAsync();
