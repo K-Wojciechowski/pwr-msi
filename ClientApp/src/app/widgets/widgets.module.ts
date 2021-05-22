@@ -27,6 +27,7 @@ import {ImageUploadComponent} from "./image-upload/image-upload.component";
 import {ContextPickerComponent} from "./context-picker/context-picker.component";
 import {SelectEditDateComponent} from "./select-edit-date/select-edit-date.component";
 import {MenuCategoryTabsComponent} from "./menu-category-tabs/menu-category-tabs.component";
+import {PipesModule} from "../pipes/pipes.module";
 
 const components = [
     AddressDisplayComponent,
@@ -61,7 +62,8 @@ const components = [
         AppRoutingModule,
         NgbPaginationModule,
         NgbTimepickerModule,
-        NgbDatepickerModule
+        NgbDatepickerModule,
+        PipesModule,
     ],
 })
 export class WidgetsModule {

@@ -7,6 +7,7 @@ import { ManageMenuCategoriesComponent } from './manage-menu-categories/manage-m
 import {FormsModule} from "@angular/forms";
 import { ManageMenuItemsComponent } from './manage-menu-items/manage-menu-items.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {PipesModule} from "../../pipes/pipes.module";
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
         CommonModule,
         WidgetsModule,
         FormsModule,
-        NgbModule
+        NgbModule,
+        PipesModule,
     ]
 })
 export class ManageModule {

@@ -63,6 +63,14 @@
     box-shadow: 0 0 0 $input-focus-width rgba($danger, .25);
 }
 
+.item-expires {
+    background: rgba($warning, .15);
+}
+
+.item-expires-warning {
+    font-weight: 900;
+}
+
 .select-amount-unit {
     max-width: 5rem;
 }

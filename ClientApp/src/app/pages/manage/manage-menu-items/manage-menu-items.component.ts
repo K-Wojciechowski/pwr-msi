@@ -13,6 +13,7 @@ import {AmountUnit} from "../../../models/enum/amount-unit";
 import {RestaurantMenuCategoryWithItems} from "../../../models/restaurant-menu-management/restaurant-menu-category-with-items";
 import {RestaurantMenuItemOptionList} from "../../../models/restaurant-menu-management/restaurant-menu-item-option-list";
 import {RestaurantMenuItemOptionItem} from "../../../models/restaurant-menu-management/restaurant-menu-item-option-item";
+import {ResultDto} from "../../../models/result-dto";
 
 @Component({
     selector: 'app-manage-menu-items',
@@ -25,6 +26,7 @@ export class ManageMenuItemsComponent implements OnInit {
     public simpleCategories: SimpleMenuCategory[] = [];
     public currentCategory: SimpleMenuCategory | null = null;
     public newItemName: string = "";
+    public latestDate: DateTime | null = null;
     public catItems: EditableWrapper<RestaurantMenuItem>[] = [];
     private itemStore: EditableWrapper<RestaurantMenuItem>[] = [];
     private restaurantId!: number;
@@ -42,6 +44,7 @@ export class ManageMenuItemsComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.params.pipe(this.contextHelper.getReq()).subscribe(id => this.restaurantId = id);
+        this.prepareDateSelector();
     }
 
     setValidFrom(dt: DateTime | null) {
@@ -59,6 +62,10 @@ export class ManageMenuItemsComponent implements OnInit {
         return `/api/restaurants/${this.restaurantId}/menu/`;
     }
 
+    get latestDateEndpoint(): string {
+        return `/api/restaurants/${this.restaurantId}/menu/latest/`;
+    }
+
     get bulkSaveEndpoint(): string {
         return `/api/restaurants/${this.restaurantId}/menu/bulk/`;
     }
@@ -67,9 +74,21 @@ export class ManageMenuItemsComponent implements OnInit {
         return `/api/uploads/${this.restaurantId}/menuitemphoto/`;
     }
 
+    prepareDateSelector() {
+        this.showLoading = true;
+        this.http.get<ResultDto<string | null>>(this.latestDateEndpoint).subscribe(res => {
+            this.latestDate = (res.result === null) ? null : DateTime.fromISO(res.result);
+            this.showLoading = false;
+        }, error => {
+            this.toastService.handleHttpError(error);
+            this.showLoading = false;
+        });
+    }
+
     loadData() {
         const reqOptions = {params: {validAt: this.validFrom?.toUTC().toISO() ?? ""}}
         this.showLoading = true;
+
         this.http.get<RestaurantMenuCategoryWithItems[]>(this.getEndpoint, reqOptions).subscribe(cats => {
             this.simpleCategories = sortBy(
                 cats.map(cat => new SimpleMenuCategory(cat.menuCategoryId, cat.name, cat.menuCategoryOrder)),
@@ -95,9 +114,9 @@ export class ManageMenuItemsComponent implements OnInit {
         const catItems = this.itemStore.filter(i => (i.oldValue?.menuCategoryId ?? i.newValue!.menuCategoryId) === menuCategoryId);
         this.catItems = sortBy(catItems, i => [i.newValue?.menuOrder ?? i.oldValue!.menuOrder, i.isDeleted ? 1 : 0]);
         this.catItems.forEach(i => {
-           if (i.oldValue !== null) {
-               this.sortOptions(i.oldValue);
-           }
+            if (i.oldValue !== null) {
+                this.sortOptions(i.oldValue);
+            }
             if (i.newValue !== null) {
                 this.sortOptions(i.newValue);
             }
@@ -106,7 +125,7 @@ export class ManageMenuItemsComponent implements OnInit {
 
     private sortOptions(item: RestaurantMenuItem) {
         const optionsSortedContents = item.options.map(ol => {
-           return {...ol, items: sortBy(ol.items, i => i.menuItemOptionItemOrder)};
+            return {...ol, items: sortBy(ol.items, i => i.menuItemOptionItemOrder)};
         });
         item.options = sortBy(optionsSortedContents, i => i.menuItemOptionListOrder);
     }

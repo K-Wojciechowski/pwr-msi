@@ -22,13 +22,14 @@ namespace pwr_msi.Models.Dto.RestaurantManagement {
             MenuCategoryId = MenuCategoryId,
             Name = Name,
             Description = Description,
+            Image = Image,
             Price = Price,
             Amount = Amount,
             AmountUnit = AmountUnit,
             ValidFrom = ValidFrom,
             ValidUntil = ValidUntil,
             MenuOrder = MenuOrder,
-            Options = Options.Select(mo => mo.AsNewMenuItemOptionList(-1)).ToList(),
+            Options = Options.Select(mo => mo.AsNewMenuItemOptionList()).ToList(),
         };
     }
 }

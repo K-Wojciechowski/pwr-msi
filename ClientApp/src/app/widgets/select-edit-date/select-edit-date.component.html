@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-header" *ngIf="selectedDt === null">Modification effective date</div>
     <div class="card-body" *ngIf="selectedDt !== null">
-        <p class="card-text">Changes will take effect on {{ selectedDtStr }}. <button type="button" class="btn btn-sm btn-outline-secondary ml-1" style="vertical-align: baseline" (click)="unselect()">Change date</button></p>
+        <p class="card-text">Changes will take effect on {{ selectedDt | ldate }}. <button type="button" class="btn btn-sm btn-outline-secondary ml-1" style="vertical-align: baseline" (click)="unselect()">Change date</button></p>
     </div>
     <div class="card-body" *ngIf="selectedDt === null">
         <h5 class="card-title">When should the changes come into effect?</h5>

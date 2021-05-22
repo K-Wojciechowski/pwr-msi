@@ -6,11 +6,10 @@ namespace pwr_msi.Models.Dto.RestaurantManagement {
         public int MenuItemOptionItemOrder { get; set; }
         public int MenuItemOptionListId { get; set; }
 
-        public MenuItemOptionItem AsNewMenuItemOptionItem(int listId) => new() {
-                MenuItemOptionItemId = MenuItemOptionItemId,
+        public MenuItemOptionItem AsNewMenuItemOptionItem() => new() {
                 Name = Name,
                 Price = Price,
-                MenuItemOptionListId = listId,
+                MenuItemOptionItemOrder = MenuItemOptionItemOrder,
         };
     }
 }

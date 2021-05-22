@@ -10,7 +10,7 @@ namespace pwr_msi.Models {
         public int MenuItemOptionListOrder { get; set; }
         public int MenuItemId { get; set; }
         public virtual MenuItem MenuItem { get; set; }
-        public virtual ICollection<MenuItemOptionItem> Items { get; set; }
+        public ICollection<MenuItemOptionItem> Items { get; set; }
 
         public RestaurantMenuItemOptionListDto AsManageOptionListDto() => new() {
             MenuItemOptionListId = MenuItemOptionListId,

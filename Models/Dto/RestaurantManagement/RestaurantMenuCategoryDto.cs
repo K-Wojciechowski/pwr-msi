@@ -12,7 +12,7 @@ namespace pwr_msi.Models.Dto.RestaurantManagement {
             RestaurantId = restaurantId,
             Name = Name,
             MenuCategoryOrder = MenuCategoryOrder,
-            ValidFrom = ValidFrom ?? new ZonedDateTime(),
+            ValidFrom = ValidFrom ?? Utils.Now(),
         };
     }
 }

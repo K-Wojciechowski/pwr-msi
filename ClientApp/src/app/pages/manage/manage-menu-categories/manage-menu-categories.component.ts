@@ -8,6 +8,7 @@ import {ToastService} from "../../../services/toast.service";
 import {RestaurantContextHelperService} from "../../../services/restaurant-context-helper.service";
 import {ActivatedRoute} from "@angular/router";
 import {BulkSaveDto} from "../../../models/bulk-save-dto";
+import {ResultDto} from "../../../models/result-dto";
 
 @Component({
     selector: 'app-manage-menu-categories',
@@ -19,6 +20,7 @@ export class ManageMenuCategoriesComponent implements OnInit {
     public showLoading: boolean = false;
     public categories: EditableWrapper<RestaurantMenuCategory>[] = [];
     public newItemName: string = "";
+    public latestDate: DateTime | null = null;
     private restaurantId!: number;
 
     constructor(private http: HttpClient, private toastService: ToastService, private route: ActivatedRoute, private contextHelper: RestaurantContextHelperService) {
@@ -26,6 +28,7 @@ export class ManageMenuCategoriesComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.params.pipe(this.contextHelper.getReq()).subscribe(id => this.restaurantId = id);
+        this.prepareDateSelector();
     }
 
     setValidFrom(dt: DateTime | null) {
@@ -43,8 +46,23 @@ export class ManageMenuCategoriesComponent implements OnInit {
         return `/api/restaurants/${this.restaurantId}/menu/categories/`;
     }
 
+    get latestDateEndpoint(): string {
+        return `/api/restaurants/${this.restaurantId}/menu/latest/`;
+    }
+
     get bulkSaveEndpoint(): string {
         return `/api/restaurants/${this.restaurantId}/menu/categories/bulk/`;
+    }
+
+    prepareDateSelector() {
+        this.showLoading = true;
+        this.http.get<ResultDto<string | null>>(this.latestDateEndpoint).subscribe(res => {
+            this.latestDate = (res.result === null) ? null : DateTime.fromISO(res.result);
+            this.showLoading = false;
+        }, error => {
+            this.toastService.handleHttpError(error);
+            this.showLoading = false;
+        });
     }
 
     loadData() {

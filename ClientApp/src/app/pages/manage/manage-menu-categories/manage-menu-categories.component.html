@@ -1,6 +1,6 @@
 <app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
 <h1>Edit Menu Categories</h1>
-<app-select-edit-date (selectedDate)="setValidFrom($event)"></app-select-edit-date>
+<app-select-edit-date (selectedDate)="setValidFrom($event)" [latestDate]="latestDate"></app-select-edit-date>
 <table *ngIf="validFrom !== null && !showLoading" class="table table-hover mt-4">
     <thead>
     <tr>

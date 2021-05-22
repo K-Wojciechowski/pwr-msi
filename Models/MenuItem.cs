@@ -21,7 +21,7 @@ namespace pwr_msi.Models {
         public int MenuCategoryId { get; set; }
         public virtual MenuCategory MenuCategory { get; set; } = null!;
 
-        public virtual ICollection<MenuItemOptionList> Options { get; set; } = null!;
+        public ICollection<MenuItemOptionList> Options { get; set; } = null!;
 
         public RestaurantMenuItemDto AsManageItemDto() => new() {
             MenuItemId = MenuItemId,
@@ -42,7 +42,7 @@ namespace pwr_msi.Models {
         }
 
         public void Invalidate(ZonedDateTime? validUntil = null) {
-            ValidUntil = validUntil ?? new ZonedDateTime();
+            ValidUntil = validUntil ?? Utils.Now();
         }
 
 

@@ -34,6 +34,7 @@ namespace pwr_msi {
             services.AddScoped<AuthService, AuthService>();
             services.AddScoped<AccountEmailService, AccountEmailService>();
             services.AddScoped<AdminCommonService, AdminCommonService>();
+            services.AddScoped<MenuService, MenuService>();
             services.AddScoped<OrderTaskService, OrderTaskService>();
             services.AddScoped<PaymentService, PaymentService>();
             services.AddScoped<S3Service, S3Service>();
@@ -61,7 +62,6 @@ namespace pwr_msi {
             services.AddSpaStaticFiles(configuration: configuration => { configuration.RootPath = "ClientApp/dist"; });
             services.AddDbContext<MsiDbContext>(optionsAction: options =>
                 options
-                    .UseLazyLoadingProxies()
                     .UseNpgsql(appConfig.DbConnectionString,
                         npgsqlOptionsAction: o => o.UseNodaTime().EnableRetryOnFailure().UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
             );

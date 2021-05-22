@@ -11,6 +11,7 @@ using NodaTime.Text;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.RestaurantManagement;
+using pwr_msi.Services;
 
 namespace pwr_msi.Controllers {
     [Authorize]
@@ -18,9 +19,11 @@ namespace pwr_msi.Controllers {
     [Route(template: "api/restaurants/")]
     public class RestaurantMenuController : MsiControllerBase {
         private readonly MsiDbContext _dbContext;
+        private readonly MenuService _menuService;
 
-        public RestaurantMenuController(MsiDbContext dbContext) {
+        public RestaurantMenuController(MsiDbContext dbContext, MenuService menuService) {
             _dbContext = dbContext;
+            _menuService = menuService;
         }
 
         private ZonedDateTime parseValidAtDate(string validAtString) {
@@ -34,17 +37,7 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<List<RestaurantMenuCategoryWithItemsDto>>>
             GetMenu([FromRoute] int id, [FromQuery] string validAt) {
             var validAtDt = parseValidAtDate(validAt);
-            var query = _dbContext.MenuCategories
-                .Include(mc => mc.Items)
-                .Include("Items.Options")
-                .Include("Items.Options.Items")
-                .Where(mc => (mc.RestaurantId == id)
-                                                              && ((mc.ValidUntil == null) ||
-                                                                  (ZonedDateTime.Comparer.Instant.Compare(
-                                                                      (ZonedDateTime) mc.ValidUntil, validAtDt) > 0))
-                                                              && (ZonedDateTime.Comparer.Instant.Compare(validAtDt,
-                                                                  mc.ValidFrom) >= 0));
-            var mcList = await query.ToListAsync();
+            var mcList = await _menuService.GetMenuFromDb(id, validAtDt);
             return mcList.Select(mc => mc.AsManageMenuDto()).ToList();
         }
 
@@ -70,6 +63,47 @@ namespace pwr_msi.Controllers {
             return mcList.Select(mc => mc.AsManageCategoryDto()).ToList();
         }
 
+        [Route(template: "{id}/menu/bulk/")]
+        [ManageRestaurantAuthorize("id")]
+        [HttpPost]
+        public async Task<ActionResult> BulkSaveItems([FromRoute] int id,
+            [FromBody] BulkSaveDto<RestaurantMenuItemDto> bulkSaveDto) {
+            Debug.Assert(bulkSaveDto.ValidFrom != null, "bulkSaveDto.ValidFrom != null");
+
+            var executionStrategy = _dbContext.Database.CreateExecutionStrategy();
+            ActionResult status = Ok();
+            await executionStrategy.ExecuteAsync(async () => {
+                await using var transaction =
+                    await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+                var addedItems = bulkSaveDto.Added.Select(miDto => miDto.AsNewMenuItem()).ToList();
+                var editedItems = bulkSaveDto.Edited.Select(miDto => miDto.AsNewMenuItem()).ToList();
+                var editedItemIdsToInvalidate = bulkSaveDto.Edited.Select(miDto => miDto.MenuItemId).ToList();
+                var deletedItemIdsToInvalidate = bulkSaveDto.Deleted.Select(miDto => miDto.MenuItemId).ToList();
+
+                var itemIdsToInvalidate = editedItemIdsToInvalidate.Concat(deletedItemIdsToInvalidate);
+                var itemsToInvalidate = _dbContext.MenuItems.Include(i => i.MenuCategory).Where(i =>
+                    i.MenuCategory.RestaurantId == id && itemIdsToInvalidate.Contains(i.MenuItemId));
+                var itemCount = await itemsToInvalidate.CountAsync();
+                if (itemCount != itemIdsToInvalidate.Count()) {
+                    status = BadRequest();
+                    return;
+                }
+
+                foreach (var item in itemsToInvalidate) {
+                    item.Invalidate(bulkSaveDto.ValidFrom);
+                }
+
+                addedItems.ForEach(item => item.ValidFrom = bulkSaveDto.ValidFrom.Value);
+                editedItems.ForEach(item => item.ValidFrom = bulkSaveDto.ValidFrom.Value);
+
+                await _dbContext.MenuItems.AddRangeAsync(addedItems);
+                await _dbContext.MenuItems.AddRangeAsync(editedItems);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                await _menuService.InvalidateMenuCache(id);
+            });
+            return status;
+        }
 
         [Route(template: "{id}/menu/categories/bulk/")]
         [ManageRestaurantAuthorize("id")]
@@ -81,39 +115,52 @@ namespace pwr_msi.Controllers {
             var executionStrategy = _dbContext.Database.CreateExecutionStrategy();
             ActionResult status = Ok();
             await executionStrategy.ExecuteAsync(async () => {
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-            var addedCats = bulkSaveDto.Added.Select(mcDto => mcDto.AsNewMenuCategory(id));
-            var editedCats = bulkSaveDto.Edited.Select(mcDto => mcDto.AsNewMenuCategory(id)).ToList();
-            var editedCatIdsToInvalidate = bulkSaveDto.Edited.Select(mcDto => mcDto.MenuCategoryId).ToList();
-            var deletedCatIdsToInvalidate = bulkSaveDto.Deleted.Select(mcDto => mcDto.MenuCategoryId).ToList();
+                await using var transaction =
+                    await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+                var addedCats = bulkSaveDto.Added.Select(mcDto => mcDto.AsNewMenuCategory(id)).ToList();
+                var editedCats = bulkSaveDto.Edited.Select(mcDto => mcDto.AsNewMenuCategory(id)).ToList();
+                var editedCatIdsToInvalidate = bulkSaveDto.Edited.Select(mcDto => mcDto.MenuCategoryId).ToList();
+                var deletedCatIdsToInvalidate = bulkSaveDto.Deleted.Select(mcDto => mcDto.MenuCategoryId).ToList();
 
-            var catIdsToInvalidate = editedCatIdsToInvalidate.Concat(deletedCatIdsToInvalidate);
-            var catsToInvalidate = _dbContext.MenuCategories.Where(c =>
-                c.RestaurantId == id && catIdsToInvalidate.Contains(c.MenuCategoryId));
-            var catCount = await catsToInvalidate.CountAsync();
-            if (catCount != catIdsToInvalidate.Count()) {
-                status = BadRequest();
-                return;
-            }
+                var catIdsToInvalidate = editedCatIdsToInvalidate.Concat(deletedCatIdsToInvalidate);
+                var catsToInvalidate = _dbContext.MenuCategories.Where(c =>
+                    c.RestaurantId == id && catIdsToInvalidate.Contains(c.MenuCategoryId));
+                var catCount = await catsToInvalidate.CountAsync();
+                if (catCount != catIdsToInvalidate.Count()) {
+                    status = BadRequest();
+                    return;
+                }
 
-            foreach (var cat in catsToInvalidate) {
-                cat.Invalidate(bulkSaveDto.ValidFrom);
-            }
+                foreach (var cat in catsToInvalidate) {
+                    cat.Invalidate(bulkSaveDto.ValidFrom);
+                }
 
-            await _dbContext.MenuCategories.AddRangeAsync(addedCats);
-            await _dbContext.MenuCategories.AddRangeAsync(editedCats);
-            await _dbContext.SaveChangesAsync();
+                addedCats.ForEach(cat => cat.ValidFrom = bulkSaveDto.ValidFrom.Value);
+                editedCats.ForEach(cat => cat.ValidFrom = bulkSaveDto.ValidFrom.Value);
 
-            var categoryIdMap = editedCatIdsToInvalidate.Zip(editedCats.Select(mc => mc.MenuCategoryId))
-                .ToDictionary(kv => kv.First, kv => kv.Second);
-            await MigrateMenuItemsByCategory(categoryIdMap, bulkSaveDto.ValidFrom.Value);
-            await InvalidateMenuItemsByCategory(deletedCatIdsToInvalidate, bulkSaveDto.ValidFrom.Value);
+                await _dbContext.MenuCategories.AddRangeAsync(addedCats);
+                await _dbContext.MenuCategories.AddRangeAsync(editedCats);
+                await _dbContext.SaveChangesAsync();
 
-            await transaction.CommitAsync();
+                var categoryIdMap = editedCatIdsToInvalidate.Zip(editedCats.Select(mc => mc.MenuCategoryId))
+                    .ToDictionary(kv => kv.First, kv => kv.Second);
+                await MigrateMenuItemsByCategory(categoryIdMap, bulkSaveDto.ValidFrom.Value);
+                await InvalidateMenuItemsByCategory(deletedCatIdsToInvalidate, bulkSaveDto.ValidFrom.Value);
 
+                await transaction.CommitAsync();
+                await _menuService.InvalidateMenuCache(id);
             });
             return status;
         }
+
+        [Route(template: "{id}/menu/latest/")]
+        [ManageRestaurantAuthorize("id")]
+        public async Task<ResultDto<ZonedDateTime?>> MenuLatestVersion([FromRoute] int id) {
+            var latest = await _menuService.GetMenuLatestVersionDate(id, Utils.Now());
+            return new ResultDto<ZonedDateTime?>(latest);
+        }
+
+        /* Old API below - might not work fully */
 
         [Route(template: "{id}/menu/categories/")]
         [ManageRestaurantAuthorize("id")]
@@ -170,7 +217,7 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<List<RestaurantMenuItemDto>>> GetItems([FromRoute] int id,
             [FromQuery] bool showAll) {
             IQueryable<MenuItem> query;
-            ZonedDateTime now = new ZonedDateTime();
+            var now = Utils.Now();
             if (showAll) {
                 query = _dbContext.MenuItems.Where(mi => (mi.MenuCategory.RestaurantId == id));
             } else {
@@ -178,7 +225,8 @@ namespace pwr_msi.Controllers {
                                                          && ((mi.ValidUntil == null) ||
                                                              (ZonedDateTime.Comparer.Instant.Compare(
                                                                  (ZonedDateTime) mi.ValidUntil, now) > 0))
-                                                         && (ZonedDateTime.Comparer.Instant.Compare(now, mi.ValidFrom) >=
+                                                         && (ZonedDateTime.Comparer.Instant.Compare(now,
+                                                                 mi.ValidFrom) >=
                                                              0));
             }
 
@@ -235,7 +283,8 @@ namespace pwr_msi.Controllers {
         [HttpPost]
         public async Task<ActionResult<RestaurantMenuItemOptionListDto>> CreateMenuItemOptionList(
             [FromBody] RestaurantMenuItemOptionListDto miolDto, [FromRoute] int itemId) {
-            var optionList = miolDto.AsNewMenuItemOptionList(itemId);
+            var optionList = miolDto.AsNewMenuItemOptionList();
+            optionList.MenuItemId = itemId;
             await _dbContext.MenuItemOptionLists.AddAsync(optionList);
             await _dbContext.SaveChangesAsync();
             return optionList.AsManageOptionListDto();
@@ -263,7 +312,8 @@ namespace pwr_msi.Controllers {
         [HttpPost]
         public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> CreateMenuItemOptionItem(
             [FromBody] RestaurantMenuItemOptionItemDto mioiDto, [FromRoute] int listId) {
-            var optionItem = mioiDto.AsNewMenuItemOptionItem(listId);
+            var optionItem = mioiDto.AsNewMenuItemOptionItem();
+            optionItem.MenuItemOptionListId = listId;
             await _dbContext.MenuItemOptionItems.AddAsync(optionItem);
             await _dbContext.SaveChangesAsync();
             return optionItem.AsManageOptionItemDto();
@@ -285,7 +335,8 @@ namespace pwr_msi.Controllers {
         [HttpPut]
         public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> UpdateOptionItem([FromRoute] int itemId,
             [FromBody] RestaurantMenuItemOptionItemDto mioiDto) {
-            var newOptionItem = mioiDto.AsNewMenuItemOptionItem(mioiDto.MenuItemOptionListId);
+            var newOptionItem = mioiDto.AsNewMenuItemOptionItem();
+            newOptionItem.MenuItemOptionListId = mioiDto.MenuItemOptionListId;
             await _dbContext.MenuItemOptionItems.AddAsync(newOptionItem);
             var oldOptionItem = await _dbContext.MenuItemOptionItems.FindAsync(itemId);
             if (oldOptionItem == null) return NotFound();

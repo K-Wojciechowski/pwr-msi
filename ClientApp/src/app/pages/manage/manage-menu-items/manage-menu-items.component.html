@@ -1,10 +1,10 @@
 <app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
 <h1>Edit Menu Items</h1>
-<app-select-edit-date (selectedDate)="setValidFrom($event)"></app-select-edit-date>
+<app-select-edit-date (selectedDate)="setValidFrom($event)" [latestDate]="latestDate"></app-select-edit-date>
 <div *ngIf="validFrom !== null && !showLoading" class="mt-4">
     <app-menu-category-tabs navClass="mb-4" [categories]="simpleCategories"
                             (selection)="selectCategory($event)"></app-menu-category-tabs>
-    <div class="card mb-2" *ngFor="let itemEditable of catItems; index as i">
+    <div class="card mb-2" *ngFor="let itemEditable of catItems; index as i" [ngClass]="{'item-expires': itemEditable.oldValue !== null && !!itemEditable.oldValue.validUntil}">
         <div class="card-body d-flex">
             <div class="menu-img-box d-flex flex-direction-column justify-content-center"
                  [ngClass]="{'menu-img-expanded': itemEditable.isHighlighted}"
@@ -21,7 +21,7 @@
             </ng-container>
             <ng-container *ngIf="itemEditable.isDeleted">
                 <input class="form-control ml-2 mr-2 input-deleted" disabled placeholder="Name"
-                       [(ngModel)]="itemEditable.oldValue!.name">
+                       [value]="itemEditable.oldValue!.name">
             </ng-container>
 
             <div class="price mr-2 d-flex align-items-center" *ngIf="!itemEditable.isDeleted">
@@ -43,8 +43,10 @@
             </div>
 
         </div>
-        <div class="menu-subcard-container" [(ngbCollapse)]="itemEditable.isHighlighted">
+        <div class="menu-subcard-container" [(ngbCollapse)]="!itemEditable.isHighlighted">
             <div class="menu-subcard">
+                <p class="item-expires-warning" *ngIf="itemEditable.oldValue !== null && !!itemEditable.oldValue.validUntil">This item expires on
+                    {{itemEditable.oldValue!.validUntil | ldate }}.</p>
                 <div class="row">
                     <div class="col-md-9">
                         <div class="form-group row">

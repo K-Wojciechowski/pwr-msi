@@ -15,7 +15,7 @@ namespace pwr_msi.Models {
         public int RestaurantId { get; set; }
         public virtual Restaurant Restaurant { get; set; }
 
-        public virtual ICollection<MenuItem> Items { get; set; }
+        public ICollection<MenuItem> Items { get; set; }
         public RestaurantMenuCategoryWithItemsDto AsManageMenuDto() => new () {
             MenuCategoryId = MenuCategoryId,
             Name = Name,
@@ -32,11 +32,11 @@ namespace pwr_msi.Models {
             ValidUntil = ValidUntil,
         };
         public void UpdateWithRestaurantMenuCategoryDto(RestaurantMenuCategoryDto mcDto) {
-            ValidUntil = mcDto.ValidFrom ?? new ZonedDateTime();
+            ValidUntil = mcDto.ValidFrom ?? Utils.Now();
         }
 
         public void Invalidate(ZonedDateTime? validUntil = null) {
-            ValidUntil = validUntil ?? new ZonedDateTime();
+            ValidUntil = validUntil ?? Utils.Now();
         }
     }
 }
