@@ -1,5 +1,8 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.Admin;
 
@@ -30,15 +33,18 @@ namespace pwr_msi.Models {
             Logo = Logo,
             Address = Address,
             IsActive = IsActive,
+            Cuisines = Cuisines.ToList(),
         };
 
-        public void UpdateWithAdminDto(RestaurantAdminDto raDto) {
+        public async Task UpdateWithAdminDto(RestaurantAdminDto raDto, DbSet<Cuisine> cuisineSource) {
             Name = raDto.Name;
             Website = raDto.Website;
             Description = raDto.Description;
             Address = raDto.Address;
             Logo = raDto.Logo;
             IsActive = raDto.IsActive;
+            var cuisineIds = raDto.Cuisines.Select(c => c.CuisineId);
+            Cuisines = await cuisineSource.Where(c => cuisineIds.Contains(c.CuisineId)).ToListAsync();
         }
     }
 }

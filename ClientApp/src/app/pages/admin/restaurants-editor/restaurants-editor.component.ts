@@ -6,6 +6,12 @@ import {RestaurantEditorOutput} from "../../../models/restaurant-editor-output";
 import {Address} from "../../../models/address";
 import {setFormValues} from "../../../../utils";
 import {RestaurantAdmin} from "../../../models/restaurant-admin";
+import {Cuisine} from "../../../models/cuisine";
+import {RestaurantBasic} from "../../../models/restaurant-basic";
+import {Observable, of, OperatorFunction} from "rxjs";
+import {UserBasic} from "../../../models/user-basic";
+import {catchError, debounceTime, distinctUntilChanged, switchMap, tap} from "rxjs/operators";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
     selector: 'app-restaurants-editor',
@@ -19,11 +25,14 @@ export class RestaurantsEditorComponent implements OnInit, OnChanges {
     @Input("restarantUsers") restaurantUsersInput!: RestaurantUser[] | undefined;
     @Input("isAdding") isAdding!: boolean;
     @Output("restaurantSubmit") submitEvent = new EventEmitter<RestaurantEditorOutput>();
+    cuisines: Cuisine[] = [];
     address!: Address | undefined;
     addressId!: number | undefined;
     imageUrl: string | null = null;
+    searchFailed: boolean = false;
+    newCuisine: Cuisine | null = null;
 
-    constructor() {
+    constructor(private http: HttpClient) {
     }
 
     ngOnInit(): void {
@@ -41,6 +50,7 @@ export class RestaurantsEditorComponent implements OnInit, OnChanges {
     loadRestaurantInput() {
         if (this.restaurantInput !== undefined) {
             setFormValues(this.restaurantInput, this.form);
+            this.cuisines = this.restaurantInput.cuisines;
             this.address = (this.restaurantInput.address === null || this.restaurantInput.address === undefined) ? undefined : this.restaurantInput.address;
             this.addressId = this.restaurantInput.address?.addressId;
             this.imageUrl = this.restaurantInput.logo;
@@ -54,10 +64,15 @@ export class RestaurantsEditorComponent implements OnInit, OnChanges {
         const restaurant = {
             ...f.value,
             logo: this.imageUrl,
+            cuisines: this.cuisines,
             address: address
         };
         const restaurantUsers = this.ruEditor.restaurantUsers;
         this.submitEvent.emit({restaurant, restaurantUsers});
+    }
+
+    get cuisineEndpoint() {
+        return `/api/admin/cuisines/typeahead/`;
     }
 
     get imageEndpoint() {
@@ -67,4 +82,34 @@ export class RestaurantsEditorComponent implements OnInit, OnChanges {
     logoChanged(logo: string | null) {
         this.imageUrl = logo;
     }
+
+    addCuisine() {
+        if (this.newCuisine === null) return;
+        this.cuisines.push(this.newCuisine);
+        this.newCuisine = null;
+    }
+
+    deleteCuisine(cuisine: Cuisine) {
+        this.cuisines = this.cuisines.filter(c => c.cuisineId !== cuisine.cuisineId);
+    }
+
+    cuisineInputFormatter(c: Cuisine) {
+        return c.name;
+    }
+
+    typeahead: OperatorFunction<string, readonly Cuisine[]> = (text$: Observable<string>) =>
+        text$.pipe(
+            debounceTime(200),
+            distinctUntilChanged(),
+            switchMap(term => {
+                return (term === "") ? of([]) :
+                    this.http.get<Cuisine[]>(this.cuisineEndpoint).pipe(
+                        tap(() => this.searchFailed = false),
+                        catchError(() => {
+                            this.searchFailed = true;
+                            return of([]);
+                        })
+                    )
+            })
+        )
 }
