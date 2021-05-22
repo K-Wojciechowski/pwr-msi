@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.Admin;
 using pwr_msi.Models.Dto.Auth;
@@ -32,10 +33,22 @@ namespace pwr_msi.Controllers {
             _dbContext = dbContext;
         }
 
+
+        private IQueryable<User> GetUsersBaseQueryable() {
+            return _dbContext.Users
+                .Include(u => u.BillingAddress);
+        }
+
+        private IQueryable<RestaurantUser> GetRestaurantUsersBaseQueryable() {
+            return _dbContext.RestaurantUsers
+                .Include(ru => ru.Restaurant)
+                .Include(ru => ru.User);
+        }
+
         [Route(template: "")]
         public async Task<ActionResult<Page<UserAdminDto>>> List([FromQuery] int page = 1) {
             return await Utils.Paginate(
-                queryable: _dbContext.Users.OrderBy(u => u.LastName).ThenBy(u => u.FirstName).ThenBy(u => u.Email),
+                queryable: GetUsersBaseQueryable().OrderBy(u => u.LastName).ThenBy(u => u.FirstName).ThenBy(u => u.Email),
                 page,
                 converter: u => u.AsAdminDto()
             );
@@ -57,14 +70,14 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "{id}/")]
         public async Task<ActionResult<UserAdminDto>> Get([FromRoute] int id) {
-            var user = await _dbContext.Users.FindAsync(id);
+            var user = await GetUsersBaseQueryable().Where(u => u.UserId == id).FirstOrDefaultAsync();
             return user == null ? NotFound() : user.AsAdminDto();
         }
 
         [Route(template: "{id}/")]
         [HttpPut]
         public async Task<ActionResult<UserAdminDto>> Update([FromRoute] int id, [FromBody] UserAdminDto userAdminDto) {
-            var user = await _dbContext.Users.FindAsync(id);
+            var user = await GetUsersBaseQueryable().Where(u => u.UserId == id).FirstOrDefaultAsync();
             if (user == null) return NotFound();
             user.UpdateWithAdminDto(userAdminDto);
             await _dbContext.SaveChangesAsync();
@@ -74,7 +87,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/password/")]
         [HttpPost]
         public async Task<IActionResult> ResetPassword([FromRoute] int id, [FromBody] PasswordResetDto resetDto) {
-            var user = await _dbContext.Users.FindAsync(id);
+            var user = await GetUsersBaseQueryable().Where(u => u.UserId == id).FirstOrDefaultAsync();
             if (user == null) return NotFound();
             user.Password = _authService.HashPassword(user, resetDto.Password);
             await _dbContext.SaveChangesAsync();
@@ -83,7 +96,7 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "{id}/restaurants/")]
         public async Task<ActionResult<List<RestaurantUserDto>>> GetRestaurants([FromRoute] int id) {
-            var query = _dbContext.RestaurantUsers.Include(ru => ru.Restaurant).Include(ru => ru.User).Where(ru => ru.UserId == id);
+            var query = GetRestaurantUsersBaseQueryable().Include(ru => ru.Restaurant).Include(ru => ru.User).Where(ru => ru.UserId == id);
             var ruList = await query.ToListAsync();
             return ruList.Select(ru => ru.AsDto()).ToList();
         }
@@ -101,7 +114,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "typeahead/")]
         public async Task<ActionResult<List<UserAdminDto>>> UsersTypeAhead([FromQuery(Name = "q")] string query) {
             var likeQuery = $"{query}%";
-            var users = _dbContext.Users.Where(r =>
+            var users = GetUsersBaseQueryable().Where(r =>
                 EF.Functions.ILike(r.Username, likeQuery) ||
                 EF.Functions.ILike(r.FirstName,likeQuery) ||
                 EF.Functions.ILike(r.LastName,likeQuery)

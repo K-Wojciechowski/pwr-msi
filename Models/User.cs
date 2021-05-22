@@ -27,12 +27,12 @@ namespace pwr_msi.Models {
         [Required] public bool IsVerified { get; set; }
 
         public int? BillingAddressId { get; set; }
-        public virtual Address BillingAddress { get; set; }
+        public Address BillingAddress { get; set; }
 
-        public virtual ICollection<Address> Addresses { get; set; }
-        public virtual ICollection<Restaurant> Restaurants { get; set; }
-        public virtual ICollection<Payment> Payments { get; set; }
-        public virtual List<RestaurantUser> RestaurantUsers { get; set; }
+        public ICollection<Address> Addresses { get; set; }
+        public ICollection<Restaurant> Restaurants { get; set; }
+        public ICollection<Payment> Payments { get; set; }
+        public List<RestaurantUser> RestaurantUsers { get; set; }
 
         public string FullName => FirstName + " " + LastName;
 
