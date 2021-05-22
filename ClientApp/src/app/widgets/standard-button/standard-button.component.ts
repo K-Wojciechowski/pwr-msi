@@ -11,6 +11,8 @@ export class StandardButtonComponent implements OnInit, OnChanges {
     @Input("btnStyle") buttonStyle!: string;
     @Input("text") userText!: string;
     @Input("icon") userIcon!: string;
+    @Input("noText") noText: boolean = false;
+    @Input("extraClass") extraClass: string = "";
 
     buttonClasses: string = "btn";
     iconName: string = "";
@@ -37,6 +39,9 @@ export class StandardButtonComponent implements OnInit, OnChanges {
             case "table":
                 btnClassBase = "btn btn-singleline btn-sm btn-outline-";
                 break;
+            case "tablecolorful":
+                btnClassBase = "btn btn-singleline btn-sm btn-";
+                break;
             case "minor":
                 btnClassBase = "btn btn-sm btn-outline-";
                 break;
@@ -59,9 +64,12 @@ export class StandardButtonComponent implements OnInit, OnChanges {
         if (this.userText !== "" && this.userText !== undefined) {
             this.text = this.userText;
         }
+        if (this.noText) {
+            this.text = "";
+        }
         if (this.userIcon !== "" && this.userIcon !== undefined) {
             this.iconName = this.userIcon;
         }
-        this.el.nativeElement.className = this.buttonClasses;
+        this.el.nativeElement.className = this.buttonClasses + " " + this.extraClass;
     }
 }

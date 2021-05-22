@@ -1,0 +1,3 @@
+<nav class="nav nav-pills nav-fill {{navClass}}">
+    <button type="button" *ngFor="let category of categories" class="btn btn-link nav-link" [ngClass]="{'active': selectedId === category.menuCategoryId}" href="" (click)="selectCategory(category)">{{ category.name }}</button>
+</nav>

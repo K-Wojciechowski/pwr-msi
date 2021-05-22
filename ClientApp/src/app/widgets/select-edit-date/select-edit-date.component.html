@@ -1,0 +1,19 @@
+<div class="card">
+    <div class="card-header" *ngIf="selectedDt === null">Modification effective date</div>
+    <div class="card-body" *ngIf="selectedDt !== null">
+        <p class="card-text">Changes will take effect on {{ selectedDt | ldate }}. <button type="button" class="btn btn-sm btn-outline-secondary ml-1" style="vertical-align: baseline" (click)="unselect()">Change date</button></p>
+    </div>
+    <div class="card-body" *ngIf="selectedDt === null">
+        <h5 class="card-title">When should the changes come into effect?</h5>
+        <p class="card-text">All changes made to the menu will come into effect at a certain date. Customers will not
+            see the changes you make until that date. It is recommended to pick a time outside of your usual business
+            hours.</p>
+        <div class="d-flex justify-content-center align-items-center">
+            <ngb-datepicker [(ngModel)]="date"></ngb-datepicker>
+            <ngb-timepicker class="ml-4" [(ngModel)]="time"></ngb-timepicker>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+            <button type="button" standardButton btnStyle="form" btnType="continue" (click)="submit()"></button>
+        </div>
+    </div>
+</div>

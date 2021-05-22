@@ -45,7 +45,7 @@ namespace pwr_msi.Models {
             ExternalPaymentId = apiPayment.Id;
             Status = apiPayment.Status;
             ErrorMessage = apiPayment.Error;
-            Updated = new ZonedDateTime();
+            Updated = Utils.Now();
         }
 
         public PaymentDto AsDto() => new() {

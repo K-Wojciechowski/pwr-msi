@@ -22,11 +22,11 @@ namespace pwr_msi.Services {
             var orderTask = await _dbContext.OrderTasks.Where(t => t.Order == order && t.Task == task)
                 .FirstOrDefaultAsync();
             if (orderTask != null) {
-                orderTask.DateCompleted = new ZonedDateTime();
+                orderTask.DateCompleted = Utils.Now();
                 orderTask.CompletedBy = completedBy;
             } else {
                 orderTask = new OrderTask {
-                    Order = order, CompletedBy = completedBy, DateCompleted = new ZonedDateTime(),
+                    Order = order, CompletedBy = completedBy, DateCompleted = Utils.Now(),
                 };
                 await _dbContext.AddAsync(orderTask);
             }

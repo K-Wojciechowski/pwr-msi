@@ -9,12 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
-using pwr_msi.Internal;
 using pwr_msi.Models;
+using pwr_msi.Serialization;
 using pwr_msi.Services;
 
 namespace pwr_msi {
@@ -34,6 +34,7 @@ namespace pwr_msi {
             services.AddScoped<AuthService, AuthService>();
             services.AddScoped<AccountEmailService, AccountEmailService>();
             services.AddScoped<AdminCommonService, AdminCommonService>();
+            services.AddScoped<MenuService, MenuService>();
             services.AddScoped<OrderTaskService, OrderTaskService>();
             services.AddScoped<PaymentService, PaymentService>();
             services.AddScoped<S3Service, S3Service>();
@@ -43,9 +44,17 @@ namespace pwr_msi {
 
             services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization().AddNewtonsoftJson(s => {
-                    s.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+                    // s.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+                    s.SerializerSettings.DateParseHandling = DateParseHandling.None;
+                    s.SerializerSettings.FloatParseHandling = FloatParseHandling.Decimal;
                     s.SerializerSettings.Converters.Add(
                         new StringEnumConverter(new UpperSnakeCaseNamingStrategy(), allowIntegerValues: false)
+                    );
+                    s.SerializerSettings.Converters.Add(
+                        new ZonedDateTimeJsonConverter()
+                    );
+                    s.SerializerSettings.Converters.Add(
+                        new NullableZonedDateTimeJsonConverter()
                     );
                 });
 
@@ -53,8 +62,8 @@ namespace pwr_msi {
             services.AddSpaStaticFiles(configuration: configuration => { configuration.RootPath = "ClientApp/dist"; });
             services.AddDbContext<MsiDbContext>(optionsAction: options =>
                 options
-                    .UseLazyLoadingProxies()
-                    .UseNpgsql(appConfig.DbConnectionString, npgsqlOptionsAction: o => o.UseNodaTime().EnableRetryOnFailure())
+                    .UseNpgsql(appConfig.DbConnectionString,
+                        npgsqlOptionsAction: o => o.UseNodaTime().EnableRetryOnFailure().UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
             );
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(configureOptions: o => {

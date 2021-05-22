@@ -110,10 +110,10 @@ namespace pwr_msi.Controllers {
         [Authorize]
         [Route(template: "access/")]
         public async Task<ActionResult<UserAccessDto>> GetAccess() {
-            var userPermissions = _dbContext.RestaurantUsers.Where(predicate: ru => ru.UserId == MsiUserId);
+            var userPermissions = _dbContext.RestaurantUsers.Include(ru => ru.Restaurant).Where(predicate: ru => ru.UserId == MsiUserId);
             var manage = await userPermissions.Where(predicate: ru => ru.CanManage).ToListAsync();
-            var accept = await userPermissions.Where(predicate: ru => ru.CanManage).ToListAsync();
-            var deliver = await userPermissions.Where(predicate: ru => ru.CanManage).ToListAsync();
+            var accept = await userPermissions.Where(predicate: ru => ru.CanAcceptOrders).ToListAsync();
+            var deliver = await userPermissions.Where(predicate: ru => ru.CanDeliverOrders).ToListAsync();
             return new UserAccessDto {
                 Profile = MsiUser.AsProfile(),
                 Admin = MsiUser.IsAdmin,

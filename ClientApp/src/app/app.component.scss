@@ -54,6 +54,14 @@ $sidebar-width: 250px;
         background: lighten($primary, 40%);
     }
 
+    .sidebar-context {
+        margin-right: 15px;
+    }
+
+    .sidebar-nav li.sidebar-context a {
+        color: $indigo;
+    }
+
     .sidebar-nav li.active span {
         display: inline;
         padding-left: 5px;
@@ -112,6 +120,14 @@ $sidebar-width: 250px;
 
     .sidebar-nav li.active {
         background: lighten($primary, 40%);
+    }
+
+    .sidebar-context {
+        margin-bottom: 15px;
+    }
+
+    .sidebar-nav li.sidebar-context a {
+        color: $indigo;
     }
 
     .col-sidebar h1 {
