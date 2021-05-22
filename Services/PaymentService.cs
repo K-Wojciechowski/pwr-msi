@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using NodaTime;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.PaymentGateway;
@@ -70,8 +69,8 @@ namespace pwr_msi.Services {
                 if (paidFromBalance > 0) {
                     var balancePayment = new Payment {
                         Amount = paidFromBalance,
-                        Order = order,
-                        User = order.Customer,
+                        OrderId = order.OrderId,
+                        UserId = order.CustomerId,
                         Status = PaymentStatus.CREATED,
                         IsTargettingBalance = true,
                         Created = Utils.Now(),
@@ -84,8 +83,8 @@ namespace pwr_msi.Services {
                 if (paidExternally > 0) {
                     var externalPayment = new Payment {
                         Amount = paidExternally,
-                        Order = order,
-                        User = order.Customer,
+                        OrderId = order.OrderId,
+                        UserId = order.CustomerId,
                         Status = PaymentStatus.CREATED,
                         Created = Utils.Now(),
                         Updated = Utils.Now()
@@ -110,29 +109,6 @@ namespace pwr_msi.Services {
         public async Task<Payment> RefreshStatusFromApi(Payment payment) {
             await GetPaymentInfoAndRefreshStatus(payment);
             return payment;
-        }
-
-        public async Task<string> ProcessNewExternalPayment(Payment payment) {
-            await _dbContext.AddAsync(payment);
-            await _dbContext.SaveChangesAsync();
-            return await RegisterExternalPayment(payment);
-        }
-
-        public async Task<PaymentInfoDto> GetPaymentInfoAndRefreshStatus(Payment payment) {
-            PaymentInfoDto paymentInfo = null!;
-            var executionStrategy = _dbContext.Database.CreateExecutionStrategy();
-            await executionStrategy.ExecuteAsync(async () => {
-                await using var transaction =
-                    await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-                var httpClient = _httpClientFactory.CreateClient();
-                Debug.Assert(payment.ExternalPaymentId != null, "payment.ExternalPaymentId != null");
-                using var httpResponse = await httpClient.GetAsync(_gatewayEndpointInfo(payment.ExternalPaymentId));
-                paymentInfo = await DeserializeFromGateway<PaymentInfoDto>(httpResponse);
-                await UpdatePaymentFromApi(payment, paymentInfo.Payment);
-                await _dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
-            });
-            return paymentInfo;
         }
 
         public async Task<PaymentAttemptDto> MakePayment(Payment payment) {
@@ -164,8 +140,8 @@ namespace pwr_msi.Services {
                 .Where(p => p.OrderId == order.OrderId && p.Status == PaymentStatus.COMPLETED).SumAsync(p => p.Amount);
             var payment = new Payment {
                 Amount = -amountToReturn,
-                Order = order,
-                User = order.Customer,
+                OrderId = order.OrderId,
+                UserId = order.CustomerId,
                 Status = PaymentStatus.CREATED,
                 IsTargettingBalance = true,
                 Created = Utils.Now(),
@@ -189,7 +165,7 @@ namespace pwr_msi.Services {
             user.Balance -= balance;
             var payment = new Payment {
                 Amount = -balance,
-                User = user,
+                UserId = user.UserId,
                 Status = PaymentStatus.CREATED,
                 IsBalanceRepayment = true,
                 Created = Utils.Now(),
@@ -214,6 +190,29 @@ namespace pwr_msi.Services {
             await _dbContext.SaveChangesAsync();
             await HandlePaymentStatusUpdate(oldStatus, payment);
             await transaction.CommitAsync();
+        }
+
+        private async Task<string> ProcessNewExternalPayment(Payment payment) {
+            await _dbContext.AddAsync(payment);
+            await _dbContext.SaveChangesAsync();
+            return await RegisterExternalPayment(payment);
+        }
+
+        private async Task<PaymentInfoDto> GetPaymentInfoAndRefreshStatus(Payment payment) {
+            PaymentInfoDto paymentInfo = null!;
+            var executionStrategy = _dbContext.Database.CreateExecutionStrategy();
+            await executionStrategy.ExecuteAsync(async () => {
+                await using var transaction =
+                    await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+                var httpClient = _httpClientFactory.CreateClient();
+                Debug.Assert(payment.ExternalPaymentId != null, "payment.ExternalPaymentId != null");
+                using var httpResponse = await httpClient.GetAsync(_gatewayEndpointInfo(payment.ExternalPaymentId));
+                paymentInfo = await DeserializeFromGateway<PaymentInfoDto>(httpResponse);
+                await UpdatePaymentFromApi(payment, paymentInfo.Payment);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+            });
+            return paymentInfo;
         }
 
         private async Task ProcessNewBalancePayment(Payment payment) {

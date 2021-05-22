@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 
@@ -15,7 +16,10 @@ namespace pwr_msi.Services {
 
         public async Task UpdateRestaurantUsers(IEnumerable<RestaurantUserDto> incomingRestaurantUsers,
             Func<RestaurantUser, bool> criteria) {
-            var dbRestaurantUsers = _dbContext.RestaurantUsers.Where(criteria);
+            var dbRestaurantUsers = _dbContext.RestaurantUsers
+                .Include(ru => ru.Restaurant)
+                .Include(ru => ru.User)
+                .Where(criteria);
             var incomingDict = incomingRestaurantUsers.ToDictionary(rud =>
                 new RestaurantUserKey(rud.User.UserId, rud.Restaurant.RestaurantId));
             var dbDict = dbRestaurantUsers.ToDictionary(ru =>
