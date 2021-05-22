@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using pwr_msi.Models.Dto;
 
 namespace pwr_msi.Models {
     public class Address {
@@ -13,5 +14,15 @@ namespace pwr_msi.Models {
 
         [JsonIgnore]
         public virtual ICollection<User> Users { get; set; }
+
+        public AddressDto AsDto() => new AddressDto() {
+            AddressId = AddressId,
+            Addressee = Addressee,
+            FirstLine = FirstLine,
+            SecondLine = SecondLine,
+            PostCode = PostCode,
+            City = City,
+            Country = Country
+        };
     }
 }
