@@ -52,7 +52,7 @@ namespace pwr_msi.Controllers {
             [FromBody] RestaurantAdminDto restaurantAdminDto) {
             var restaurant = await _dbContext.Restaurants.FindAsync(id);
             if (restaurant == null) return NotFound();
-            restaurant.UpdateWithAdminDto(restaurantAdminDto);
+            restaurant.UpdateWithAdminDto(restaurantAdminDto, _dbContext.Cuisines);
             await _dbContext.SaveChangesAsync();
             return restaurant.AsAdminDto();
         }
