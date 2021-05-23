@@ -9,16 +9,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using NodaTime;
-using pwr_msi.Internal;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.PaymentGateway;
+using pwr_msi.Serialization;
 
 namespace pwr_msi.Services {
     public class PaymentService {
@@ -50,78 +48,67 @@ namespace pwr_msi.Services {
         }
 
         public async Task<PaymentGroupInfo> CreatePaymentForOrder(Order order, bool useBalance = false) {
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-            var alreadyPaid = await _dbContext.Payments
-                .Where(p => p.OrderId == order.OrderId && p.Status == PaymentStatus.COMPLETED).SumAsync(p => p.Amount);
-            // ReSharper disable once ArgumentsStyleLiteral
-            var remainingToPay = Math.Max(0, order.TotalPrice - alreadyPaid);
+            PaymentGroupInfo paymentGroupInfo = null!;
+            var executionStrategy = _dbContext.Database.CreateExecutionStrategy();
+            await executionStrategy.ExecuteAsync(async () => {
+                await using var transaction =
+                    await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+                var alreadyPaid = await _dbContext.Payments
+                    .Where(p => p.OrderId == order.OrderId && p.Status == PaymentStatus.COMPLETED)
+                    .SumAsync(p => p.Amount);
+                // ReSharper disable once ArgumentsStyleLiteral
+                var remainingToPay = Math.Max(0, order.TotalPrice - alreadyPaid);
 
-            decimal paidFromBalance = 0;
-            if (useBalance) {
-                paidFromBalance = Math.Min(order.Customer.Balance, remainingToPay);
-            }
+                decimal paidFromBalance = 0;
+                if (useBalance) {
+                    paidFromBalance = Math.Min(order.Customer.Balance, remainingToPay);
+                }
 
-            var paidExternally = remainingToPay - paidFromBalance;
+                var paidExternally = remainingToPay - paidFromBalance;
 
-            if (paidFromBalance > 0) {
-                var balancePayment = new Payment {
-                    Amount = paidFromBalance,
-                    Order = order,
-                    User = order.Customer,
-                    Status = PaymentStatus.CREATED,
-                    IsTargettingBalance = true,
-                    Created = new ZonedDateTime(),
-                    Updated = new ZonedDateTime()
+                if (paidFromBalance > 0) {
+                    var balancePayment = new Payment {
+                        Amount = paidFromBalance,
+                        OrderId = order.OrderId,
+                        UserId = order.CustomerId,
+                        Status = PaymentStatus.CREATED,
+                        IsTargettingBalance = true,
+                        Created = Utils.Now(),
+                        Updated = Utils.Now()
+                    };
+                    await ProcessNewBalancePayment(balancePayment);
+                }
+
+                string? paymentLink = null;
+                if (paidExternally > 0) {
+                    var externalPayment = new Payment {
+                        Amount = paidExternally,
+                        OrderId = order.OrderId,
+                        UserId = order.CustomerId,
+                        Status = PaymentStatus.CREATED,
+                        Created = Utils.Now(),
+                        Updated = Utils.Now()
+                    };
+                    paymentLink = await ProcessNewExternalPayment(externalPayment);
+                }
+
+                var isPaid = paidExternally == 0;
+
+                await transaction.CommitAsync();
+
+                paymentGroupInfo = new PaymentGroupInfo {
+                    PaidFromBalance = paidFromBalance,
+                    PaidExternally = paidExternally,
+                    IsPaid = isPaid,
+                    PaymentLink = paymentLink,
                 };
-                await ProcessNewBalancePayment(balancePayment);
-            }
-
-            string? paymentLink = null;
-            if (paidExternally > 0) {
-                var externalPayment = new Payment {
-                    Amount = paidExternally,
-                    Order = order,
-                    User = order.Customer,
-                    Status = PaymentStatus.CREATED,
-                    Created = new ZonedDateTime(),
-                    Updated = new ZonedDateTime()
-                };
-                paymentLink = await ProcessNewExternalPayment(externalPayment);
-            }
-
-            var isPaid = paidExternally == 0;
-
-            await transaction.CommitAsync();
-
-            return new PaymentGroupInfo {
-                PaidFromBalance = paidFromBalance,
-                PaidExternally = paidExternally,
-                IsPaid = isPaid,
-                PaymentLink = paymentLink,
-            };
+            });
+            return paymentGroupInfo;
         }
 
         public async Task<Payment> RefreshStatusFromApi(Payment payment) {
             await GetPaymentInfoAndRefreshStatus(payment);
             return payment;
-        }
-
-        public async Task<string> ProcessNewExternalPayment(Payment payment) {
-            await _dbContext.AddAsync(payment);
-            await _dbContext.SaveChangesAsync();
-            return await RegisterExternalPayment(payment);
-        }
-
-        public async Task<PaymentInfoDto> GetPaymentInfoAndRefreshStatus(Payment payment) {
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-            var httpClient = _httpClientFactory.CreateClient();
-            Debug.Assert(payment.ExternalPaymentId != null, "payment.ExternalPaymentId != null");
-            using var httpResponse = await httpClient.GetAsync(_gatewayEndpointInfo(payment.ExternalPaymentId));
-            var paymentInfo = await DeserializeFromGateway<PaymentInfoDto>(httpResponse);
-            await UpdatePaymentFromApi(payment, paymentInfo.Payment);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-            return paymentInfo;
         }
 
         public async Task<PaymentAttemptDto> MakePayment(Payment payment) {
@@ -153,12 +140,12 @@ namespace pwr_msi.Services {
                 .Where(p => p.OrderId == order.OrderId && p.Status == PaymentStatus.COMPLETED).SumAsync(p => p.Amount);
             var payment = new Payment {
                 Amount = -amountToReturn,
-                Order = order,
-                User = order.Customer,
+                OrderId = order.OrderId,
+                UserId = order.CustomerId,
                 Status = PaymentStatus.CREATED,
                 IsTargettingBalance = true,
-                Created = new ZonedDateTime(),
-                Updated = new ZonedDateTime()
+                Created = Utils.Now(),
+                Updated = Utils.Now()
             };
             await ProcessNewBalancePayment(payment);
             await _dbContext.SaveChangesAsync();
@@ -178,11 +165,11 @@ namespace pwr_msi.Services {
             user.Balance -= balance;
             var payment = new Payment {
                 Amount = -balance,
-                User = user,
+                UserId = user.UserId,
                 Status = PaymentStatus.CREATED,
                 IsBalanceRepayment = true,
-                Created = new ZonedDateTime(),
-                Updated = new ZonedDateTime()
+                Created = Utils.Now(),
+                Updated = Utils.Now()
             };
             var url = await ProcessNewExternalPayment(payment);
             await transaction.CommitAsync();
@@ -203,6 +190,29 @@ namespace pwr_msi.Services {
             await _dbContext.SaveChangesAsync();
             await HandlePaymentStatusUpdate(oldStatus, payment);
             await transaction.CommitAsync();
+        }
+
+        private async Task<string> ProcessNewExternalPayment(Payment payment) {
+            await _dbContext.AddAsync(payment);
+            await _dbContext.SaveChangesAsync();
+            return await RegisterExternalPayment(payment);
+        }
+
+        private async Task<PaymentInfoDto> GetPaymentInfoAndRefreshStatus(Payment payment) {
+            PaymentInfoDto paymentInfo = null!;
+            var executionStrategy = _dbContext.Database.CreateExecutionStrategy();
+            await executionStrategy.ExecuteAsync(async () => {
+                await using var transaction =
+                    await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+                var httpClient = _httpClientFactory.CreateClient();
+                Debug.Assert(payment.ExternalPaymentId != null, "payment.ExternalPaymentId != null");
+                using var httpResponse = await httpClient.GetAsync(_gatewayEndpointInfo(payment.ExternalPaymentId));
+                paymentInfo = await DeserializeFromGateway<PaymentInfoDto>(httpResponse);
+                await UpdatePaymentFromApi(payment, paymentInfo.Payment);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+            });
+            return paymentInfo;
         }
 
         private async Task ProcessNewBalancePayment(Payment payment) {

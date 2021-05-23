@@ -1,7 +1,7 @@
 <form #f="ngForm" ngNativeValidate>
-    <div class="form-group">
+    <div class="form-group" *ngIf="showAddressee">
         <label class="sr-only" for="addressee">Addressee</label>
-        <input ngModel class="form-control" name="addressee" id="addressee" placeholder="Addressee" [required]="required">
+        <input ngModel class="form-control" name="addressee" id="addressee" placeholder="Addressee" [required]="required && showAddressee">
     </div>
     <div class="form-group">
         <label class="sr-only" for="firstLine">Address Line 1</label>

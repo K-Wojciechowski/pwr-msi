@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Dto.Admin;
 using pwr_msi.Services;
@@ -22,10 +23,22 @@ namespace pwr_msi.Controllers {
             _adminCommonService = adminCommonService;
         }
 
+        private IQueryable<Restaurant> GetRestaurantsBaseQueryable() {
+            return _dbContext.Restaurants
+                .Include(r => r.Address)
+                .Include(r => r.Cuisines);
+        }
+
+        private IQueryable<RestaurantUser> GetRestaurantUsersBaseQueryable() {
+            return _dbContext.RestaurantUsers
+                .Include(ru => ru.Restaurant)
+                .Include(ru => ru.User);
+        }
+
         [Route(template: "")]
         public async Task<ActionResult<Page<RestaurantAdminDto>>> List([FromQuery] int page = 1) {
             return await Utils.Paginate(
-                queryable: _dbContext.Restaurants.OrderBy(u => u.Name).ThenBy(u => u.RestaurantId),
+                queryable: GetRestaurantsBaseQueryable().OrderBy(r => r.Name).ThenBy(r => r.RestaurantId),
                 page,
                 converter: r => r.AsAdminDto()
             );
@@ -42,7 +55,7 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "{id}/")]
         public async Task<ActionResult<RestaurantAdminDto>> Get([FromRoute] int id) {
-            var restaurant = await _dbContext.Restaurants.FindAsync(id);
+            var restaurant = await GetRestaurantsBaseQueryable().Where(r => r.RestaurantId == id).FirstOrDefaultAsync();
             return restaurant == null ? NotFound() : restaurant.AsAdminDto();
         }
 
@@ -50,35 +63,36 @@ namespace pwr_msi.Controllers {
         [HttpPut]
         public async Task<ActionResult<RestaurantAdminDto>> Update([FromRoute] int id,
             [FromBody] RestaurantAdminDto restaurantAdminDto) {
-            var restaurant = await _dbContext.Restaurants.FindAsync(id);
+            var restaurant = await GetRestaurantsBaseQueryable().Where(r => r.RestaurantId == id).FirstOrDefaultAsync();
             if (restaurant == null) return NotFound();
-            restaurant.UpdateWithAdminDto(restaurantAdminDto);
+            await restaurant.UpdateWithAdminDto(restaurantAdminDto, _dbContext.Cuisines);
             await _dbContext.SaveChangesAsync();
             return restaurant.AsAdminDto();
         }
 
         [Route(template: "{id}/users/")]
-        public async Task<ActionResult<List<RestaurantUserDto>>> GetUsers([FromRoute] int restaurantId) {
-            var query = _dbContext.RestaurantUsers.Where(ru => ru.RestaurantId == restaurantId);
+        public async Task<ActionResult<List<RestaurantUserDto>>> GetUsers([FromRoute] int id) {
+            var query = GetRestaurantUsersBaseQueryable().Where(ru => ru.RestaurantId == id);
             var ruList = await query.ToListAsync();
             return ruList.Select(ru => ru.AsDto()).ToList();
         }
 
         [Route(template: "{id}/users/")]
         [HttpPut]
-        public async Task<ActionResult<List<RestaurantUserDto>>> UpdateUsers([FromRoute] int restaurantId,
+        public async Task<ActionResult<List<RestaurantUserDto>>> UpdateUsers([FromRoute] int id,
             [FromBody] List<RestaurantUserDto> ruDtos) {
-            var incomingRestaurantUsers = ruDtos.Where(ru => ru.Restaurant.RestaruantId == restaurantId);
+            var incomingRestaurantUsers = ruDtos.Where(ru => ru.Restaurant.RestaurantId == id);
             await _adminCommonService.UpdateRestaurantUsers(incomingRestaurantUsers,
-                criteria: ru => ru.RestaurantId == restaurantId);
-            return await GetUsers(restaurantId);
+                criteria: ru => ru.RestaurantId == id);
+            return await GetUsers(id);
         }
 
         [Route(template: "typeahead/")]
-        public async Task<ActionResult<List<RestaurantAdminDto>>> RestaurantsTypeAhead([FromQuery(Name = "q")] string query) {
+        public async Task<ActionResult<List<RestaurantAdminDto>>> RestaurantsTypeAhead(
+            [FromQuery(Name = "q")] string query) {
             var likeQuery = $"{query}%";
             var restaurants =
-                _dbContext.Restaurants.Where(r => EF.Functions.ILike(r.Name, likeQuery));
+                GetRestaurantsBaseQueryable().Where(r => EF.Functions.ILike(r.Name, likeQuery));
             return (await restaurants.ToListAsync()).Select(r => r.AsAdminDto()).ToList();
         }
     }

@@ -1,0 +1,58 @@
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<h1>Edit Menu Categories</h1>
+<app-select-edit-date (selectedDate)="setValidFrom($event)" [latestDate]="latestDate"></app-select-edit-date>
+<table *ngIf="validFrom !== null && !showLoading" class="table table-hover mt-4">
+    <thead>
+    <tr>
+        <th>Order</th>
+        <th>Name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let categoryEditable of categories; index as i"
+        [ngClass]="{'table-success': categoryEditable.isAdded, 'table-info': categoryEditable.isEdited, 'table-danger': categoryEditable.isDeleted}">
+        <ng-container *ngIf="!categoryEditable.isDeleted">
+            <td>
+                {{categoryEditable.newValue!.menuCategoryOrder}}
+            </td>
+            <td>
+                <input class="form-control" placeholder="Name" [(ngModel)]="categoryEditable.newValue!.name">
+            </td>
+        </ng-container>
+        <ng-container *ngIf="categoryEditable.isDeleted">
+            <td class="strikeout">
+                {{categoryEditable.oldValue!.menuCategoryOrder}}
+            </td>
+            <td class="strikeout">
+                {{categoryEditable.oldValue!.name}}
+            </td>
+        </ng-container>
+        <td>
+            <div class="btn-group">
+                <button type="button" [disabled]="i == 0 || categoryEditable.isDeleted" (click)="moveUp(i)"
+                        standardButton btnStyle="tablecolorful" btnType="moveup" [noText]="true"></button>
+                <button type="button" [disabled]="!canMoveDown(i) || categoryEditable.isDeleted" (click)="moveDown(i)"
+                        standardButton btnStyle="tablecolorful" btnType="movedown" [noText]="true"></button>
+                <button type="button" [disabled]="!categoryEditable.canUndo" (click)="undoChanges(categoryEditable)"
+                        standardButton btnStyle="tablecolorful" btnType="undo" [noText]="true"></button>
+                <button type="button" [disabled]="!categoryEditable.canDelete" (click)="delete(categoryEditable, i)"
+                        standardButton btnStyle="tablecolorful" btnType="delete" [noText]="true"></button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td><strong>New</strong></td>
+        <td>
+            <input class="form-control" placeholder="Name" [(ngModel)]="newItemName">
+        </td>
+        <td>
+            <button type="button" (click)="addNewItem()" [disabled]="newItemName.trim().length == 0" standardButton
+                    btnStyle="tablecolorful" btnType="add"></button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div class="btn-box mt-4" *ngIf="validFrom !== null && !showLoading">
+    <button type="button" (click)="submit()" standardButton btnStyle="large" btnType="save"></button>
+</div>

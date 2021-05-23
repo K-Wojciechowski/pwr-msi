@@ -10,8 +10,23 @@
             <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                 <a class="nav-link" routerLink="/">Dashboard</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+            <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" routerLink="/browse">Browse</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" routerLink="/orders">Orders</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" routerLink="/account">Account</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active" *ngIf="canDeliver">
+                <a class="nav-link" routerLink="/deliver">Deliver</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active" *ngIf="canManage">
+                <a class="nav-link" routerLink="/manage">Manage</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active" *ngIf="isAdmin">
+                <a class="nav-link" routerLink="/admin">Admin Panel</a>
             </li>
         </ul>
 
@@ -39,19 +54,19 @@
                     <li class="sidebar-nav-item" routerLinkActive="active">
                         <a class="sidebar-nav-link" routerLink="/admin/users">
                             <bs-icon name="people"></bs-icon>
-                            Users
+                            <span>Users</span>
                         </a>
                     </li>
                     <li class="sidebar-nav-item" routerLinkActive="active">
                         <a class="sidebar-nav-link" routerLink="/admin/restaurants">
                             <bs-icon name="shop"></bs-icon>
-                            Restaurants
+                            <span>Restaurants</span>
                         </a>
                     </li>
                     <li class="sidebar-nav-item" routerLinkActive="active">
                         <a class="sidebar-nav-link" routerLink="/admin/cuisines">
                             <bs-icon name="globe"></bs-icon>
-                            Cuisines
+                            <span>Cuisines</span>
                         </a>
                     </li>
                 </ul>
@@ -60,15 +75,44 @@
                 <h1>Orders</h1>
                 <ul class="sidebar-nav">
                     <li class="sidebar-nav-item" routerLinkActive="active">
-                        <a class="sidebar-nav-link" routerLink="/orders/list">
+                        <a class="sidebar-nav-link" routerLink="/orders">
                             <bs-icon name="bag"></bs-icon>
-                            Orders
+                            <span>Orders</span>
                         </a>
                     </li>
                     <li class="sidebar-nav-item" routerLinkActive="active">
-                        <a class="sidebar-nav-link" routerLink="/orders/payments">
+                        <a class="sidebar-nav-link" routerLink="/payments">
                             <bs-icon name="cash"></bs-icon>
-                            Payments
+                            <span>Payments</span>
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
+            <ng-container *ngSwitchCase="'manage'">
+                <h1>Manage</h1>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item sidebar-context" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                        <a class="sidebar-nav-link" routerLink="/manage">
+                            <bs-icon name="shop"></bs-icon>
+                            <span>{{ currentRestaurantName }}</span>
+                        </a>
+                    </li>
+                    <li *ngIf="currentCanManageAccept" class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/manage/{{currentRestaurantIdValue}}/orders">
+                            <bs-icon name="bag"></bs-icon>
+                            <span>Orders</span>
+                        </a>
+                    </li>
+                    <li *ngIf="currentCanManageMenu" class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/manage/{{currentRestaurantIdValue}}/menucategories">
+                            <bs-icon name="tags"></bs-icon>
+                            <span>Menu Categories</span>
+                        </a>
+                    </li>
+                    <li *ngIf="currentCanManageMenu" class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/manage/{{currentRestaurantIdValue}}/menu">
+                            <bs-icon name="journal-text"></bs-icon>
+                            <span>Menu Items</span>
                         </a>
                     </li>
                 </ul>

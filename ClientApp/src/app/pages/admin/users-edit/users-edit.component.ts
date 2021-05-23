@@ -65,7 +65,6 @@ export class UsersEditComponent implements OnInit {
         this.http.put<UserAdmin>(this.endpoint, user).subscribe(newUser => {
             this.showLoading -= 1;
             this.user = newUser;
-            this.saveRestaurantUsers(newUser, restaurantUsers);
             this.toastService.showSuccess(`Changes to ${newUser.username} saved.`);
             this.saveRestaurantUsers(newUser, restaurantUsers);
         }, error => {
@@ -87,7 +86,7 @@ export class UsersEditComponent implements OnInit {
 
     saveRestaurantUsers(user: UserAdmin, restaurantUsers: RestaurantUser[]) {
         const updatedRestaurantUsers = UsersRestaurantsEditorComponent.updateWithUser(restaurantUsers, user);
-        this.http.post<RestaurantUser[]>(this.restaurantUsersEndpoint, updatedRestaurantUsers).subscribe(restaurantUsers => {
+        this.http.put<RestaurantUser[]>(this.restaurantUsersEndpoint, updatedRestaurantUsers).subscribe(restaurantUsers => {
             this.restaurantUsers = restaurantUsers;
             this.toastService.showSuccess(`Permissions for ${user.username} saved.`);
             this.showLoading = 0;

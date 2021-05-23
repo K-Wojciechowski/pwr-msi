@@ -10,7 +10,7 @@ import {RefreshResult} from "../models/refresh-result";
 })
 export class AuthStoreService {
     public user: BehaviorSubject<UserProfile | null> = new BehaviorSubject<UserProfile | null>(null);
-    public access: BehaviorSubject<UserAccess | null> = new BehaviorSubject<UserAccess | null>(null);
+    public access: BehaviorSubject<UserAccess | null | undefined> = new BehaviorSubject<UserAccess | null | undefined>(undefined);
     public authInitialized: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     public authToken: string | null = null;

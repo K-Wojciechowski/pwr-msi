@@ -8,7 +8,7 @@ namespace pwr_msi.Models {
         public int UserId { get; set; }
         public VerificationTokenType TokenType { get; set; }
         public Instant ValidUntil { get; set; }
-        public virtual User User { get; set; }
+        public User User { get; set; }
 
         public bool IsValid => !IsUsed && SystemClock.Instance.GetCurrentInstant() < ValidUntil;
     }

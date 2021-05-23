@@ -38,7 +38,7 @@ export class PaymentsMakeComponent implements OnInit {
     handleAttempt(attempt: PaymentAttempt) {
         this.showHttpError = false;
         if (!!attempt.paymentUrl) {
-            const baseUrl = new URL(`/orders/payments/${attempt.paymentId}/check`, window.location.toString());
+            const baseUrl = new URL(`/payments/${attempt.paymentId}/check`, window.location.toString());
             const queryParams = new URLSearchParams();
             queryParams.set("next", baseUrl.toString());
             const destinationUrl = new URL(attempt.paymentUrl);

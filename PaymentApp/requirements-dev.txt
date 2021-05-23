@@ -1,5 +1,11 @@
-black==21.4b0
+appdirs==1.4.4
+black==21.5b1
+click==8.0.0
 mypy==0.812
-typing-extensions==3.7.4.3
-git+https://github.com/bryanforbes/asyncpg-stubs.git
+mypy-extensions==0.4.3
+pathspec==0.8.1
+regex==2021.4.4
+toml==0.10.2
 typed-ast==1.4.3
+typing-extensions==3.10.0.0
+git+https://github.com/bryanforbes/asyncpg-stubs.git

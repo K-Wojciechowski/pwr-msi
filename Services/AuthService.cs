@@ -16,11 +16,9 @@ namespace pwr_msi.Services {
         private readonly PasswordHasher<User> _passwordHasher;
 
         private readonly AppConfig _appConfig;
-        private MsiDbContext _dbContext;
 
-        public AuthService(AppConfig appConfig, MsiDbContext dbContext) {
+        public AuthService(AppConfig appConfig) {
             _appConfig = appConfig;
-            _dbContext = dbContext;
             _passwordHasher = new PasswordHasher<User>();
         }
 

@@ -20,6 +20,11 @@ import {PaymentsOverviewComponent} from "./pages/orders/payments-overview/paymen
 import {PaymentsInfoComponent} from "./pages/orders/payments-info/payments-info.component";
 import {PaymentsMakeComponent} from "./pages/orders/payments-make/payments-make.component";
 import {PaymentsCheckComponent} from "./pages/orders/payments-check/payments-check.component";
+import {AuthGuardService} from "./services/auth-guard.service";
+import {ManagePickContextComponent} from "./pages/manage/manage-pick-context/manage-pick-context.component";
+import {ManageIndexComponent} from "./pages/manage/manage-index/manage-index.component";
+import {ManageMenuCategoriesComponent} from "./pages/manage/manage-menu-categories/manage-menu-categories.component";
+import {ManageMenuItemsComponent} from "./pages/manage/manage-menu-items/manage-menu-items.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -36,18 +41,27 @@ const routes: Routes = [
     {path: "admin/restaurants/add", component: RestaurantsAddComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/restaurants/:id", component: RestaurantsEditComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/cuisines", component: CuisinesListComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
-    {path: "orders", redirectTo: "/orders/list", pathMatch: "full"},
-    {path: "orders/payments", component: PaymentsOverviewComponent, data: {sidebar: "orders"}},
-    {path: "orders/payments/repay", component: PaymentsMakeComponent, data: {sidebar: "orders", isBalanceRepayment: true}},
-    {path: "orders/payments/:id", component: PaymentsInfoComponent, data: {sidebar: "orders"}},
-    {path: "orders/payments/:id/make", component: PaymentsMakeComponent, data: {sidebar: "orders"}},
-    {path: "orders/payments/:id/check", component: PaymentsCheckComponent, data: {sidebar: "orders"}},
-    {path: "orders/list", component: OrdersOverviewComponent, data: {sidebar: "orders"}},
-    {path: "orders/:id", component: OrdersInfoComponent, data: {sidebar: "orders"}},
+    {path: "orders", component: OrdersOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "orders/:id", component: OrdersInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "payments", component: PaymentsOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "payments/repay", component: PaymentsMakeComponent, data: {sidebar: "orders", isBalanceRepayment: true, auth: AuthType.USER}},
+    {path: "payments/:id", component: PaymentsInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "payments/:id/make", component: PaymentsMakeComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "payments/:id/check", component: PaymentsCheckComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "manage", component: ManagePickContextComponent, data: {sidebar: null}},
+    {path: "manage/:restaurantId/start", component: ManageIndexComponent, data: {sidebar: "manage", auth: AuthType.ACCEPT_OR_MANAGE}},
+    {path: "manage/:restaurantId/menucategories", component: ManageMenuCategoriesComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
+    {path: "manage/:restaurantId/menu", component: ManageMenuItemsComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
 ];
 
+const routesWithActivators = routes.map(route => {
+    return (route.redirectTo !== undefined) ? route : {
+    ...route,
+    canActivate: [AuthGuardService]
+}});
+
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {enableTracing: true})],
+  imports: [RouterModule.forRoot(routesWithActivators)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

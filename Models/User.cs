@@ -20,19 +20,19 @@ namespace pwr_msi.Models {
 
         [Required] public decimal Balance { get; set; }
 
-        [Required] public bool? IsActive { get; set; }
+        [Required] public bool IsActive { get; set; }
 
         [Required] public bool IsAdmin { get; set; }
 
         [Required] public bool IsVerified { get; set; }
 
         public int? BillingAddressId { get; set; }
-        public virtual Address BillingAddress { get; set; }
+        public Address BillingAddress { get; set; }
 
-        public virtual ICollection<Address> Addresses { get; set; }
-        public virtual ICollection<Restaurant> Restaurants { get; set; }
-        public virtual ICollection<Payment> Payments { get; set; }
-        public virtual List<RestaurantUser> RestaurantUsers { get; set; }
+        public ICollection<Address> Addresses { get; set; }
+        public ICollection<Restaurant> Restaurants { get; set; }
+        public ICollection<Payment> Payments { get; set; }
+        public List<RestaurantUser> RestaurantUsers { get; set; }
 
         public string FullName => FirstName + " " + LastName;
 
@@ -54,7 +54,7 @@ namespace pwr_msi.Models {
             LastName = LastName,
             Balance = Balance,
             BillingAddress = BillingAddress,
-            IsActive = IsActive.GetValueOrDefault(false),
+            IsActive = IsActive,
             IsAdmin = IsAdmin,
             IsVerified = IsVerified,
         };
@@ -69,10 +69,15 @@ namespace pwr_msi.Models {
             FirstName = userAdminDto.FirstName;
             LastName = userAdminDto.LastName;
             Balance = userAdminDto.Balance;
-            BillingAddress = userAdminDto.BillingAddress;
             IsActive = userAdminDto.IsActive;
             IsAdmin = userAdminDto.IsAdmin;
             IsVerified = userAdminDto.IsVerified;
+
+            if (BillingAddress != null && userAdminDto.BillingAddress != null) {
+                BillingAddress.Update(userAdminDto.BillingAddress);
+            } else {
+                BillingAddress = userAdminDto.BillingAddress;
+            }
         }
     }
 }
