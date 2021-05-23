@@ -69,10 +69,15 @@ namespace pwr_msi.Models {
             FirstName = userAdminDto.FirstName;
             LastName = userAdminDto.LastName;
             Balance = userAdminDto.Balance;
-            BillingAddress = userAdminDto.BillingAddress;
             IsActive = userAdminDto.IsActive;
             IsAdmin = userAdminDto.IsAdmin;
             IsVerified = userAdminDto.IsVerified;
+
+            if (BillingAddress != null && userAdminDto.BillingAddress != null) {
+                BillingAddress.Update(userAdminDto.BillingAddress);
+            } else {
+                BillingAddress = userAdminDto.BillingAddress;
+            }
         }
     }
 }
