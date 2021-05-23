@@ -15,22 +15,24 @@ export class AddressEditorComponent implements OnInit, OnChanges {
     @Input("address") addressInput!: Address | undefined;
     @Output("addressChange") addressChange = new EventEmitter<Address>();
     @ViewChild("f", {static: true}) form!: NgForm;
-    address!: Address;
+    address: Address = this.newAddress();
 
     constructor() { }
 
     ngOnInit(): void {
-        this.address = this.addressInput === undefined ? this.newAddress() : this.addressInput;
+        if (this.addressInput !== undefined) {
+            this.address = this.addressInput;
+        }
         this.form.valueChanges?.subscribe(v => {
             this.address = this.getAddress(v);
             this.addressChange.emit(this.address);
-        })
+        });
     }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.addressInput.previousValue !== changes.addressInput.currentValue && this.addressInput !== undefined) {
-            this.address = this.addressInput;
-            setFormValues(this.address, this.form);
+            console.log(this.address);
+            setTimeout(() => setFormValues(changes.addressInput.currentValue, this.form), 0);
         }
     }
 

@@ -74,6 +74,7 @@ namespace pwr_msi.Controllers {
         [Route("{rid}/menuitem/{miid}/photo/")]
         public async Task<ActionResult<ResultDto<string>>> UploadMenuItemPhoto([FromRoute] int rid, [FromRoute] int miid, IFormFile file) {
             var menuItem = await _dbContext.MenuItems
+                .Include(mi => mi.MenuCategory)
                 .Where(mi => mi.MenuCategory.RestaurantId == rid && mi.MenuItemId == miid).FirstOrDefaultAsync();
             if (menuItem == null) return NotFound();
             string uploadedPath;
@@ -94,6 +95,7 @@ namespace pwr_msi.Controllers {
         [Route("{rid}/menuitem/{miid}/photo/")]
         public async Task<IActionResult> DeleteMenuItemPhoto([FromRoute] int rid, [FromRoute] int miid, IFormFile file) {
             var menuItem = await _dbContext.MenuItems
+                .Include(mi => mi.MenuCategory)
                 .Where(mi => mi.MenuCategory.RestaurantId == rid && mi.MenuItemId == miid).FirstOrDefaultAsync();
             if (menuItem == null) return NotFound();
             menuItem.Image = null;

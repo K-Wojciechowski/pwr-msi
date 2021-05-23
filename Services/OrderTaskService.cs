@@ -19,7 +19,7 @@ namespace pwr_msi.Services {
             var canPerform = OrderTaskTypeSettings.allowedTransitions[order.LastTaskType].Contains(task);
             var userAllowed = await IsUserAllowedToPerform(task, order, completedBy);
             if (!canPerform || !userAllowed) return false;
-            var orderTask = await _dbContext.OrderTasks.Where(t => t.Order == order && t.Task == task)
+            var orderTask = await _dbContext.OrderTasks.Where(t => t.OrderId == order.OrderId && t.Task == task)
                 .FirstOrDefaultAsync();
             if (orderTask != null) {
                 orderTask.DateCompleted = Utils.Now();

@@ -28,6 +28,7 @@ export class RestaurantsEditorComponent implements OnInit, OnChanges {
     cuisines: Cuisine[] = [];
     address!: Address | undefined;
     addressId!: number | undefined;
+    newAddress!: Address | undefined;
     imageUrl: string | null = null;
     searchFailed: boolean = false;
     newCuisine: Cuisine | null = null;
@@ -53,6 +54,7 @@ export class RestaurantsEditorComponent implements OnInit, OnChanges {
             this.cuisines = this.restaurantInput.cuisines;
             this.address = (this.restaurantInput.address === null || this.restaurantInput.address === undefined) ? undefined : this.restaurantInput.address;
             this.addressId = this.restaurantInput.address?.addressId;
+            this.newAddress = this.address;
             this.imageUrl = this.restaurantInput.logo;
         } else {
             this.form.setValue({...this.form.value, isActive: true});
@@ -60,7 +62,7 @@ export class RestaurantsEditorComponent implements OnInit, OnChanges {
     }
 
     submit(f: NgForm) {
-        const address = this.address === undefined ? undefined : {...this.address, addressee: f.value.name};
+        const address = this.newAddress === undefined ? undefined : {...this.newAddress, addressee: f.value.name};
         const restaurant = {
             ...f.value,
             logo: this.imageUrl,

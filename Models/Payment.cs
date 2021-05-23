@@ -19,10 +19,10 @@ namespace pwr_msi.Models {
         public ZonedDateTime Updated { get; set; }
 
         public int? UserId { get; set; }
-        public virtual User User { get; set; } = null!;
+        public User User { get; set; } = null!;
 
         public int? OrderId { get; set; }
-        public virtual Order? Order { get; set; }
+        public Order? Order { get; set; }
 
         public bool CanPay => Status == PaymentStatus.CREATED || Status == PaymentStatus.REQUESTED;
         public decimal AbsAmount => Math.Abs(Amount);

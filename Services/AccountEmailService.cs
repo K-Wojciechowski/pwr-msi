@@ -51,7 +51,7 @@ namespace pwr_msi.Services {
             var tokenStr = Guid.NewGuid().ToString();
             var token = new VerificationToken {
                 Token = tokenStr,
-                User = user,
+                UserId = user.UserId,
                 IsUsed = false,
                 ValidUntil = SystemClock.Instance.GetCurrentInstant().Plus(duration: Duration.FromDays(days: 1)),
                 TokenType = tokenType,

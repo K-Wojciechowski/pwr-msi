@@ -16,12 +16,12 @@ namespace pwr_msi.Models {
         public bool IsActive { get; set; }
 
         public int AddressId { get; set; }
-        public virtual Address Address { get; set; } = null!;
+        public Address Address { get; set; } = null!;
 
-        public virtual ICollection<Cuisine> Cuisines { get; set; } = null!;
-        public virtual ICollection<MenuCategory> MenuCategories { get; set; } = null!;
-        public virtual ICollection<User> Users { get; set; } = null!;
-        public virtual List<RestaurantUser> RestaurantUsers { get; set; } = null!;
+        public ICollection<Cuisine> Cuisines { get; set; } = null!;
+        public ICollection<MenuCategory> MenuCategories { get; set; } = null!;
+        public ICollection<User> Users { get; set; } = null!;
+        public List<RestaurantUser> RestaurantUsers { get; set; } = null!;
 
         public RestaurantBasicDto AsBasicDto() => new (RestaurantId, Name, Logo);
 
@@ -40,7 +40,7 @@ namespace pwr_msi.Models {
             Name = raDto.Name;
             Website = raDto.Website;
             Description = raDto.Description;
-            Address = raDto.Address;
+            Address.Update(raDto.Address);
             Logo = raDto.Logo;
             IsActive = raDto.IsActive;
             var cuisineIds = raDto.Cuisines.Select(c => c.CuisineId);

@@ -48,15 +48,12 @@ namespace pwr_msi.Controllers {
             var validAtDt = parseValidAtDate(validAt);
             IQueryable<MenuCategory> query;
 
-            if (showAll) {
-                query = _dbContext.MenuCategories.Where(mc => (mc.RestaurantId == id));
-            } else {
-                query = _dbContext.MenuCategories.Where(mc => (mc.RestaurantId == id)
-                                                              && ((mc.ValidUntil == null) ||
-                                                                  (ZonedDateTime.Comparer.Instant.Compare(
-                                                                      (ZonedDateTime) mc.ValidUntil, validAtDt) > 0))
-                                                              && (ZonedDateTime.Comparer.Instant.Compare(
-                                                                  validAtDt, mc.ValidFrom) >= 0));
+            query = _dbContext.MenuCategories.Where(mc => mc.RestaurantId == id);
+            if (!showAll) {
+                query = query
+                .Where(mc => ZonedDateTime.Comparer.Instant.Compare(mc.ValidFrom, validAtDt) <= 0)
+                .Where(mc =>
+                    mc.ValidUntil == null || ZonedDateTime.Comparer.Instant.Compare(validAtDt, mc.ValidUntil.Value) < 0);
             }
 
             var mcList = await query.ToListAsync();

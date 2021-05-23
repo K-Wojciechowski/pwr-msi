@@ -19,7 +19,7 @@ namespace pwr_msi.Models {
         public int MenuOrder { get; set; }
 
         public int MenuCategoryId { get; set; }
-        public virtual MenuCategory MenuCategory { get; set; } = null!;
+        public MenuCategory MenuCategory { get; set; } = null!;
 
         public ICollection<MenuItemOptionList> Options { get; set; } = null!;
 
