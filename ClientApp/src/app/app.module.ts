@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {DEFAULT_CURRENCY_CODE, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -8,6 +8,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AuthInterceptor} from "./interceptors/auth.interceptor";
 import {PagesModule} from "./pages/pages.module";
 import {WidgetsModule} from "./widgets/widgets.module";
+import {PipesModule} from "./pipes/pipes.module";
 
 @NgModule({
     declarations: [
@@ -19,10 +20,12 @@ import {WidgetsModule} from "./widgets/widgets.module";
         NgbModule,
         HttpClientModule,
         PagesModule,
+        PipesModule,
         WidgetsModule
     ],
     providers: [
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+        {provide: DEFAULT_CURRENCY_CODE, useValue: "PLN"}
     ],
     exports: [
     ],

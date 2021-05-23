@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {AuthService} from "../../../services/auth.service";
 import {ToastService} from "../../../services/toast.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
     selector: 'app-log-in',
@@ -11,11 +11,15 @@ import {Router} from "@angular/router";
 })
 export class LogInComponent implements OnInit {
     showLoading: boolean = false;
+    nextUrl: string | null = null;
 
-    constructor(private authService: AuthService, private toastService: ToastService, private router: Router) {
+    constructor(private authService: AuthService, private toastService: ToastService, private router: Router, private route: ActivatedRoute) {
     }
 
     ngOnInit(): void {
+        this.route.queryParamMap.subscribe(queryParamMap => {
+            this.nextUrl = queryParamMap.get("next");
+        });
     }
 
     canSubmit(f: NgForm) {
@@ -32,7 +36,8 @@ export class LogInComponent implements OnInit {
             async access => {
                 this.showLoading = false;
                 this.toastService.showSuccess(`Welcome, ${access.profile.firstName}!`);
-                await this.router.navigateByUrl("/");
+                const nextUrl = this.nextUrl != null && this.nextUrl.startsWith("/") ? this.nextUrl : "/";
+                await this.router.navigateByUrl(nextUrl);
             },
             error => {
                 this.showLoading = false;

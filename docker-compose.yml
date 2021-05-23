@@ -16,13 +16,12 @@ services:
             - MSI_SMTP_HOST=mailhog
             - MSI_PAY_URL=http://msipay:5007/
     msipay:
-        restart: unless-stopped
         build: PaymentApp
         links:
             - nginx
         environment:
             - MSIPAY_DB_CONNECTION_STRING
-            - MSIPAY_CALLBACK_ADDRESS
+            - MSIPAY_CALLBACK_URL
             - MSIPAY_SERVER_ADDRESS
     nginx:
         build: ClientApp
@@ -48,13 +47,13 @@ services:
             - "8025:8025"
     minio:
         image: minio/minio:latest
+        command: ["server", "/data"]
         ports:
             - "9000:9000"
         environment:
-            - MINIO_ROOT_USER=msi
-            - MINIO_ROOT_PASSWORD=msi
-            - MINIO_ACCESS_KEY=msi_s3_access
-            - MINIO_SECRET_KEY=msi_s3_secret
+            - MINIO_ROOT_USER=msi_s3_root_user
+            - MINIO_ROOT_PASSWORD=msi_s3_root_password
+            - MINIO_REGION=us-east-1
         volumes:
             - miniodata:/data
 

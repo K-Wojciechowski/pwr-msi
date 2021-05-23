@@ -10,6 +10,9 @@ export class StandardButtonComponent implements OnInit, OnChanges {
     @Input("btnType") buttonType!: string;
     @Input("btnStyle") buttonStyle!: string;
     @Input("text") userText!: string;
+    @Input("icon") userIcon!: string;
+    @Input("noText") noText: boolean = false;
+    @Input("extraClass") extraClass: string = "";
 
     buttonClasses: string = "btn";
     iconName: string = "";
@@ -34,10 +37,23 @@ export class StandardButtonComponent implements OnInit, OnChanges {
                 btnClassBase = "btn btn-";
                 break;
             case "table":
+                btnClassBase = "btn btn-singleline btn-sm btn-outline-";
+                break;
+            case "tablecolorful":
+                btnClassBase = "btn btn-singleline btn-sm btn-";
+                break;
+            case "minor":
                 btnClassBase = "btn btn-sm btn-outline-";
                 break;
+            case "xminor":
+                btnClassBase = "btn btn-xs btn-outline-";
+                break;
             case "form":
+            case "large":
                 btnClassBase = "btn btn-lg btn-";
+                break;
+            case "outline-large":
+                btnClassBase = "btn btn-lg btn-outline-";
                 break;
             default:
                 btnClassBase = "btn btn-";
@@ -48,6 +64,12 @@ export class StandardButtonComponent implements OnInit, OnChanges {
         if (this.userText !== "" && this.userText !== undefined) {
             this.text = this.userText;
         }
-        this.el.nativeElement.className = this.buttonClasses;
+        if (this.noText) {
+            this.text = "";
+        }
+        if (this.userIcon !== "" && this.userIcon !== undefined) {
+            this.iconName = this.userIcon;
+        }
+        this.el.nativeElement.className = this.buttonClasses + " " + this.extraClass;
     }
 }

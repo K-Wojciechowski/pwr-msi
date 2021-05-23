@@ -1,0 +1,21 @@
+#cuisine-input {
+    flex: unset;
+    width: 10rem;
+}
+
+.cuisine-chip {
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    display: block;
+    font-weight: 400;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.cuisine-boxes .input-group {
+    display: inline-flex;
+    width: unset;
+}

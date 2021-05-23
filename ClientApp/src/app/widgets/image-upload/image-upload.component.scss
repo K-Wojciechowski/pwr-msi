@@ -1,0 +1,24 @@
+.btn-group .btn {
+    border-bottom: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.btn-group .btn:first-child {
+    border-left: none;
+}
+
+.btn-group .btn:last-child {
+    border-right: none;
+}
+
+.card-img-icon, .card-img-real {
+    min-height: 2rem;
+}
+
+.card-img-icon {
+    min-height: 4rem;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}

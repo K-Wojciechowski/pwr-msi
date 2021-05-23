@@ -1,0 +1,32 @@
+@import '~bootstrap/scss/_functions.scss';
+@import '~bootstrap/scss/_variables.scss';
+
+.payments-check-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.payments-check-box-text {
+    font-size: 2em;
+    font-weight: lighter;
+}
+
+.payments-check-box-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.payments-check-box-success .payments-check-box-icon, .payments-check-box-failure .payments-check-box-icon {
+    font-size: 5em;
+}
+
+.payments-check-box-success .payments-check-box-icon, .payments-check-box-success .payments-check-box-text {
+    color: $success;
+}
+.payments-check-box-failure .payments-check-box-icon, .payments-check-box-failure .payments-check-box-text {
+    color: $danger;
+}

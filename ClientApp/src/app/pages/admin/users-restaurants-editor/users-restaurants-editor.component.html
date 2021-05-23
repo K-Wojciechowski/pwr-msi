@@ -33,6 +33,6 @@
         <td class="td-center"><input class="table-checkbox" type="checkbox" [(ngModel)]="newRu.canDeliverOrders"></td>
         <td class="td-center"><input class="table-checkbox" type="checkbox" [(ngModel)]="newRu.canAcceptOrders"></td>
         <td class="td-center"><input class="table-checkbox" type="checkbox" [(ngModel)]="newRu.canManage"></td>
-        <td><button type="button" standardButton btnType="add" btnStyle="table"></button></td>
+        <td><button type="button" standardButton btnType="add" btnStyle="table" (click)="addNewRu()"></button></td>
     </tr>
 </table>

@@ -1,0 +1,38 @@
+<app-empty-state [empty]="!showLoading && items.length === 0">
+    <div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Order</th>
+            <th class="table-hidden-sm" scope="col">Restaurant</th>
+            <th class="table-hidden-sm" scope="col">Type</th>
+            <th scope="col">Status</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let payment of items">
+            <th scope="row"><a routerLink="/payments/{{payment.v.paymentId}}">{{payment.v.paymentId}}</a></th>
+            <td *ngIf="payment.v.order != null"><a
+                routerLink="/orders/{{payment.v.order.orderId}}">{{payment.v.order.orderId}}</a></td>
+            <td class="table-hidden-sm" *ngIf="payment.v.order != null">{{payment.v.order.restaurant.name}}</td>
+            <td *ngIf="payment.v.order == null">-</td>
+            <td class="table-hidden-sm" *ngIf="payment.v.order == null">-</td>
+            <td class="table-hidden-sm">{{payment.typeText}}</td>
+            <td>{{payment.statusText}}</td>
+            <td>{{payment.v.amount|currency}}</td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Payment actions">
+                    <a *ngIf="payment.canPay" standardButton routerLink="/payments/{{payment.v.paymentId}}/make"
+                       btnStyle="table" btnType="makepayment"></a>
+                    <a standardButton routerLink="/payments/{{payment.v.paymentId}}" btnStyle="table"
+                       btnType="show"></a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</app-empty-state>

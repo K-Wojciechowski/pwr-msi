@@ -9,9 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 using pwr_msi.Models;
+using pwr_msi.Serialization;
 using pwr_msi.Services;
 
 namespace pwr_msi {
@@ -31,22 +34,36 @@ namespace pwr_msi {
             services.AddScoped<AuthService, AuthService>();
             services.AddScoped<AccountEmailService, AccountEmailService>();
             services.AddScoped<AdminCommonService, AdminCommonService>();
+            services.AddScoped<MenuService, MenuService>();
             services.AddScoped<OrderTaskService, OrderTaskService>();
             services.AddScoped<PaymentService, PaymentService>();
+            services.AddScoped<S3Service, S3Service>();
 
             services.AddLocalization(setupAction: options => options.ResourcesPath = "Resources");
             services.AddHttpClient();
 
             services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization().AddNewtonsoftJson(s =>
-                    s.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
+                .AddDataAnnotationsLocalization().AddNewtonsoftJson(s => {
+                    // s.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+                    s.SerializerSettings.DateParseHandling = DateParseHandling.None;
+                    s.SerializerSettings.FloatParseHandling = FloatParseHandling.Decimal;
+                    s.SerializerSettings.Converters.Add(
+                        new StringEnumConverter(new UpperSnakeCaseNamingStrategy(), allowIntegerValues: false)
+                    );
+                    s.SerializerSettings.Converters.Add(
+                        new ZonedDateTimeJsonConverter()
+                    );
+                    s.SerializerSettings.Converters.Add(
+                        new NullableZonedDateTimeJsonConverter()
+                    );
+                });
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration: configuration => { configuration.RootPath = "ClientApp/dist"; });
             services.AddDbContext<MsiDbContext>(optionsAction: options =>
                 options
-                    .UseLazyLoadingProxies()
-                    .UseNpgsql(appConfig.DbConnectionString, npgsqlOptionsAction: o => o.UseNodaTime())
+                    .UseNpgsql(appConfig.DbConnectionString,
+                        npgsqlOptionsAction: o => o.UseNodaTime().EnableRetryOnFailure().UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
             );
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(configureOptions: o => {
@@ -79,9 +96,9 @@ namespace pwr_msi {
 
             app.UseStaticFiles();
 
-            app.UseRouting();
-
             app.UseAuthentication();
+
+            app.UseRouting();
 
             app.UseAuthorization();
 

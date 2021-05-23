@@ -1,0 +1,21 @@
+<h1>Payments</h1>
+
+<app-progress-spinner-content [showLoading]="showLoading > 0">
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Current balance: <strong>{{ balance|currency }}</strong></h5>
+        <p class="card-text">Your balance may be used to pay for orders. You can also ask for the balance to be returned to your bank account.</p>
+        <p class="card-text" *ngIf="balance > 0"><a routerLink="/payments/repay" standardButton icon="wallet2" btnType="primary" text="Request balance repayment"></a></p>
+    </div>
+</div>
+
+<ng-container *ngIf="pendingPayments.length > 0">
+    <h2>Pending payments</h2>
+    <app-payments-table [showLoading]="showLoading > 0" [payments]="pendingPayments"></app-payments-table>
+</ng-container>
+
+<h2 *ngIf="pendingPayments.length > 0">Payment history</h2>
+
+<app-payments-table [showLoading]="showLoading > 0" [payments]="paymentHistory" [ngClass]="{'mt-2': pendingPayments.length == 0}"></app-payments-table>
+<app-pager [page]="historyPageNumber" (pageChange)="goToHistoryPage($event)" [totalItems]="historyTotalItems"></app-pager>
+</app-progress-spinner-content>

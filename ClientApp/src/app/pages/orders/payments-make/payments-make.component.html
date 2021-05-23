@@ -1,0 +1,11 @@
+<h1 *ngIf="isBalanceRepayment">Balance Repayment</h1>
+<h1 *ngIf="!isBalanceRepayment">Make Payment</h1>
+<app-progress-spinner-fullwidth *ngIf="showLoading"></app-progress-spinner-fullwidth>
+<p *ngIf="showLoading" class="payments-make-text">Payment in progress…</p>
+<ng-container *ngIf="!showLoading">
+    <p class="text-danger" *ngIf="showHttpError && isBalanceRepayment">Unable to initiate balance repayment. Your
+        balance might be insufficient to request a repayment.</p>
+    <p class="text-danger" *ngIf="showHttpError && !isBalanceRepayment">There was an error making the request.</p>
+    <p class="text-danger" *ngIf="!showHttpError && !showSuccess">Unable to make payment. It might have already been processed.</p>
+    <p class="text-success" *ngIf="showSuccess">Payment successful!</p>
+</ng-container>

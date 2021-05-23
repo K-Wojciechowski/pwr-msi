@@ -1,0 +1,89 @@
+@import '~bootstrap/scss/_functions.scss';
+@import '~bootstrap/scss/_variables.scss';
+
+.strikeout {
+    text-decoration: line-through;
+}
+
+.menu-img {
+    max-width: 4rem;
+}
+
+.menu-img-box, .menu-img-placeholder, .add-placeholder {
+    width: 4rem;
+    flex-shrink: 0;
+    margin-left: -$card-spacer-x;
+    margin-top: -$card-spacer-x;
+    margin-bottom: -$card-spacer-x;
+    border-top-left-radius: $card-border-radius;
+    border-bottom-left-radius: $card-border-radius;
+    transition: border-radius .35s ease;
+}
+
+.menu-img-placeholder {
+    background: theme-color-level("secondary", $table-bg-level);
+}
+
+.menu-img-expanded {
+    border-bottom-left-radius: 0;
+}
+
+.add-placeholder {
+    height: add($input-height, 2 * $card-spacer-x);
+    line-height: add($input-height, 2 * $card-spacer-x);
+    text-align: center;
+    background: theme-color-level("success", $table-bg-level);
+}
+
+.menu-buttons button {
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+}
+
+.menu-subcard {
+    padding: $card-spacer-x;
+}
+
+.menu-subcard-container {
+    border-top: $card-border-width solid $card-border-color;
+}
+
+.input-added {
+    border-color: $success;
+    box-shadow: 0 0 0 $input-focus-width rgba($success, .25);
+}
+
+.input-edited {
+    border-color: $info;
+    box-shadow: 0 0 0 $input-focus-width rgba($info, .25);
+}
+
+.input-deleted {
+    border-color: $danger;
+    box-shadow: 0 0 0 $input-focus-width rgba($danger, .25);
+}
+
+.item-expires {
+    background: rgba($warning, .15);
+}
+
+.item-expires-warning {
+    font-weight: 900;
+}
+
+.select-amount-unit {
+    max-width: 5rem;
+}
+
+.menu-options li {
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+
+.option-item-price-group {
+    width: unset;
+}
+
+.option-item-price {
+    max-width: 8rem;
+}
