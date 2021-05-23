@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Device.Location;
+using GeoCoordinatePortable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -25,7 +25,9 @@ namespace pwr_msi.Controllers {
             var rList = await query.ToListAsync();
             foreach (var r in rList) {
                 var rAddress = new GeoCoordinate(r.Address.Latitude, r.Address.Longitude);
-                if (rAddress.GetDistanceTo(userLoc) > 10000) {
+                //value of radius (metres) of area to search restaurants in
+                int range = 10000;
+                if (rAddress.GetDistanceTo(userLoc) > range) {
                     rList.Remove(r);
                 }
             }
