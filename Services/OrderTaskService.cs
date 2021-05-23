@@ -10,9 +10,11 @@ using pwr_msi.Models.Enum;
 namespace pwr_msi.Services {
     public class OrderTaskService {
         private MsiDbContext _dbContext;
+        private PaymentService _paymentService;
 
-        public OrderTaskService(MsiDbContext dbContext) {
+        public OrderTaskService(MsiDbContext dbContext, PaymentService paymentService) {
             _dbContext = dbContext;
+            _paymentService = paymentService;
         }
 
         public async Task<bool> TryCompleteTask(Order order, OrderTaskType task, User? completedBy) {
@@ -42,6 +44,9 @@ namespace pwr_msi.Services {
         private async Task ReactToTaskCompletion(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
             if (newStatus == OrderStatus.DELIVERED) {
                 await TryCompleteTask(order, OrderTaskType.COMPLETE, completedBy: null);
+            }
+            if (newStatus == OrderStatus.REJECTED) {
+                await _paymentService.ReturnOrderPayment(order);
             }
         }
 

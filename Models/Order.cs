@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NodaTime;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Enum;
@@ -49,7 +50,7 @@ namespace pwr_msi.Models {
             Created = Created,
             Updated = Updated,
             Delivered = Delivered,
-            Items = items,
+            Items = items.Select(oi => oi.AsDto()).ToList(),
             DeliveryPerson = DeliveryPerson.AsBasicDto()
         };
     }

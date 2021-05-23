@@ -9,6 +9,7 @@ using NodaTime;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Enum;
+using pwr_msi.Services;
 
 namespace pwr_msi.Controllers {
     [Authorize]
@@ -17,10 +18,11 @@ namespace pwr_msi.Controllers {
     [Route(template: "api/restaurant/")]
     public class RestaurantOrderController : MsiControllerBase {
         private readonly MsiDbContext _dbContext;
+        private readonly OrderTaskService _orderTaskService;
 
-        public RestaurantOrderController(MsiDbContext dbContext) {
+        public RestaurantOrderController(MsiDbContext dbContext, OrderTaskService orderTaskService) {
             _dbContext = dbContext;
-
+            _orderTaskService = orderTaskService;
         }
         
         [AcceptOrdersRestaurantAuthorize("id")]
@@ -51,22 +53,27 @@ namespace pwr_msi.Controllers {
         }
         
         [AcceptOrdersRestaurantAuthorize("id")]
-        [Route(template: "{id}/orders/{orderId}/")]
+        [Route(template: "{id}/orders/{orderId}/accept/")]
         [HttpPut]
-        public async Task<ActionResult<OrderBasicDto>> AcceptOrder([FromRoute] int orderId, [FromRoute] int id, [FromQuery] string status) {
+        public async Task<ActionResult<OrderBasicDto>> AcceptOrder([FromRoute] int orderId, [FromRoute] int id) {
             var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
             if (order == null) return NotFound();
-            switch (status) {
-                case("accepted"):
-                    order.Status = OrderStatus.ACCEPTED;
-                    break;
-                case("prepared") :
-                    order.Status = OrderStatus.PREPARED;
-                    break;
-            }
+            await _orderTaskService.TryCompleteTask(order, OrderTaskType.ACCEPT, MsiUser);
             await _dbContext.SaveChangesAsync();
             return order.AsBasicDto();
         }
+        
+        [AcceptOrdersRestaurantAuthorize("id")]
+        [Route(template: "{id}/orders/{orderId}/prepare/")]
+        [HttpPut]
+        public async Task<ActionResult<OrderBasicDto>> PrepareOrder([FromRoute] int orderId, [FromRoute] int id) {
+            var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
+            if (order == null) return NotFound();
+            await _orderTaskService.TryCompleteTask(order, OrderTaskType.PREPARE, MsiUser);
+            await _dbContext.SaveChangesAsync();
+            return order.AsBasicDto();
+        }
+        
         [AcceptOrdersRestaurantAuthorize("id")]
         [Route(template: "{id}/orders/{orderId}/delivery/")]
         public async Task<ActionResult<List<DelivererDto>>> GetDeliverers([FromRoute] int orderId, [FromRoute] int id) {
@@ -74,7 +81,7 @@ namespace pwr_msi.Controllers {
             if (order == null) return NotFound();
             var deliverers = _dbContext.RestaurantUsers.Where(ru => ru.RestaurantId == id && ru.CanDeliverOrders);
             Dictionary<RestaurantUser, int> activeTasks = new Dictionary<RestaurantUser, int>();
-            ZonedDateTime now = new ZonedDateTime();
+            ZonedDateTime now = Utils.Now();
             foreach (var deliverer in deliverers) {
                 var count = await _dbContext.OrderTasks.CountAsync(ot => ot.AssigneeUserId == deliverer.UserId 
                                                                          && ot.AssigneeType.Equals(AssigneeType.DELIVERY)
@@ -95,11 +102,11 @@ namespace pwr_msi.Controllers {
             OrderTask orderTask =
                 new OrderTask {Task = OrderTaskType.DELIVER, OrderId = orderId, AssigneeRestaurantId = id};
             switch (assign) {
-                case("auto"):
+                case "auto":
                     orderTask.AssigneeType = AssigneeType.DELIVERY;
                     var deliverers = _dbContext.RestaurantUsers.Where(ru => ru.RestaurantId == id && ru.CanDeliverOrders);
                     Dictionary<RestaurantUser, int> activeTasks = new Dictionary<RestaurantUser, int>();
-                    ZonedDateTime now = new ZonedDateTime();
+                    ZonedDateTime now = Utils.Now();
                     foreach (var deliverer in deliverers) {
                         var count = await _dbContext.OrderTasks.CountAsync(ot => ot.AssigneeUserId == deliverer.UserId 
                                                                            && ot.AssigneeType.Equals(AssigneeType.DELIVERY)
@@ -110,11 +117,11 @@ namespace pwr_msi.Controllers {
                     unbusyDeliverers.Sort((pair1,pair2) => pair1.Value.CompareTo(pair2.Value));
                     orderTask.AssigneeUserId = unbusyDeliverers[0].Key.UserId;
                     break;
-                case("specified") :
+                case "specified":
                     orderTask.AssigneeType = AssigneeType.DELIVERY;
                     orderTask.AssigneeUserId = deliverId;
                     break;
-                case("unassigned") :
+                case "unassigned":
                     orderTask.AssigneeType = AssigneeType.RESTAURANT;
                     break;
             }
@@ -131,7 +138,7 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<OrderBasicDto>> RejectOrder([FromRoute] int orderId, [FromRoute] int id) {
             var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
             if (order == null) return NotFound();
-            order.Status = OrderStatus.REJECTED;
+            await _orderTaskService.TryCompleteTask(order, OrderTaskType.REJECT, MsiUser);
             await _dbContext.SaveChangesAsync();
             return order.AsBasicDto();
         }
