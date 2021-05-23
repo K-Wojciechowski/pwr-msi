@@ -7,7 +7,7 @@ namespace pwr_msi.Models.Dto {
         public int OrderId { get; set; }
         public RestaurantBasicDto Restaurant { get; set; } = null!;
         public UserBasicDto Customer { get; set; } = null!;
-        public virtual Address Address { get; set; } = null!;
+        public Address Address { get; set; } = null!;
         public OrderStatus Status { get; set; }
         public decimal TotalPrice { get; set; }
         public string? DeliveryNotes { get; set; }

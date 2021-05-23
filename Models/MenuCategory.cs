@@ -13,7 +13,7 @@ namespace pwr_msi.Models {
         public ZonedDateTime? ValidUntil { get; set; }
 
         public int RestaurantId { get; set; }
-        public virtual Restaurant Restaurant { get; set; }
+        public Restaurant Restaurant { get; set; }
 
         public ICollection<MenuItem> Items { get; set; }
         public RestaurantMenuCategoryWithItemsDto AsManageMenuDto() => new () {

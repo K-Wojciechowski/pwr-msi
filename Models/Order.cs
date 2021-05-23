@@ -17,10 +17,10 @@ namespace pwr_msi.Models {
         public ZonedDateTime Updated { get; set; }
         public ZonedDateTime? Delivered { get; set; }
 
-        public virtual Restaurant Restaurant { get; set; }
-        public virtual User Customer { get; set; }
-        public virtual User DeliveryPerson { get; set; }
-        public virtual Address Address { get; set; }
+        public Restaurant Restaurant { get; set; }
+        public User Customer { get; set; }
+        public User DeliveryPerson { get; set; }
+        public Address Address { get; set; }
 
         public OrderTaskType LastTaskType => OrderTaskTypeSettings.taskTypeByStatus[Status];
 

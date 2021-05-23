@@ -6,6 +6,6 @@ namespace pwr_msi.Models {
         public int CuisineId { get; set; }
         public string Name { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Restaurant> Restaurants { get; set; }
+        public ICollection<Restaurant> Restaurants { get; set; }
     }
 }
