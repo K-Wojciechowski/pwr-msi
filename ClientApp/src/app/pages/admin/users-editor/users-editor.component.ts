@@ -22,6 +22,7 @@ export class UsersEditorComponent implements OnInit, OnChanges {
     @Output("userSubmit") submitEvent = new EventEmitter<UserEditorOutput>();
     @Output("reset") resetEvent = new EventEmitter<PasswordResetInput>();
     billingAddress!: Address | undefined;
+    newBillingAddress!: Address | undefined;
     billingAddressId!: number | undefined;
     hasBillingAddress: boolean = false;
 
@@ -46,6 +47,7 @@ export class UsersEditorComponent implements OnInit, OnChanges {
             this.hasBillingAddress = this.userInput.billingAddress !== null && this.userInput.billingAddress !== undefined;
             this.billingAddress = (this.userInput.billingAddress === null || this.userInput.billingAddress === undefined) ? undefined : this.userInput.billingAddress;
             this.billingAddressId = this.userInput.billingAddress?.addressId;
+            this.newBillingAddress = this.billingAddress;
         } else {
             this.form.setValue({...this.form.value, isActive: true});
         }
@@ -57,7 +59,7 @@ export class UsersEditorComponent implements OnInit, OnChanges {
             isActive: !!f.value.isActive,
             isVerified: !!f.value.isVerified,
             isAdmin: !!f.value.isAdmin,
-            billingAddress: this.hasBillingAddress ? this.billingAddress : null
+            billingAddress: this.hasBillingAddress ? this.newBillingAddress : null
         };
         const restaurantUsers = this.ruEditor.restaurantUsers;
         this.submitEvent.emit({user, restaurantUsers});
