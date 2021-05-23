@@ -10,6 +10,8 @@ namespace pwr_msi.Models {
         public string PostCode { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
+        public float Latitude { get; set; }
+        public float Longitude { get; set; }
 
         [JsonIgnore]
         public ICollection<User> Users { get; set; }
