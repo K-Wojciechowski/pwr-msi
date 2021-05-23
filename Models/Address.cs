@@ -18,8 +18,8 @@ namespace pwr_msi.Models {
 
         public void Update(Address address) {
             this.Addressee = address.Addressee;
-            this.FirstLine = address.FirstLine;
-            this.SecondLine = address.SecondLine;
+            this.Street = address.Street;
+            this.HouseNumber = address.HouseNumber;
             this.PostCode = address.PostCode;
             this.City = address.City;
             this.Country = address.Country;

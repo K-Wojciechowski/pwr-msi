@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto;
+using pwr_msi.Services;
 
 namespace pwr_msi.Controllers {
     [ApiController]
@@ -16,9 +17,11 @@ namespace pwr_msi.Controllers {
     [Route(template: "api/offer/restaurants/")]
     public class ClientOffersController : MsiControllerBase {
         private readonly MsiDbContext _dbContext;
+        private readonly MenuService _menuService;
         
-        public ClientOffersController(MsiDbContext dbContext) {
+        public ClientOffersController(MsiDbContext dbContext, MenuService menuService) {
             _dbContext = dbContext;
+            _menuService = menuService;
         }
 
         private async Task<List<Restaurant>> GetCloseRestaurants(IQueryable<Restaurant> query, GeoCoordinate userLoc) {
@@ -57,13 +60,16 @@ namespace pwr_msi.Controllers {
             var user = await _dbContext.Users.FindAsync(MsiUserId);
             if (user == null) return NotFound();
             Address last = user.Addresses.Last();
-            ZonedDateTime now = new ZonedDateTime();
+            ZonedDateTime now = Utils.Now();
+            var likeQueryName = $"%{name}%";
+            var likeQueryCuisine = $"%{cuisine}%";
+            var likeQueryMeal = $"%{meal}%";
+            var query= _dbContext.Restaurants.Where(r => EF.Functions.ILike(r.Name, likeQueryName)&&
+                                                         r.Cuisines.Any(c =>  EF.Functions.ILike(c.Name, likeQueryCuisine)) &&
+                                                         r.MenuCategories.Any(mc => mc.Items.Any(mi => EF.Functions.ILike(mi.Name, likeQueryMeal) &&
+                                                             (mi.ValidUntil == null || ZonedDateTime.Comparer.Local.Compare((ZonedDateTime)mi.ValidUntil, now) >= 0)
+                                                             && ZonedDateTime.Comparer.Local.Compare(now, mi.ValidFrom) > 0)));
             var userAddress = new GeoCoordinate(last.Latitude, last.Longitude);
-            var query = _dbContext.Restaurants.Where(r => r.Name.Contains(name) &&
-                                                          r.Cuisines.Any(c => c.Name==cuisine) &&
-                                                          r.MenuCategories.Any(mc => mc.Items.Any(mi => mi.Name==meal &&
-                                                              (mi.ValidUntil == null || ZonedDateTime.Comparer.Local.Compare((ZonedDateTime)mi.ValidUntil, now) >= 0)
-                                                              && ZonedDateTime.Comparer.Local.Compare(now, mi.ValidFrom) > 0)));
             var rList = await GetCloseRestaurants(query, userAddress);
             return rList.Select(r => r.AsBasicDto()).ToList();
         }
@@ -76,11 +82,7 @@ namespace pwr_msi.Controllers {
         
         [Route(template: "{id}/")]
         public async Task<ActionResult<List<ClientMenuDto>>> RestaurantMenu([FromRoute] int id) {
-            ZonedDateTime now = new ZonedDateTime();
-            var query = _dbContext.MenuCategories.Where(mc =>( mc.RestaurantId == id)
-                                                             && ((mc.ValidUntil == null) || (ZonedDateTime.Comparer.Local.Compare((ZonedDateTime)mc.ValidUntil, now) >= 0))
-                                                             && (ZonedDateTime.Comparer.Local.Compare(now, mc.ValidFrom) > 0));
-            var mcList = await query.ToListAsync();
+            var mcList = await _menuService.GetMenuFromDb(id, Utils.Now());
             return mcList.Select(mc => mc.AsClientMenuDto()).ToList();
         }
         
