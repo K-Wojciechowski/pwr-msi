@@ -35,6 +35,7 @@ namespace pwr_msi.Services {
 
             var oldStatus = order.Status;
             order.Status = OrderTaskTypeSettings.statusByTaskType[task];
+            order.Updated = Utils.Now();
             await _dbContext.SaveChangesAsync();
             await ReactToTaskCompletion(order, oldStatus, order.Status);
 

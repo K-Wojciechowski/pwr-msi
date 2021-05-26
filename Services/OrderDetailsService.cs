@@ -44,7 +44,7 @@ namespace pwr_msi.Services {
             return orderDto;
         }
 
-        public async Task<OrderDto?> GetOrderById(int orderId) {
+        public async Task<OrderDto?> GetOrderById(int orderId, bool includeDeliveryPerson) {
             var cachedOrder = await GetOrderFromCache(orderId);
             if (cachedOrder == null) {
                 return await GetOrderFromDbAndSaveInCache(orderId);
@@ -58,10 +58,13 @@ namespace pwr_msi.Services {
             var dbUpdated = await dbUpdatedQuery.FirstOrDefaultAsync();
 
             if (cachedOrder.Updated == dbUpdated) {
+                if (!includeDeliveryPerson) cachedOrder.DeliveryPerson = null;
                 return cachedOrder;
             }
-            return await GetOrderFromDbAndSaveInCache(orderId);
 
+            var order = await GetOrderFromDbAndSaveInCache(orderId);
+            if (order != null && !includeDeliveryPerson) order.DeliveryPerson = null;
+            return order;
         }
     }
 }

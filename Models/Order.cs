@@ -1,12 +1,9 @@
 #nullable enable
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Options;
 using NodaTime;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Enum;
-using pwr_msi.Services;
 
 namespace pwr_msi.Models {
     public class Order {
@@ -43,11 +40,12 @@ namespace pwr_msi.Models {
             Updated = Updated,
             Delivered = Delivered,
         };
-        
+
         public OrderDto AsDto() => new() {
             OrderId = OrderId,
             Restaurant = Restaurant.AsBasicDto(),
             Customer = Customer.AsBasicDto(),
+            DeliveryPerson = DeliveryPerson?.AsBasicDto(),
             Address = Address,
             Status = Status,
             TotalPrice = TotalPrice,

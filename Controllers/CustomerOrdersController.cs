@@ -16,13 +16,13 @@ namespace pwr_msi.Controllers {
     [Authorize]
     [ApiController]
     [Route(template: "api/orders/")]
-    public class ClientOrdersController : MsiControllerBase {
+    public class CustomerOrdersController : MsiControllerBase {
         private readonly MsiDbContext _dbContext;
         private readonly PaymentService _paymentService;
         private readonly OrderDetailsService _orderDetailsService;
         private readonly OrderTaskService _orderTaskService;
 
-        public ClientOrdersController(MsiDbContext dbContext, PaymentService paymentService,
+        public CustomerOrdersController(MsiDbContext dbContext, PaymentService paymentService,
             OrderDetailsService orderDetailsService,
             OrderTaskService orderTaskService) {
             _dbContext = dbContext;
@@ -65,14 +65,14 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "{id}/")]
         public async Task<ActionResult<OrderDto>> GetOrder([FromRoute] int id) {
-            OrderDto orderDto = await _orderDetailsService.GetOrderById(id);
+            OrderDto orderDto = await _orderDetailsService.GetOrderById(id, includeDeliveryPerson: false);
             if (orderDto == null || orderDto.Customer.UserId != MsiUserId) return NotFound();
             return orderDto;
         }
 
         [Route(template: "{id}/")]
         [HttpDelete]
-        public async Task<ActionResult<OrderBasicDto>> CancelOrder([FromRoute] int id) {
+        public async Task<ActionResult<OrderDto>> CancelOrder([FromRoute] int id) {
             var order = await _dbContext.Orders.FindAsync(id);
             if (order == null) return NotFound();
             if (order.Status == OrderStatus.PAID || order.Status == OrderStatus.CREATED) {
@@ -80,7 +80,7 @@ namespace pwr_msi.Controllers {
                 await _paymentService.ReturnOrderPayment(order);
                 order.Updated = new ZonedDateTime();
                 await _dbContext.SaveChangesAsync();
-                return order.AsBasicDto();
+                return await _orderDetailsService.GetOrderById(order.OrderId, includeDeliveryPerson: false);
             }
 
             return BadRequest();
@@ -95,7 +95,7 @@ namespace pwr_msi.Controllers {
             await _dbContext.Orders.AddAsync(order);
             await _orderTaskService.TryCompleteTask(order, OrderTaskType.CREATE, MsiUser);
             await _dbContext.SaveChangesAsync();
-            return await _orderDetailsService.GetOrderById(order.OrderId);
+            return await _orderDetailsService.GetOrderById(order.OrderId, includeDeliveryPerson: false);
         }
 
         [Route(template: "{id}/pay/")]
