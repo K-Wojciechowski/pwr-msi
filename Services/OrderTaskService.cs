@@ -3,18 +3,18 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using NodaTime;
+using Microsoft.Extensions.DependencyInjection;
 using pwr_msi.Models;
 using pwr_msi.Models.Enum;
 
 namespace pwr_msi.Services {
     public class OrderTaskService {
-        private MsiDbContext _dbContext;
-        private PaymentService _paymentService;
+        private readonly MsiDbContext _dbContext;
+        private readonly IServiceProvider _services;
 
-        public OrderTaskService(MsiDbContext dbContext, PaymentService paymentService) {
+        public OrderTaskService(MsiDbContext dbContext, IServiceProvider services) {
             _dbContext = dbContext;
-            _paymentService = paymentService;
+            _services = services;
         }
 
         public async Task<bool> TryCompleteTask(Order order, OrderTaskType task, User? completedBy) {
@@ -43,11 +43,16 @@ namespace pwr_msi.Services {
         }
 
         private async Task ReactToTaskCompletion(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
-            if (newStatus == OrderStatus.DELIVERED) {
-                await TryCompleteTask(order, OrderTaskType.COMPLETE, completedBy: null);
-            }
-            if (newStatus == OrderStatus.REJECTED) {
-                await _paymentService.ReturnOrderPayment(order);
+            switch (newStatus) {
+                case OrderStatus.DELIVERED:
+                    await TryCompleteTask(order, OrderTaskType.COMPLETE, completedBy: null);
+                    break;
+                case OrderStatus.REJECTED: {
+                    // This works around a dependency cycle.
+                    var task = _services.GetService<PaymentService>()?.ReturnOrderPayment(order);
+                    if (task != null) await task;
+                    break;
+                }
             }
         }
 
