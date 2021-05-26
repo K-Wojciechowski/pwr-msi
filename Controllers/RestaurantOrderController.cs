@@ -44,6 +44,14 @@ namespace pwr_msi.Controllers {
         }
         
         [AcceptOrdersRestaurantAuthorize("id")]
+        [Route(template: "{id}/orders/awaiting/")]
+        public async Task<ActionResult<List<OrderBasicDto>>> GetAwaitingForAcceptanceOrders([FromRoute] int id) {
+            var query = _dbContext.Orders.Where(o => o.RestaurantId == id && (o.Status.Equals(OrderStatus.PAID) || o.Status.Equals(OrderStatus.DECIDED)));
+            var oList = await query.ToListAsync();
+            return oList.Select(o => o.AsBasicDto()).ToList();
+        }
+        
+        [AcceptOrdersRestaurantAuthorize("id")]
         [Route(template: "{id}/orders/{orderId}/")]
         public async Task<ActionResult<OrderDetailsDto>> GetOrder([FromRoute] int orderId, [FromRoute] int id) {
             var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
