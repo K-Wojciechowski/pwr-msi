@@ -18,5 +18,10 @@ namespace pwr_msi.Models {
             CanAcceptOrders = CanAcceptOrders,
             CanDeliverOrders = CanDeliverOrders,
         };
+        public DelivererDto AsDelivererDto(int activeTasks) => new() {
+            Restaurant = Restaurant.AsBasicDto(),
+            User = User.AsBasicDto(),
+            ActiveTasks = activeTasks
+        };
     }
 }
