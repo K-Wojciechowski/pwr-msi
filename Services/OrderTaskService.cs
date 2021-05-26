@@ -47,12 +47,11 @@ namespace pwr_msi.Services {
                 case OrderStatus.DELIVERED:
                     await TryCompleteTask(order, OrderTaskType.COMPLETE, completedBy: null);
                     break;
-                case OrderStatus.REJECTED: {
+                case OrderStatus.REJECTED:
                     // This works around a dependency cycle.
                     var task = _services.GetService<PaymentService>()?.ReturnOrderPayment(order);
                     if (task != null) await task;
                     break;
-                }
             }
         }
 

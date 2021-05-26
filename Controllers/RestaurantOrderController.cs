@@ -43,7 +43,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/orders/")]
         public async Task<ActionResult<List<OrderBasicDto>>> GetOrders([FromRoute] int id, [FromQuery] string status) {
             if (!Enum.TryParse(status.ToUpper(), out OrderStatus parsedStatus)) return BadRequest();
-            var query = OrderBasicQuery().Where(o => o.RestaurantId == id && o.Status.Equals(parsedStatus));
+            var query = OrderBasicQuery().Where(o => o.RestaurantId == id && o.Status == parsedStatus);
             var oList = await query.ToListAsync();
             return oList.Select(o => o.AsBasicDto()).ToList();
         }
@@ -51,8 +51,7 @@ namespace pwr_msi.Controllers {
         [AcceptOrdersRestaurantAuthorize("id")]
         [Route(template: "{id}/orders/awaiting/")]
         public async Task<ActionResult<List<OrderBasicDto>>> GetAwaitingForAcceptanceOrders([FromRoute] int id) {
-            var query = OrderBasicQuery().Where(o =>
-                o.RestaurantId == id && (o.Status.Equals(OrderStatus.PAID) || o.Status.Equals(OrderStatus.DECIDED)));
+            var query = OrderBasicQuery().Where(o => o.RestaurantId == id && o.Status == OrderStatus.PAID);
             var oList = await query.ToListAsync();
             return oList.Select(o => o.AsBasicDto()).ToList();
         }
