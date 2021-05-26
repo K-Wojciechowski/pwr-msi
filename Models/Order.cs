@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿#nullable enable
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Options;
 using NodaTime;
 using pwr_msi.Models.Dto;
@@ -25,6 +27,7 @@ namespace pwr_msi.Models {
         public User Customer { get; set; }
         public User DeliveryPerson { get; set; }
         public Address Address { get; set; }
+        public ICollection<OrderItem> Items { get; set; } = null!;
 
         public OrderTaskType LastTaskType => OrderTaskTypeSettings.taskTypeByStatus[Status];
 
@@ -41,7 +44,7 @@ namespace pwr_msi.Models {
             Delivered = Delivered,
         };
         
-        public OrderDto AsDto(ICollection<OrderItemCustomization> Options,ICollection<OrderItem> Items) => new() {
+        public OrderDto AsDto() => new() {
             OrderId = OrderId,
             Restaurant = Restaurant.AsBasicDto(),
             Customer = Customer.AsBasicDto(),
@@ -51,8 +54,7 @@ namespace pwr_msi.Models {
             DeliveryNotes = DeliveryNotes,
             Created = Created,
             Updated = Updated,
-            ItemOptions = Options,
-            Items = Items
+            Items = Items.Select(item => item.AsDto()).ToList()
         };
     }
 }
