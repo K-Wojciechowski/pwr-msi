@@ -1,5 +1,5 @@
 ﻿using pwr_msi.Models.Dto;
-using pwr_msi.Models.Dto.RestaurantManagement;
+using pwr_msi.Models.Dto.RestaurantMenu;
 
 namespace pwr_msi.Models {
     public class MenuItemOptionItem {
@@ -10,7 +10,7 @@ namespace pwr_msi.Models {
         public int MenuItemOptionListId { get; set; }
         public MenuItemOptionList MenuItemOptionList { get; set; }
         
-        public RestaurantMenuItemOptionItemDto AsManageOptionItemDto() => new () {
+        public RestaurantMenuItemOptionItemDto AsDto() => new () {
             MenuItemOptionItemId = MenuItemOptionItemId,
             Name = Name,
             Price = Price,
