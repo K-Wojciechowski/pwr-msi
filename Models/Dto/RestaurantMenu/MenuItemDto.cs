@@ -18,8 +18,9 @@ namespace pwr_msi.Models.Dto.RestaurantMenu {
         public int MenuOrder { get; set; }
         public ICollection<MenuItemOptionListDto> Options { get; set; } = null!;
 
-        public MenuItem AsNewMenuItem() => new() {
+        public MenuItem AsNewMenuItem(int restaurantId) => new() {
             MenuCategoryId = MenuCategoryId,
+            RestaurantId = restaurantId,
             Name = Name,
             Description = Description,
             Image = Image,

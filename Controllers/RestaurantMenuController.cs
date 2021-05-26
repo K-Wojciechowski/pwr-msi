@@ -46,9 +46,7 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<List<MenuCategoryDto>>> GetCategories([FromRoute] int id,
             [FromQuery] bool showAll, [FromQuery] string validAt) {
             var validAtDt = parseValidAtDate(validAt);
-            IQueryable<MenuCategory> query;
-
-            query = _dbContext.MenuCategories.Where(mc => mc.RestaurantId == id);
+            var query = _dbContext.MenuCategories.Where(mc => mc.RestaurantId == id);
             if (!showAll) {
                 query = query
                 .Where(mc => ZonedDateTime.Comparer.Instant.Compare(mc.ValidFrom, validAtDt) <= 0)
@@ -72,8 +70,8 @@ namespace pwr_msi.Controllers {
             await executionStrategy.ExecuteAsync(async () => {
                 await using var transaction =
                     await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-                var addedItems = bulkSaveDto.Added.Select(miDto => miDto.AsNewMenuItem()).ToList();
-                var editedItems = bulkSaveDto.Edited.Select(miDto => miDto.AsNewMenuItem()).ToList();
+                var addedItems = bulkSaveDto.Added.Select(miDto => miDto.AsNewMenuItem(id)).ToList();
+                var editedItems = bulkSaveDto.Edited.Select(miDto => miDto.AsNewMenuItem(id)).ToList();
                 var editedItemIdsToInvalidate = bulkSaveDto.Edited.Select(miDto => miDto.MenuItemId).ToList();
                 var deletedItemIdsToInvalidate = bulkSaveDto.Deleted.Select(miDto => miDto.MenuItemId).ToList();
 
@@ -242,8 +240,8 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/menu/items/")]
         [ManageRestaurantAuthorize("id")]
         [HttpPost]
-        public async Task<ActionResult<MenuItemDto>> CreateMenuItem([FromBody] MenuItemDto miDto) {
-            var menuItem = miDto.AsNewMenuItem();
+        public async Task<ActionResult<MenuItemDto>> CreateMenuItem([FromRoute] int id, [FromBody] MenuItemDto miDto) {
+            var menuItem = miDto.AsNewMenuItem(id);
             await _dbContext.MenuItems.AddAsync(menuItem);
             await _dbContext.SaveChangesAsync();
             return menuItem.AsDto();
@@ -252,9 +250,9 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/menu/items/{itemId}/")]
         [ManageRestaurantAuthorize("id")]
         [HttpPut]
-        public async Task<ActionResult<MenuItemDto>> UpdateItem([FromRoute] int itemId,
+        public async Task<ActionResult<MenuItemDto>> UpdateItem([FromRoute] int id, [FromRoute] int itemId,
             [FromBody] MenuItemDto miDto) {
-            var newMenuItem = miDto.AsNewMenuItem();
+            var newMenuItem = miDto.AsNewMenuItem(id);
             await _dbContext.MenuItems.AddAsync(newMenuItem);
             var oldMenuItem = await _dbContext.MenuItems.FindAsync(itemId);
             if (oldMenuItem == null) return NotFound();
