@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+#nullable enable
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 using NodaTime;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Enum;
+using pwr_msi.Services;
 
 namespace pwr_msi.Models {
     public class Order {
@@ -12,17 +16,18 @@ namespace pwr_msi.Models {
         public int? DeliveryPersonId { get; set; }
         public int AddressId { get; set; }
         public decimal TotalPrice { get; set; }
-        public string DeliveryNotes { get; set; }
+        public string DeliveryNotes { get; set; } = null!;
         public OrderStatus Status { get; set; }
 
         public ZonedDateTime Created { get; set; }
         public ZonedDateTime Updated { get; set; }
         public ZonedDateTime? Delivered { get; set; }
 
-        public Restaurant Restaurant { get; set; }
-        public User Customer { get; set; }
-        public User DeliveryPerson { get; set; }
-        public Address Address { get; set; }
+        public Restaurant Restaurant { get; set; } = null!;
+        public User Customer { get; set; } = null!;
+        public User? DeliveryPerson { get; set; }
+        public Address Address { get; set; } = null!;
+        public ICollection<OrderItem> Items { get; set; } = null!;
 
         public OrderTaskType LastTaskType => OrderTaskTypeSettings.taskTypeByStatus[Status];
 
@@ -39,7 +44,7 @@ namespace pwr_msi.Models {
             Delivered = Delivered,
         };
         
-        public OrderDetailsDto AsDetailedDto(ICollection<OrderItem> items, ICollection<OrderItemCustomization> options) => new() {
+        public OrderDto AsDto() => new() {
             OrderId = OrderId,
             Restaurant = Restaurant.AsBasicDto(),
             Customer = Customer.AsBasicDto(),
@@ -49,10 +54,7 @@ namespace pwr_msi.Models {
             DeliveryNotes = DeliveryNotes,
             Created = Created,
             Updated = Updated,
-            Delivered = Delivered,
-            Items = items.Select(oi => oi.AsDto()).ToList(),
-            Options = options,
-            DeliveryPerson = DeliveryPerson.AsBasicDto()
+            Items = Items.Select(item => item.AsDto()).ToList()
         };
     }
 }

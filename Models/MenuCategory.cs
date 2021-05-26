@@ -2,7 +2,7 @@
 using System.Linq;
 using NodaTime;
 using pwr_msi.Models.Dto;
-using pwr_msi.Models.Dto.RestaurantManagement;
+using pwr_msi.Models.Dto.RestaurantMenu;
 
 namespace pwr_msi.Models {
     public class MenuCategory {
@@ -16,22 +16,22 @@ namespace pwr_msi.Models {
         public Restaurant Restaurant { get; set; }
 
         public ICollection<MenuItem> Items { get; set; }
-        public RestaurantMenuCategoryWithItemsDto AsManageMenuDto() => new () {
+        public MenuCategoryWithItemsDto AsMenuDto() => new () {
             MenuCategoryId = MenuCategoryId,
             Name = Name,
             MenuCategoryOrder = MenuCategoryOrder,
             ValidFrom = ValidFrom,
             ValidUntil = ValidUntil,
-            Items = Items.Select(mi => mi.AsManageItemDto()).ToList(),
+            Items = Items.Select(mi => mi.AsDto()).ToList(),
         };
-        public RestaurantMenuCategoryDto AsManageCategoryDto() => new () {
+        public MenuCategoryDto AsCategoryDto() => new () {
             MenuCategoryId = MenuCategoryId,
             MenuCategoryOrder = MenuCategoryOrder,
             Name = Name,
             ValidFrom = ValidFrom,
             ValidUntil = ValidUntil,
         };
-        public void UpdateWithRestaurantMenuCategoryDto(RestaurantMenuCategoryDto mcDto) {
+        public void UpdateWithMenuCategoryDto(MenuCategoryDto mcDto) {
             ValidUntil = mcDto.ValidFrom ?? Utils.Now();
         }
 

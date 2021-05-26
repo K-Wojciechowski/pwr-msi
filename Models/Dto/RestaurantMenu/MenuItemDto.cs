@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using NodaTime;
 
-namespace pwr_msi.Models.Dto.RestaurantManagement {
-    public class RestaurantMenuItemDto {
+namespace pwr_msi.Models.Dto.RestaurantMenu {
+    public class MenuItemDto {
         public int? MenuItemId { get; set; }
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
@@ -16,10 +16,11 @@ namespace pwr_msi.Models.Dto.RestaurantManagement {
         public ZonedDateTime? ValidUntil { get; set; }
         public int MenuCategoryId { get; set; }
         public int MenuOrder { get; set; }
-        public ICollection<RestaurantMenuItemOptionListDto> Options { get; set; } = null!;
+        public ICollection<MenuItemOptionListDto> Options { get; set; } = null!;
 
-        public MenuItem AsNewMenuItem() => new() {
+        public MenuItem AsNewMenuItem(int restaurantId) => new() {
             MenuCategoryId = MenuCategoryId,
+            RestaurantId = restaurantId,
             Name = Name,
             Description = Description,
             Image = Image,
