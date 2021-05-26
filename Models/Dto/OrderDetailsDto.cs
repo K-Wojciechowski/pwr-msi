@@ -18,5 +18,6 @@ namespace pwr_msi.Models.Dto {
         public virtual UserBasicDto DeliveryPerson { get; set; }
         public virtual Address Address { get; set; }
         public ICollection<OrderItemDto> Items { get; set; }
+        public ICollection<OrderItemCustomization> Options { get; set; }
     }
 }

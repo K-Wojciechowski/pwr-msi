@@ -47,9 +47,17 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/orders/{orderId}/")]
         public async Task<ActionResult<OrderDetailsDto>> GetOrder([FromRoute] int orderId, [FromRoute] int id) {
             var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
-            var query = _dbContext.OrderItems.Where(oi => oi.OrderId == orderId);
-            ICollection<OrderItem> items = await query.ToListAsync(); 
-            return order == null ? NotFound() : order.AsDetailedDto(items);
+            var queryItems = _dbContext.OrderItems.Where(oi => oi.OrderId == orderId);
+            ICollection<OrderItem> items = await queryItems.ToListAsync(); 
+            ICollection<OrderItemCustomization> options = new List<OrderItemCustomization>();
+            foreach (var item in items) {
+                var queryOptions =_dbContext.OrderItemCustomizations.Where(oi=> oi.OrderItemId==item.OrderItemId);
+                foreach (var option in queryOptions) {
+                    options.Add(option);
+                    
+                }
+            }
+            return order == null ? NotFound() : order.AsDetailedDto(items, options);
         }
         
         [AcceptOrdersRestaurantAuthorize("id")]
@@ -128,8 +136,16 @@ namespace pwr_msi.Controllers {
             await _dbContext.OrderTasks.AddAsync(orderTask);
             var query = _dbContext.OrderItems.Where(oi => oi.OrderId == orderId);
             ICollection<OrderItem> items = await query.ToListAsync(); 
+            ICollection<OrderItemCustomization> options = new List<OrderItemCustomization>();
+            foreach (var item in items) {
+                var queryOptions =_dbContext.OrderItemCustomizations.Where(oi=> oi.OrderItemId==item.OrderItemId);
+                foreach (var option in queryOptions) {
+                    options.Add(option);
+                    
+                }
+            }
             await _dbContext.SaveChangesAsync();
-            return order.AsDetailedDto(items);
+            return order.AsDetailedDto(items, options);
         }
         
         [AcceptOrdersRestaurantAuthorize("id")]

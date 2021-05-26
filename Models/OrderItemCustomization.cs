@@ -6,5 +6,7 @@
 
         public OrderItem OrderItem { get; set; }
         public MenuItemOptionItem MenuItemOptionItem { get; set; }
+        
+        
     }
 }

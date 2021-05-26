@@ -39,7 +39,7 @@ namespace pwr_msi.Models {
             Delivered = Delivered,
         };
         
-        public OrderDetailsDto AsDetailedDto(ICollection<OrderItem> items) => new() {
+        public OrderDetailsDto AsDetailedDto(ICollection<OrderItem> items, ICollection<OrderItemCustomization> options) => new() {
             OrderId = OrderId,
             Restaurant = Restaurant.AsBasicDto(),
             Customer = Customer.AsBasicDto(),
@@ -51,6 +51,7 @@ namespace pwr_msi.Models {
             Updated = Updated,
             Delivered = Delivered,
             Items = items.Select(oi => oi.AsDto()).ToList(),
+            Options = options,
             DeliveryPerson = DeliveryPerson.AsBasicDto()
         };
     }
