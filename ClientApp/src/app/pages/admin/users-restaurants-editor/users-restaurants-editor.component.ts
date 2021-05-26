@@ -31,7 +31,7 @@ export class UsersRestaurantsEditorComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (!!changes.restaurantUsers && changes.restaurantUsers.previousValue !== changes.restaurantUsers.currentValue) {
+        if (!!changes.restaurantUsersInput && changes.restaurantUsersInput.previousValue !== changes.restaurantUsersInput.currentValue) {
             this.loadRestaurantUsersInput();
         }
     }
@@ -57,6 +57,11 @@ export class UsersRestaurantsEditorComponent implements OnInit, OnChanges {
     };
 
     constructor(private http: HttpClient) {
+    }
+
+    addNewRu() {
+        this.restaurantUsers.push(this.newRu);
+        this.clearNewRu();
     }
 
     clearNewRu() {

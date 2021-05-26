@@ -20,7 +20,7 @@ export class PaymentsInfoComponent implements OnInit {
     }
 
     get makePaymentLink() {
-        return `/orders/payments/${this.paymentId}/make`;
+        return `/payments/${this.paymentId}/make`;
     }
 
     ngOnInit(): void {

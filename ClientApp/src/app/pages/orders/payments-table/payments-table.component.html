@@ -14,7 +14,7 @@
         </thead>
         <tbody>
         <tr *ngFor="let payment of items">
-            <th scope="row"><a routerLink="/orders/payments/{{payment.v.paymentId}}">{{payment.v.paymentId}}</a></th>
+            <th scope="row"><a routerLink="/payments/{{payment.v.paymentId}}">{{payment.v.paymentId}}</a></th>
             <td *ngIf="payment.v.order != null"><a
                 routerLink="/orders/{{payment.v.order.orderId}}">{{payment.v.order.orderId}}</a></td>
             <td class="table-hidden-sm" *ngIf="payment.v.order != null">{{payment.v.order.restaurant.name}}</td>
@@ -25,9 +25,9 @@
             <td>{{payment.v.amount|currency}}</td>
             <td>
                 <div class="btn-group" role="group" aria-label="Payment actions">
-                    <a *ngIf="payment.canPay" standardButton routerLink="/orders/payments/{{payment.v.paymentId}}/make"
+                    <a *ngIf="payment.canPay" standardButton routerLink="/payments/{{payment.v.paymentId}}/make"
                        btnStyle="table" btnType="makepayment"></a>
-                    <a standardButton routerLink="/orders/payments/{{payment.v.paymentId}}" btnStyle="table"
+                    <a standardButton routerLink="/payments/{{payment.v.paymentId}}" btnStyle="table"
                        btnType="show"></a>
                 </div>
             </td>

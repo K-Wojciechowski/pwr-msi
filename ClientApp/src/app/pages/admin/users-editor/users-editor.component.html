@@ -23,7 +23,7 @@
             </label>
             <div style="max-width: 500px;" *ngIf="hasBillingAddress">
                 <app-address-editor [required]="hasBillingAddress" [addressId]="billingAddressId"
-                                    [(address)]="billingAddress"></app-address-editor>
+                                    [address]="billingAddress" (addressChange)="newBillingAddress = $event"></app-address-editor>
             </div>
         </div>
     </div>

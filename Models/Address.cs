@@ -12,6 +12,15 @@ namespace pwr_msi.Models {
         public string Country { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<User> Users { get; set; }
+        public ICollection<User> Users { get; set; }
+
+        public void Update(Address address) {
+            this.Addressee = address.Addressee;
+            this.FirstLine = address.FirstLine;
+            this.SecondLine = address.SecondLine;
+            this.PostCode = address.PostCode;
+            this.City = address.City;
+            this.Country = address.Country;
+        }
     }
 }

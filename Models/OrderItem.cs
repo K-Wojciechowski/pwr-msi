@@ -9,8 +9,8 @@ namespace pwr_msi.Models {
         public decimal Amount { get; set; }
         public decimal TotalPrice { get; set; }
 
-        public virtual Order Order { get; set; }
-        public virtual MenuItem MenuItem { get; set; }
+        public Order Order { get; set; }
+        public MenuItem MenuItem { get; set; }
 
         public OrderItemDto AsDto() => new OrderItemDto() {
             Notes = Notes,

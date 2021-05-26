@@ -1,0 +1,19 @@
+<app-empty-state [empty]="restaurants.length === 0">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Restaurants you have access to</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let restaurant of restaurants">
+            <td>
+                <a [routerLink]="nextUrl(restaurant)">
+                    <img *ngIf="restaurant.logo" [src]="restaurant.logo" [alt]="restaurant.name">
+                    {{restaurant.name}}
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</app-empty-state>

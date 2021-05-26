@@ -17,7 +17,7 @@ namespace pwr_msi.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("AddressUser", b =>
@@ -102,6 +102,9 @@ namespace pwr_msi.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<int>("MenuCategoryOrder")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -174,6 +177,9 @@ namespace pwr_msi.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<int>("MenuItemOptionItemOrder")
+                        .HasColumnType("integer");
+
                     b.Property<int>("MenuItemOptionListId")
                         .HasColumnType("integer");
 
@@ -201,6 +207,9 @@ namespace pwr_msi.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<int>("MenuItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MenuItemOptionListOrder")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")

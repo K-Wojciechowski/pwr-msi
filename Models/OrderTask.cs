@@ -9,16 +9,16 @@ namespace pwr_msi.Models {
         public ZonedDateTime? DateCompleted { get; set; }
 
         public int OrderId { get; set; }
-        public virtual Order Order { get; set; } = null!;
+        public Order Order { get; set; } = null!;
 
         public int? CompletedById { get; set; }
-        public virtual User? CompletedBy { get; set; }
+        public User? CompletedBy { get; set; }
 
         public int? AssigneeUserId { get; set; }
-        public virtual User? AssigneeUser { get; set; }
+        public User? AssigneeUser { get; set; }
 
         public int? AssigneeRestaurantId { get; set; }
-        public virtual Restaurant? AssigneeRestaurant { get; set; }
+        public Restaurant? AssigneeRestaurant { get; set; }
 
         public AssigneeType? AssigneeType { get; set; }
     }
