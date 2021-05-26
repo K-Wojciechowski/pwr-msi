@@ -16,7 +16,7 @@ namespace pwr_msi.Models {
         public Restaurant Restaurant { get; set; }
 
         public ICollection<MenuItem> Items { get; set; }
-        public RestaurantMenuCategoryWithItemsDto AsManageMenuDto() => new () {
+        public MenuCategoryWithItemsDto AsMenuDto() => new () {
             MenuCategoryId = MenuCategoryId,
             Name = Name,
             MenuCategoryOrder = MenuCategoryOrder,
@@ -24,18 +24,14 @@ namespace pwr_msi.Models {
             ValidUntil = ValidUntil,
             Items = Items.Select(mi => mi.AsDto()).ToList(),
         };
-        public ClientMenuDto AsClientMenuDto() => new () {
-            Name = Name,
-            Items = Items,
-        };
-        public RestaurantMenuCategoryDto AsManageCategoryDto() => new () {
+        public MenuCategoryDto AsCategoryDto() => new () {
             MenuCategoryId = MenuCategoryId,
             MenuCategoryOrder = MenuCategoryOrder,
             Name = Name,
             ValidFrom = ValidFrom,
             ValidUntil = ValidUntil,
         };
-        public void UpdateWithRestaurantMenuCategoryDto(RestaurantMenuCategoryDto mcDto) {
+        public void UpdateWithMenuCategoryDto(MenuCategoryDto mcDto) {
             ValidUntil = mcDto.ValidFrom ?? Utils.Now();
         }
 

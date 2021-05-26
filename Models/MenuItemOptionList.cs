@@ -12,7 +12,7 @@ namespace pwr_msi.Models {
         public MenuItem MenuItem { get; set; }
         public ICollection<MenuItemOptionItem> Items { get; set; }
 
-        public RestaurantMenuItemOptionListDto AsDto() => new() {
+        public MenuItemOptionListDto AsDto() => new() {
             MenuItemOptionListId = MenuItemOptionListId,
             Name = Name,
             IsMultipleChoice = IsMultipleChoice,

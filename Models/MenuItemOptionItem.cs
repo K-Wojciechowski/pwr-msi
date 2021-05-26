@@ -10,14 +10,14 @@ namespace pwr_msi.Models {
         public int MenuItemOptionListId { get; set; }
         public MenuItemOptionList MenuItemOptionList { get; set; }
         
-        public RestaurantMenuItemOptionItemDto AsDto() => new () {
+        public MenuItemOptionItemDto AsDto() => new () {
             MenuItemOptionItemId = MenuItemOptionItemId,
             Name = Name,
             Price = Price,
             MenuItemOptionItemOrder = MenuItemOptionItemOrder,
             MenuItemOptionListId = MenuItemOptionListId
         };
-        public void UpdateWithRestaurantMenuItemOptionItemDto(RestaurantMenuItemOptionItemDto mioiDto) {
+        public void UpdateWithRestaurantMenuItemOptionItemDto(MenuItemOptionItemDto mioiDto) {
             Name = mioiDto.Name;
             Price = mioiDto.Price;
         }

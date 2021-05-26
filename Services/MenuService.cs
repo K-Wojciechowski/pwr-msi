@@ -84,9 +84,9 @@ namespace pwr_msi.Services {
             return second.HasValue ? new List<ZonedDateTime> {first, second.Value} : new List<ZonedDateTime> {first};
         }
 
-        public async Task<List<RestaurantMenuCategoryWithItemsDto>> GetMenuFromDbAndCache(int restaurantId, ZonedDateTime validAt) {
+        public async Task<List<MenuCategoryWithItemsDto>> GetMenuFromDbAndCache(int restaurantId, ZonedDateTime validAt) {
             var dbMenu = await GetMenuFromDb(restaurantId, validAt);
-            var menu = dbMenu.Select(mc => mc.AsManageMenuDto()).ToList();
+            var menu = dbMenu.Select(mc => mc.AsMenuDto()).ToList();
             var expirationDate = await GetMenuExpirationDate(restaurantId, validAt);
             var cacheEntry = new MenuCacheEntry(menu, validAt, expirationDate);
             var cacheEntryString =
@@ -96,7 +96,7 @@ namespace pwr_msi.Services {
             return menu;
         }
 
-        public async Task<List<RestaurantMenuCategoryWithItemsDto>> GetFromCache(int restaurantId,
+        public async Task<List<MenuCategoryWithItemsDto>> GetMenuFromCache(int restaurantId,
             ZonedDateTime validAt) {
             var cacheEntryString = await _cache.GetStringAsync("menu:" + restaurantId);
             if (cacheEntryString == null) {
@@ -107,7 +107,7 @@ namespace pwr_msi.Services {
             if (ZonedDateTime.Comparer.Instant.Compare(validAt, cacheEntry.validAt) < 0) {
                 // Going backwards, avoid cache
             var dbMenu = await GetMenuFromDb(restaurantId, validAt);
-            var menu = dbMenu.Select(mc => mc.AsManageMenuDto()).ToList();
+            var menu = dbMenu.Select(mc => mc.AsMenuDto()).ToList();
             return menu;
             }
 

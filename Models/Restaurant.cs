@@ -20,6 +20,7 @@ namespace pwr_msi.Models {
 
         public ICollection<Cuisine> Cuisines { get; set; } = null!;
         public ICollection<MenuCategory> MenuCategories { get; set; } = null!;
+        public ICollection<MenuItem> MenuItems { get; set; } = null!;
         public ICollection<User> Users { get; set; } = null!;
         public List<RestaurantUser> RestaurantUsers { get; set; } = null!;
 

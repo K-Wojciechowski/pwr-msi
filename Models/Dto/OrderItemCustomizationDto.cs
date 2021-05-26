@@ -5,10 +5,10 @@ using pwr_msi.Models.Dto.RestaurantMenu;
 namespace pwr_msi.Models.Dto {
     public class OrderItemCustomizationDto {
         public int OrderItemCustomizationId { get; }
-        public RestaurantMenuItemOptionItemDto MenuItemOptionItem { get; }
+        public MenuItemOptionItemDto MenuItemOptionItem { get; }
 
         public OrderItemCustomizationDto(int orderItemCustomizationId,
-            RestaurantMenuItemOptionItemDto menuItemOptionItem) {
+            MenuItemOptionItemDto menuItemOptionItem) {
             OrderItemCustomizationId = orderItemCustomizationId;
             MenuItemOptionItem = menuItemOptionItem;
         }

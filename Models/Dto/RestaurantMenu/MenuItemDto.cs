@@ -4,7 +4,7 @@ using System.Linq;
 using NodaTime;
 
 namespace pwr_msi.Models.Dto.RestaurantMenu {
-    public class RestaurantMenuItemDto {
+    public class MenuItemDto {
         public int? MenuItemId { get; set; }
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
@@ -16,7 +16,7 @@ namespace pwr_msi.Models.Dto.RestaurantMenu {
         public ZonedDateTime? ValidUntil { get; set; }
         public int MenuCategoryId { get; set; }
         public int MenuOrder { get; set; }
-        public ICollection<RestaurantMenuItemOptionListDto> Options { get; set; } = null!;
+        public ICollection<MenuItemOptionListDto> Options { get; set; } = null!;
 
         public MenuItem AsNewMenuItem() => new() {
             MenuCategoryId = MenuCategoryId,
