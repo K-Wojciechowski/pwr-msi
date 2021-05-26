@@ -74,13 +74,13 @@ namespace pwr_msi.Controllers {
             return rList.Select(r => r.AsBasicDto()).ToList();
         }
 
-        [Route(template: "{id}/")]
+        [Route(template: "{id}/details/")]
         public async Task<ActionResult<RestaurantDetailDto>> RestaurantDetails([FromRoute] int id) {
             var restaurant = await _dbContext.Restaurants.FindAsync(id);
             return restaurant.AsDetailDto();
         }
         
-        [Route(template: "{id}/")]
+        [Route(template: "{id}/menu/")]
         public async Task<ActionResult<List<ClientMenuDto>>> RestaurantMenu([FromRoute] int id) {
             var mcList = await _menuService.GetMenuFromDb(id, Utils.Now());
             return mcList.Select(mc => mc.AsClientMenuDto()).ToList();
