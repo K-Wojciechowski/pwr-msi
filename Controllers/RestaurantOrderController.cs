@@ -70,7 +70,7 @@ namespace pwr_msi.Controllers {
         
         [AcceptOrdersRestaurantAuthorize("id")]
         [Route(template: "{id}/orders/{orderId}/accept/")]
-        [HttpPut]
+        [HttpPost]
         public async Task<ActionResult<OrderBasicDto>> AcceptOrder([FromRoute] int orderId, [FromRoute] int id) {
             var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
             if (order == null) return NotFound();
@@ -81,7 +81,7 @@ namespace pwr_msi.Controllers {
         
         [AcceptOrdersRestaurantAuthorize("id")]
         [Route(template: "{id}/orders/{orderId}/prepare/")]
-        [HttpPut]
+        [HttpPost]
         public async Task<ActionResult<OrderBasicDto>> PrepareOrder([FromRoute] int orderId, [FromRoute] int id) {
             var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
             if (order == null) return NotFound();
@@ -111,7 +111,7 @@ namespace pwr_msi.Controllers {
         
         [AcceptOrdersRestaurantAuthorize("id")]
         [Route(template: "{id}/orders/{orderId}/delivery/")]
-        [HttpPut]
+        [HttpPost]
         public async Task<ActionResult<OrderDetailsDto>> AssignOrder([FromRoute] int orderId, [FromRoute] int id, [FromQuery] string assign, [FromBody] int deliverId) {
             var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId).FirstOrDefaultAsync();
             if (order == null) return NotFound();
