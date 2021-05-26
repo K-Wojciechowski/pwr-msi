@@ -9,6 +9,6 @@ namespace pwr_msi.Models.Dto {
         public int AddressId { get; set; }
         public string DeliveryNotes { get; set; }
         public ICollection<OrderItem> Items { get; set; }
-        public ICollection<MenuItemOptionItem> OptionItems { get; set; }
+        public ICollection<OrderItemCustomization> OptionItems { get; set; }
     }
 }
