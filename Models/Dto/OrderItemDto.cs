@@ -9,7 +9,7 @@ namespace pwr_msi.Models.Dto {
         public decimal Amount { get; set; }
         public decimal TotalPrice { get; set; }
         public string Notes { get; set; } = null!;
-        public RestaurantMenuItemDto MenuItem { get; set; } = null!;
+        public MenuItemDto MenuItem { get; set; } = null!;
         public ICollection<OrderItemCustomizationDto> Customizations { get; set; } = null!;
 
         public OrderItem AsNewOrderItem(decimal priceFromDb) {

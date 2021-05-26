@@ -21,9 +21,12 @@ namespace pwr_msi.Models {
         public int MenuCategoryId { get; set; }
         public MenuCategory MenuCategory { get; set; } = null!;
 
+        public int RestaurantId { get; set; }
+        public Restaurant Restaurant { get; set; } = null!;
+
         public ICollection<MenuItemOptionList> Options { get; set; } = null!;
 
-        public RestaurantMenuItemDto AsDto() => new() {
+        public MenuItemDto AsDto() => new() {
             MenuItemId = MenuItemId,
             Name = Name,
             Description = Description,
@@ -37,7 +40,7 @@ namespace pwr_msi.Models {
             Options = Options.Select(ol => ol.AsDto()).ToList(),
         };
 
-        public void UpdateWithRestaurantMenuItemDto(RestaurantMenuItemDto mcDto) {
+        public void UpdateWithRestaurantMenuItemDto(MenuItemDto mcDto) {
             ValidUntil = mcDto.ValidFrom;
         }
 
