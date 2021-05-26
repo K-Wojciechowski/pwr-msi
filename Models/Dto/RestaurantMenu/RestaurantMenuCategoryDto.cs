@@ -1,6 +1,6 @@
 using NodaTime;
 
-namespace pwr_msi.Models.Dto.RestaurantManagement {
+namespace pwr_msi.Models.Dto.RestaurantMenu {
     public class RestaurantMenuCategoryDto {
         public int MenuCategoryId { get; set; }
         public int MenuCategoryOrder { get; set; }

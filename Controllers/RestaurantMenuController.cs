@@ -10,7 +10,7 @@ using NodaTime;
 using NodaTime.Text;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto;
-using pwr_msi.Models.Dto.RestaurantManagement;
+using pwr_msi.Models.Dto.RestaurantMenu;
 using pwr_msi.Services;
 
 namespace pwr_msi.Controllers {
@@ -228,7 +228,7 @@ namespace pwr_msi.Controllers {
             }
 
             var miList = await query.ToListAsync();
-            return miList.Select(mi => mi.AsManageItemDto()).ToList();
+            return miList.Select(mi => mi.AsDto()).ToList();
         }
 
         [Route(template: "{id}/menu/items/{itemId}/")]
@@ -236,7 +236,7 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<RestaurantMenuItemDto>> GetItem([FromRoute] int itemId) {
             var menuItem = await _dbContext.MenuItems.FindAsync(itemId);
             // ReSharper disable once MergeConditionalExpression
-            return menuItem == null ? NotFound() : menuItem.AsManageItemDto();
+            return menuItem == null ? NotFound() : menuItem.AsDto();
         }
 
         [Route(template: "{id}/menu/items/")]
@@ -246,7 +246,7 @@ namespace pwr_msi.Controllers {
             var menuItem = miDto.AsNewMenuItem();
             await _dbContext.MenuItems.AddAsync(menuItem);
             await _dbContext.SaveChangesAsync();
-            return menuItem.AsManageItemDto();
+            return menuItem.AsDto();
         }
 
         [Route(template: "{id}/menu/items/{itemId}/")]
@@ -261,7 +261,7 @@ namespace pwr_msi.Controllers {
             oldMenuItem.UpdateWithRestaurantMenuItemDto(miDto);
             await _dbContext.SaveChangesAsync();
             await MigrateMenuOptionListsByItem(migrationMap(oldMenuItem.MenuItemId, newMenuItem.MenuItemId));
-            return newMenuItem.AsManageItemDto();
+            return newMenuItem.AsDto();
         }
 
         [Route(template: "{id}/menu/items/{itemId}/")]
@@ -272,7 +272,7 @@ namespace pwr_msi.Controllers {
             if (menuItem == null) return NotFound();
             menuItem.Invalidate();
             await _dbContext.SaveChangesAsync();
-            return menuItem.AsManageItemDto();
+            return menuItem.AsDto();
         }
 
         [Route(template: "{id}/menu/items/{itemId}/options/")]
@@ -284,7 +284,7 @@ namespace pwr_msi.Controllers {
             optionList.MenuItemId = itemId;
             await _dbContext.MenuItemOptionLists.AddAsync(optionList);
             await _dbContext.SaveChangesAsync();
-            return optionList.AsManageOptionListDto();
+            return optionList.AsDto();
         }
 
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/")]
@@ -301,7 +301,7 @@ namespace pwr_msi.Controllers {
 
             _dbContext.MenuItemOptionLists.Remove(optionList);
             await _dbContext.SaveChangesAsync();
-            return optionList.AsManageOptionListDto();
+            return optionList.AsDto();
         }
 
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/")]
@@ -313,7 +313,7 @@ namespace pwr_msi.Controllers {
             optionItem.MenuItemOptionListId = listId;
             await _dbContext.MenuItemOptionItems.AddAsync(optionItem);
             await _dbContext.SaveChangesAsync();
-            return optionItem.AsManageOptionItemDto();
+            return optionItem.AsDto();
         }
 
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/{oId}/")]
@@ -324,7 +324,7 @@ namespace pwr_msi.Controllers {
             if (optionItem == null) return NotFound();
             _dbContext.MenuItemOptionItems.Remove(optionItem);
             await _dbContext.SaveChangesAsync();
-            return optionItem.AsManageOptionItemDto();
+            return optionItem.AsDto();
         }
 
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/{oId}/")]
@@ -339,14 +339,14 @@ namespace pwr_msi.Controllers {
             if (oldOptionItem == null) return NotFound();
             oldOptionItem.UpdateWithRestaurantMenuItemOptionItemDto(mioiDto);
             await _dbContext.SaveChangesAsync();
-            return newOptionItem.AsManageOptionItemDto();
+            return newOptionItem.AsDto();
         }
 
         [Route(template: "{id}/menu/items/{itemId}/options/{listId}/{oId}/")]
         [ManageRestaurantAuthorize("id")]
         public async Task<ActionResult<RestaurantMenuItemOptionItemDto>> GetOptionItem([FromRoute] int oId) {
             var optionItem = await _dbContext.MenuItemOptionItems.FindAsync(oId);
-            return optionItem == null ? NotFound() : optionItem.AsManageOptionItemDto();
+            return optionItem == null ? NotFound() : optionItem.AsDto();
         }
 
         private async Task MigrateMenuItemsByCategory(Dictionary<int, int> categoryIdMap, ZonedDateTime validFrom) {

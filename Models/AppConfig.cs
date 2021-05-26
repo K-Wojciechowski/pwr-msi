@@ -15,6 +15,8 @@ namespace pwr_msi.Models {
             PayUrl = "http://localhost:5007/",
             EmailFromAddress = "noreply@msi.local",
             EmailFromName = "MSI",
+            RedisConnectionString = "localhost",
+            RedisInstanceName = "msi",
             SmtpHost = "localhost",
             SmtpPort = 1025,
             SmtpAuthenticate = false,
@@ -34,6 +36,8 @@ namespace pwr_msi.Models {
         public string PayUrl { get; set; }
         public string EmailFromName { get; set; }
         public string EmailFromAddress { get; set; }
+        public string RedisConnectionString { get; set; }
+        public string RedisInstanceName { get; set; }
         public string SmtpHost { get; set; }
         public int SmtpPort { get; set; }
         public bool SmtpAuthenticate { get; set; }
