@@ -56,7 +56,9 @@ namespace pwr_msi.Controllers {
         
         [Route(template: "waiting/")]
         public async Task<ActionResult<List<OrderBasicDto>>> AllWaitingOrders([FromQuery] float lat,[FromQuery] float lng, [FromQuery] int range) {
-            var query = _dbContext.Orders.Where(o => o.DeliveryPerson==null
+            var restaurants = _dbContext.RestaurantUsers.Where(ru => ru.UserId == MsiUserId);
+            var query = _dbContext.Orders.Where(o => o.DeliveryPerson==null 
+                                                     && restaurants.Any(r => r.RestaurantId == o.RestaurantId)
                                                      && (o.Status.Equals(OrderStatus.PREPARED) 
                                                          || o.Status.Equals(OrderStatus.ACCEPTED)));
 
@@ -69,7 +71,9 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<List<OrderBasicDto>>> FilteredWaitingOrders([FromQuery] string restaurant, 
             [FromQuery] float lat,[FromQuery] float lng, [FromQuery] int range) {
             var likeQuery = $"%{restaurant}%";
+            var restaurants = _dbContext.RestaurantUsers.Where(ru => ru.UserId == MsiUserId);
             var query = _dbContext.Orders.Where(o => o.DeliveryPerson==null 
+                                                     && restaurants.Any(r => r.RestaurantId == o.RestaurantId)
                                                      && (o.Status.Equals(OrderStatus.PREPARED) 
                                                          || o.Status.Equals(OrderStatus.ACCEPTED))
                                                      && EF.Functions.ILike(o.Restaurant.Name, likeQuery));
@@ -80,16 +84,17 @@ namespace pwr_msi.Controllers {
         
         [Route(template: "completed/")]
         public async Task<ActionResult<List<OrderBasicDto>>> AllCompletedOrders() {
-            var query = _dbContext.Orders.Where(o => o.DeliveryPerson==null 
+            var query = _dbContext.Orders.Where(o => o.DeliveryPersonId==MsiUserId 
                                                      && (o.Status.Equals(OrderStatus.COMPLETED) 
                                                          || o.Status.Equals(OrderStatus.DELIVERED)));
             var oList = await query.ToListAsync();
             return oList.Select(o => o.AsBasicDto()).ToList();
         }
 
-        [Route(template: "completed/")] public async Task<ActionResult<List<OrderBasicDto>>> FilteredCompletedOrders([FromQuery] string restaurant) {
+        [Route(template: "completed/")] 
+        public async Task<ActionResult<List<OrderBasicDto>>> FilteredCompletedOrders([FromQuery] string restaurant) {
             var likeQuery = $"%{restaurant}%";
-            var query = _dbContext.Orders.Where(o => o.DeliveryPerson==null 
+            var query = _dbContext.Orders.Where(o => o.DeliveryPersonId==MsiUserId
                                                      && (o.Status.Equals(OrderStatus.COMPLETED) 
                                                          || o.Status.Equals(OrderStatus.DELIVERED))
                                                      && EF.Functions.ILike(o.Restaurant.Name, likeQuery));
@@ -97,8 +102,8 @@ namespace pwr_msi.Controllers {
             return oList.Select(o => o.AsBasicDto()).ToList();
         }
 
-        [Route(template: "active/{id}/")]
-        [HttpPut]
+        [Route(template: "active/{id}/complete")]
+        [HttpPost]
         public async Task<ActionResult<OrderBasicDto>> MarkAsDelivered([FromRoute] int id) {
             var order = await _dbContext.Orders.FindAsync(id);
             if (order == null || order.DeliveryPersonId!=MsiUserId 
@@ -108,8 +113,8 @@ namespace pwr_msi.Controllers {
             return order.AsBasicDto();
         }
         
-        [Route(template: "waiting/{id}/")]
-        [HttpPut]
+        [Route(template: "waiting/{id}/assign")]
+        [HttpPost]
         public async Task<ActionResult<OrderBasicDto>> AssignYourself([FromRoute] int id) {
             var order = await _dbContext.Orders.FindAsync(id);
             if (order == null || order.DeliveryPerson!=null
@@ -119,6 +124,28 @@ namespace pwr_msi.Controllers {
             order.DeliveryPerson = MsiUser;
             await _dbContext.SaveChangesAsync();
             return order.AsBasicDto();
+        }
+
+        [Route("order/{id}/")]
+        public async Task<ActionResult<OrderDetailsDto>> OrderDetails([FromRoute] int id) {
+            var restaurants = _dbContext.RestaurantUsers.Where(ru => ru.UserId == MsiUserId);
+            var order = await _dbContext.Orders.Where(o => (o.DeliveryPerson==null 
+                                                                    && restaurants.Any(r => r.RestaurantId == o.RestaurantId) 
+                                                                    && (o.Status.Equals(OrderStatus.PREPARED) 
+                                                                    || o.Status.Equals(OrderStatus.ACCEPTED))
+                                                                || o.DeliveryPersonId==MsiUserId )).FirstOrDefaultAsync();
+            
+            var queryItems = _dbContext.OrderItems.Where(oi => oi.OrderId == id);
+            ICollection<OrderItem> items = await queryItems.ToListAsync(); 
+            ICollection<OrderItemCustomization> options = new List<OrderItemCustomization>();
+            foreach (var item in items) {
+                var queryOptions =_dbContext.OrderItemCustomizations.Where(oi=> oi.OrderItemId==item.OrderItemId);
+                foreach (var option in queryOptions) {
+                    options.Add(option);
+                    
+                }
+            }
+            return order == null ? NotFound() : order.AsDetailedDto(items, options);
         }
     }
 }

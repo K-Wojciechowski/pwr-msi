@@ -1,4 +1,6 @@
-﻿using NodaTime;
+﻿using System.Collections.Generic;
+using NodaTime;
+using System.Linq;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Enum;
 
@@ -35,6 +37,22 @@ namespace pwr_msi.Models {
             Created = Created,
             Updated = Updated,
             Delivered = Delivered,
+        };
+        
+        public OrderDetailsDto AsDetailedDto(ICollection<OrderItem> items, ICollection<OrderItemCustomization> options) => new() {
+            OrderId = OrderId,
+            Restaurant = Restaurant.AsBasicDto(),
+            Customer = Customer.AsBasicDto(),
+            Address = Address,
+            Status = Status,
+            TotalPrice = TotalPrice,
+            DeliveryNotes = DeliveryNotes,
+            Created = Created,
+            Updated = Updated,
+            Delivered = Delivered,
+            Items = items.Select(oi => oi.AsDto()).ToList(),
+            Options = options,
+            DeliveryPerson = DeliveryPerson.AsBasicDto()
         };
     }
 }
