@@ -30,11 +30,11 @@ namespace pwr_msi.Models.Dto {
 
             var menuItemsWithPrices = from mi in dbContext.MenuItems
                 where menuItemIds.Contains(mi.MenuItemId)
-                select (mi.MenuItemId, mi.Price);
+                select new {mi.MenuItemId, mi.Price};
 
             var menuItemOptionItemsWithPrices = from oi in dbContext.MenuItemOptionItems
                 where menuItemOptionItemIds.Contains(oi.MenuItemOptionItemId)
-                select (oi.MenuItemOptionItemId, oi.Price);
+                select new {oi.MenuItemOptionItemId, oi.Price};
 
             var menuItemPriceMap = await menuItemsWithPrices.ToDictionaryAsync(r => r.MenuItemId, r => r.Price);
             var menuItemOptionItemPriceMap =
