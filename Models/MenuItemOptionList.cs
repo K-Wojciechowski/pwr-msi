@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using pwr_msi.Models.Dto.RestaurantManagement;
+using pwr_msi.Models.Dto.RestaurantMenu;
 
 namespace pwr_msi.Models {
     public class MenuItemOptionList {
@@ -12,13 +12,13 @@ namespace pwr_msi.Models {
         public MenuItem MenuItem { get; set; }
         public ICollection<MenuItemOptionItem> Items { get; set; }
 
-        public RestaurantMenuItemOptionListDto AsManageOptionListDto() => new() {
+        public RestaurantMenuItemOptionListDto AsDto() => new() {
             MenuItemOptionListId = MenuItemOptionListId,
             Name = Name,
             IsMultipleChoice = IsMultipleChoice,
             MenuItemOptionListOrder = MenuItemOptionListOrder,
             MenuItemId = MenuItemId,
-            Items = Items.Select(oi => oi.AsManageOptionItemDto()).ToList()
+            Items = Items.Select(oi => oi.AsDto()).ToList()
         };
 
         public MenuItemOptionList CreateNewWithItem(int menuItemId) => new() {

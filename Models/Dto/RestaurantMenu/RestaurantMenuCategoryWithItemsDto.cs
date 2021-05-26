@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using NodaTime;
 
-namespace pwr_msi.Models.Dto.RestaurantManagement {
+namespace pwr_msi.Models.Dto.RestaurantMenu {
     public class RestaurantMenuCategoryWithItemsDto : RestaurantMenuCategoryDto {
         public ICollection<RestaurantMenuItemDto> Items { get; set; }
     }

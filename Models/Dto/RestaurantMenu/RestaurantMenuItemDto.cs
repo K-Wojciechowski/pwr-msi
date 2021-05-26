@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NodaTime;
 
-namespace pwr_msi.Models.Dto.RestaurantManagement {
+namespace pwr_msi.Models.Dto.RestaurantMenu {
     public class RestaurantMenuItemDto {
         public int? MenuItemId { get; set; }
         public string Name { get; set; } = null!;

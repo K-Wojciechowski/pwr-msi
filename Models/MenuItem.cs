@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NodaTime;
 using pwr_msi.Models.Dto;
-using pwr_msi.Models.Dto.RestaurantManagement;
+using pwr_msi.Models.Dto.RestaurantMenu;
 
 namespace pwr_msi.Models {
     public class MenuItem {
@@ -23,7 +23,7 @@ namespace pwr_msi.Models {
 
         public ICollection<MenuItemOptionList> Options { get; set; } = null!;
 
-        public RestaurantMenuItemDto AsManageItemDto() => new() {
+        public RestaurantMenuItemDto AsDto() => new() {
             MenuItemId = MenuItemId,
             Name = Name,
             Description = Description,
@@ -34,7 +34,7 @@ namespace pwr_msi.Models {
             ValidFrom = ValidFrom,
             ValidUntil = ValidUntil,
             MenuCategoryId = MenuCategoryId,
-            Options = Options.Select(ol => ol.AsManageOptionListDto()).ToList(),
+            Options = Options.Select(ol => ol.AsDto()).ToList(),
         };
 
         public void UpdateWithRestaurantMenuItemDto(RestaurantMenuItemDto mcDto) {

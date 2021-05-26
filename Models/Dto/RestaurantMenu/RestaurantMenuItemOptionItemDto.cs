@@ -1,4 +1,4 @@
-namespace pwr_msi.Models.Dto.RestaurantManagement {
+namespace pwr_msi.Models.Dto.RestaurantMenu {
     public class RestaurantMenuItemOptionItemDto {
         public int MenuItemOptionItemId { get; set; }
         public string Name { get; set; }
