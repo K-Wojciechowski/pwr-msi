@@ -36,7 +36,7 @@ namespace pwr_msi.Controllers {
         }
 
         [Route(template: "")]
-        public async Task<ActionResult<Page<RestaurantAdminDto>>> List([FromQuery] int page = 1) {
+        public async Task<ActionResult<Page<RestaurantFullDto>>> List([FromQuery] int page = 1) {
             return await Utils.Paginate(
                 queryable: GetRestaurantsBaseQueryable().OrderBy(r => r.Name).ThenBy(r => r.RestaurantId),
                 page,
@@ -46,26 +46,26 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "")]
         [HttpPost]
-        public async Task<ActionResult<RestaurantAdminDto>> Create([FromBody] RestaurantAdminDto restaurantAdminDto) {
-            var restaurant = restaurantAdminDto.AsNewRestaurant();
+        public async Task<ActionResult<RestaurantFullDto>> Create([FromBody] RestaurantFullDto restaurantFullDto) {
+            var restaurant = restaurantFullDto.AsNewRestaurant();
             await _dbContext.Restaurants.AddAsync(restaurant);
             await _dbContext.SaveChangesAsync();
             return restaurant.AsAdminDto();
         }
 
         [Route(template: "{id}/")]
-        public async Task<ActionResult<RestaurantAdminDto>> Get([FromRoute] int id) {
+        public async Task<ActionResult<RestaurantFullDto>> Get([FromRoute] int id) {
             var restaurant = await GetRestaurantsBaseQueryable().Where(r => r.RestaurantId == id).FirstOrDefaultAsync();
             return restaurant == null ? NotFound() : restaurant.AsAdminDto();
         }
 
         [Route(template: "{id}/")]
         [HttpPut]
-        public async Task<ActionResult<RestaurantAdminDto>> Update([FromRoute] int id,
-            [FromBody] RestaurantAdminDto restaurantAdminDto) {
+        public async Task<ActionResult<RestaurantFullDto>> Update([FromRoute] int id,
+            [FromBody] RestaurantFullDto restaurantFullDto) {
             var restaurant = await GetRestaurantsBaseQueryable().Where(r => r.RestaurantId == id).FirstOrDefaultAsync();
             if (restaurant == null) return NotFound();
-            await restaurant.UpdateWithAdminDto(restaurantAdminDto, _dbContext.Cuisines);
+            await restaurant.UpdateWithAdminDto(restaurantFullDto, _dbContext.Cuisines);
             await _dbContext.SaveChangesAsync();
             return restaurant.AsAdminDto();
         }
@@ -88,7 +88,7 @@ namespace pwr_msi.Controllers {
         }
 
         [Route(template: "typeahead/")]
-        public async Task<ActionResult<List<RestaurantAdminDto>>> RestaurantsTypeAhead(
+        public async Task<ActionResult<List<RestaurantFullDto>>> RestaurantsTypeAhead(
             [FromQuery(Name = "q")] string query) {
             var likeQuery = $"{query}%";
             var restaurants =

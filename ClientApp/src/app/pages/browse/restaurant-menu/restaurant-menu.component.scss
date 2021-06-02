@@ -1,0 +1,119 @@
+@import '~bootstrap/scss/_functions.scss';
+@import '~bootstrap/scss/_variables.scss';
+
+#restaurant-header {
+    border-bottom: 1px solid $gray-200;
+    margin-bottom: 1rem;
+}
+
+#restaurant-heading {
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+.restaurant-logo {
+    max-height: 100px;
+    display: block;
+    align-self: center;
+}
+
+#restaurant-details {
+    text-align: center;
+}
+
+#restaurant-details span:first-child:before {
+    content: "";
+}
+
+#restaurant-details span:before {
+    content: " • ";
+    color: $gray-600;
+}
+
+#restaurant-description {
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.menu-img {
+    max-width: 4rem;
+}
+
+.menu-img-box, .menu-img-placeholder, .add-placeholder {
+    width: 4rem;
+    flex-shrink: 0;
+    margin-left: -$card-spacer-x;
+    margin-top: -$card-spacer-x;
+    margin-bottom: -$card-spacer-x;
+    border-top-left-radius: $card-border-radius;
+    border-bottom-left-radius: $card-border-radius;
+    transition: border-radius .35s ease;
+}
+
+.menu-item-name {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    margin-left: 1.25rem;
+}
+
+.menu-price-amount {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.menu-price-amount .amount {
+    font-size: 0.65rem;
+}
+
+.menu-img-placeholder {
+    background: theme-color-level("secondary", $table-bg-level);
+}
+
+.menu-img-expanded {
+    border-bottom-left-radius: 0;
+}
+
+.menu-buttons button {
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+}
+
+.menu-subcard {
+    padding: $card-spacer-x;
+}
+
+.menu-subcard-container {
+    border-top: $card-border-width solid $card-border-color;
+}
+
+.menu-subcard h4 {
+    font-size: 1.3rem;
+}
+
+ul.menu-options {
+    padding: 0;
+}
+
+ul.menu-options li {
+    list-style: none;
+    margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+
+.menu-option-title {
+    font-weight: bold;
+}
+
+ul.menu-options label {
+    display: block;
+    margin-left: 1rem;
+}
+
+.menu-add-box {
+    text-align: right;
+}

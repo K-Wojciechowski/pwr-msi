@@ -20,6 +20,10 @@ namespace pwr_msi {
             return now.InUtc();
         }
 
+        public static OffsetDateTime OffsetNow() {
+            return Now().ToOffsetDateTime();
+        }
+
         public static async Task<Page<TO>> Paginate<TD, TO>(IQueryable<TD> queryable, int pageRaw,
             Func<TD, TO> converter) where TD : class {
             var itemCount = await queryable.CountAsync();

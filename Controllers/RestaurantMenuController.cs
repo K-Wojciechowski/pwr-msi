@@ -28,7 +28,7 @@ namespace pwr_msi.Controllers {
 
         private ZonedDateTime parseValidAtDate(string validAtString) {
             var parseResult = OffsetDateTimePattern.Rfc3339.Parse(validAtString);
-            parseResult.TryGetValue(new OffsetDateTime(), out var validAtDt);
+            parseResult.TryGetValue(Utils.OffsetNow(), out var validAtDt);
             return validAtDt.InFixedZone();
         }
 
@@ -37,8 +37,8 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<List<MenuCategoryWithItemsDto>>>
             GetMenu([FromRoute] int id, [FromQuery] string validAt) {
             var validAtDt = parseValidAtDate(validAt);
-            var mcList = await _menuService.GetMenuFromDb(id, validAtDt);
-            return mcList.Select(mc => mc.AsMenuDto()).ToList();
+            var menu = await _menuService.GetMenuFromCache(id, validAtDt);
+            return menu;
         }
 
         [Route(template: "{id}/menu/categories/")]

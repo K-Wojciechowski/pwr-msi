@@ -1,4 +1,4 @@
 <ng-container *ngIf="empty; else nonEmptyState">
-    <div class="font-weight-lighter" style="font-size: 2rem; text-align: center;">No items found.</div>
+    <div class="font-weight-lighter" style="font-size: 2rem; text-align: center;">{{text}}</div>
 </ng-container>
 <ng-template #nonEmptyState><ng-content></ng-content></ng-template>
