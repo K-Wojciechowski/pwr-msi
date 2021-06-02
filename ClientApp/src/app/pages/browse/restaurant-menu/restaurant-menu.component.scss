@@ -1,5 +1,6 @@
 @import '~bootstrap/scss/_functions.scss';
 @import '~bootstrap/scss/_variables.scss';
+@import '~bootstrap/scss/_mixins.scss';
 
 #restaurant-header {
     border-bottom: 1px solid $gray-200;
@@ -53,6 +54,15 @@
     transition: border-radius .35s ease;
 }
 
+@include media-breakpoint-up(md) {
+    .order-items .menu-img {
+        max-width: 3rem;
+    }
+    .order-items .menu-img-box, .order-items .menu-img-placeholder {
+        width: 3rem;
+    }
+}
+
 .menu-item-name {
     display: flex;
     align-items: center;
@@ -63,7 +73,7 @@
 .menu-price-amount {
     display: flex;
     flex-direction: column;
-    align-items: end;
+    align-items: flex-end;
 }
 
 .menu-price-amount .amount {
@@ -116,4 +126,107 @@ ul.menu-options label {
 
 .menu-add-box {
     text-align: right;
+}
+
+.delivery-address-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.delivery-address {
+    flex-grow: 1;
+}
+
+.delivery-address-container button {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    align-self: stretch;
+}
+
+.order-item-rest {
+    flex-grow: 1;
+}
+
+.order-delete-btn {
+    padding: 0.2rem;
+    margin-right: -$card-spacer-x;
+    margin-top: -$card-spacer-x;
+    margin-bottom: -$card-spacer-x;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+ul.order-item-options {
+    margin: 0;
+    padding-left: 0.5rem;
+    font-size: 0.85rem;
+}
+
+ul.order-item-options > li {
+    list-style: none;
+}
+
+ul.order-item-options {
+    padding-top: 1.25rem;
+}
+
+ul.order-item-options:empty {
+    padding-top: 0;
+}
+
+ul.order-item-options li ul {
+    padding-left: 0.75rem;
+}
+
+ul.order-item-options li ul li {
+    list-style: disc;
+}
+
+ul.order-item-options li ul li:only-child {
+    list-style: none;
+}
+
+.order-item-options-title {
+    font-weight: bolder;
+}
+
+.order-total {
+    display: flex;
+    flex-direction: row;
+    font-size: $h5-font-size;
+    margin-bottom: 1rem;
+}
+
+.order-total .total {
+    flex-grow: 1;
+}
+
+.order-total .price {
+    font-weight: bolder;
+}
+
+.address-selector-modal-body {
+    padding-top: 15px;
+    padding-bottom: 0;
+}
+
+.address-selector-modal-body app-empty-state {
+    margin-bottom: 15px;
+}
+
+.address-selector-card-holder {
+    margin-bottom: 15px;
+}
+
+.address-selector-card:hover {
+    background: $gray-200;
+    cursor: pointer;
+}
+
+.address-selector-card.active {
+    background: $gray-100;
 }
