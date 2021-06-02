@@ -25,7 +25,7 @@ import {ManagePickContextComponent} from "./pages/manage/manage-pick-context/man
 import {ManageIndexComponent} from "./pages/manage/manage-index/manage-index.component";
 import {ManageMenuCategoriesComponent} from "./pages/manage/manage-menu-categories/manage-menu-categories.component";
 import {ManageMenuItemsComponent} from "./pages/manage/manage-menu-items/manage-menu-items.component";
-import {BrowseRestaurantsComponent} from "./browse-restaurants/browse-restaurants.component";
+import {BrowseRestaurantsComponent} from "./pages/browse/browse-restaurants/browse-restaurants.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
