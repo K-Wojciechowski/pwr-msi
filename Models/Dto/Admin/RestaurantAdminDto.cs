@@ -6,7 +6,7 @@ namespace pwr_msi.Models.Dto.Admin {
         public string Name { get; init; }
         public string Website { get; init; }
         public string Description { get; init; }
-        public string Logo { get; init; }
+        public string? Logo { get; init; }
         public Address Address { get; init; }
         public bool IsActive { get; init; }
         public List<Cuisine> Cuisines { get; init; }
