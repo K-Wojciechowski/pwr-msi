@@ -34,59 +34,29 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "")]
         [HttpPost]
-        public async Task<ActionResult<Address>> AddAddress([FromBody] Address ad) {
-            var address =  await _dbContext.Addresses.FirstAsync(a => a.Addressee == ad.Addressee
-                                                                      && a.City == ad.City
-                                                                      && a.Country == ad.Country
-                                                                      && a.FirstLine == ad.FirstLine
-                                                                      && a.SecondLine == ad.SecondLine
-                                                                      && a.PostCode == ad.PostCode);
-            if (address==null) {
-                ad.Users.Add(MsiUser);
-                await _dbContext.Addresses.AddAsync(ad);
-                await _dbContext.SaveChangesAsync();
-                return ad;
-            }
+        public async Task<ActionResult<Address>> AddAddress([FromBody] Address address) {
             address.Users.Add(MsiUser);
+            await _dbContext.Addresses.AddAsync(address);
             await _dbContext.SaveChangesAsync();
             return address;
         }
+
         [Route(template: "{id}/")]
         [HttpPut]
-        public async Task<ActionResult<Address>> ModifyAddress([FromBody] Address ad, [FromRoute] int id) {
-            var address =  await _dbContext.Addresses.FirstAsync(a => a.Addressee == ad.Addressee
-                                                                      && a.City == ad.City
-                                                                      && a.Country == ad.Country
-                                                                      && a.FirstLine == ad.FirstLine
-                                                                      && a.SecondLine == ad.SecondLine
-                                                                      && a.PostCode == ad.PostCode);
-            if (address==null) {
-                ad.Users.Add(MsiUser);
-                await _dbContext.Addresses.AddAsync(ad);
-                await _dbContext.SaveChangesAsync();
-                return ad;
-            }
-
-            var oldAddress = await  _dbContext.Addresses.FindAsync(id);
-            oldAddress.Users.Remove(MsiUser);
-            if (oldAddress.Users.IsNullOrEmpty()) {
-                _dbContext.Addresses.Remove(oldAddress);
-            }
-            address.Users.Add(MsiUser);
+        public async Task<ActionResult<Address>> ModifyAddress([FromBody] Address inputAddress, [FromRoute] int id) {
+            var address = await  _dbContext.Addresses.FindAsync(id);
+            address.Update(inputAddress);
             await _dbContext.SaveChangesAsync();
             return address;
         }
         
         [Route(template: "{id}/")]
         [HttpDelete]
-        public async Task<ActionResult<Address>> DeleteAddress([FromRoute] int id) {
-            var oldAddress = await  _dbContext.Addresses.FindAsync(id);
-            oldAddress.Users.Remove(MsiUser);
-            if (oldAddress.Users.IsNullOrEmpty()) {
-                _dbContext.Addresses.Remove(oldAddress);
-            }
+        public async Task<ActionResult> DeleteAddress([FromRoute] int id) {
+            var address = await  _dbContext.Addresses.FindAsync(id);
+            _dbContext.Remove(address);
             await _dbContext.SaveChangesAsync();
-            return oldAddress;
+            return Ok();
         }
         
     }
