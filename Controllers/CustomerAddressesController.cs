@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using pwr_msi.Models;
+using pwr_msi.Models.Dto;
 
 namespace pwr_msi.Controllers {
     [Authorize]
@@ -30,6 +30,16 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<Address>> GetDefaultAddress() {
             if (MsiUser.BillingAddressId == null) return NotFound();
             return await _dbContext.Addresses.FindAsync(MsiUser.BillingAddressId);
+        }
+
+
+        [Route(template: "default/")]
+        [HttpPost]
+        public async Task<ActionResult<Address>> SetDefaultAddress([FromBody] InputDto<int> addressIdInput) {
+            var user = await _dbContext.Users.FindAsync(MsiUserId);
+            user.BillingAddressId = addressIdInput.Input;
+            await _dbContext.SaveChangesAsync();
+            return await _dbContext.Addresses.FindAsync(user.BillingAddressId);
         }
 
         [Route(template: "")]
