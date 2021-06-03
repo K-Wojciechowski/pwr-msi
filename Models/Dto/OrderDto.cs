@@ -21,7 +21,6 @@ namespace pwr_msi.Models.Dto {
         public UserBasicDto? DeliveryPerson { get; set; } = null!;
         public Address Address { get; set; } = null!;
 
-        public OrderTaskType LastTaskType => OrderTaskTypeSettings.taskTypeByStatus[Status];
         public ICollection<OrderItemDto> Items { get; set; } = null!;
 
         public async Task<Order> AsNewOrder(int userId, MsiDbContext dbContext) {

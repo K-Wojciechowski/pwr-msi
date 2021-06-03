@@ -61,9 +61,11 @@
                                 <dd class="col-sm-9">{{item.value.amount | amount: item.value.amountUnit }}</dd>
                             </dl>
                             <p>{{item.value.description}}</p>
+                            <h4>Notes</h4>
+                            <textarea class="form-control" [(ngModel)]="item.notes" placeholder="Notes for this item (optional)"></textarea>
 
                             <ng-container *ngIf="item.options.length > 0">
-                                <h4>Customize</h4>
+                                <h4 class="mt-2">Customize</h4>
                                 <ul class="menu-options">
                                     <li *ngFor="let opt of item.options">
                                         <span class="menu-option-title">{{opt.value.name}}</span>
@@ -151,8 +153,9 @@
 
                                     </div>
                                 </div>
-                                <div *ngIf="item.options.length > 0">
+                                <div *ngIf="item.options.length > 0 || item.notes.trim().length > 0">
                                     <ul class="order-item-options">
+                                        <li *ngIf="item.notes.trim().length > 0" class="order-item-notes">{{item.notes.trim()}}</li>
                                         <ng-container *ngFor="let opt of item.options">
                                             <li *ngIf="opt.getChoices().length > 0">
                                                 <span class="order-item-options-title">{{opt.value.name}}</span>

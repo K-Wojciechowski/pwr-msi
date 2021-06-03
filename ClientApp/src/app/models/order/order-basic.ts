@@ -1,7 +1,7 @@
-import {RestaurantBasic} from "./restaurant-basic";
-import {UserBasic} from "./user-basic";
-import {Address} from "./address";
-import {OrderStatus} from "./enum/order-status";
+import {RestaurantBasic} from "../restaurant-basic";
+import {UserBasic} from "../user-basic";
+import {Address} from "../address";
+import {OrderStatus} from "../enum/order-status";
 
 export interface OrderBasic {
     orderId: number;

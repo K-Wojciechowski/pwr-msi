@@ -7,12 +7,14 @@ export class MenuItemWrapper {
     public options: MenuItemOptionListWrapper[];
     public isHighlighted: boolean;
     public total: number;
+    public notes: string;
 
     constructor(value: RestaurantMenuItem, options: MenuItemOptionListWrapper[] = [], isHighlighted: boolean = false) {
         this.value = value;
         this.options = options;
         this.isHighlighted = isHighlighted;
         this.total = parseFloat(value.price);
+        this.notes = "";
     }
 
     recalculateTotal() {
