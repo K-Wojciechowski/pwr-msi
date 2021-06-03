@@ -5,8 +5,8 @@ namespace pwr_msi.Models {
     public class Address {
         public int AddressId { get; set; }
         public string Addressee { get; set; }
-        public string Street { get; set; }
-        public string HouseNumber { get; set; }
+        public string FirstLine { get; set; }
+        public string SecondLine { get; set; }
         public string PostCode { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
@@ -17,12 +17,14 @@ namespace pwr_msi.Models {
         public ICollection<User> Users { get; set; }
 
         public void Update(Address address) {
-            this.Addressee = address.Addressee;
-            this.Street = address.Street;
-            this.HouseNumber = address.HouseNumber;
-            this.PostCode = address.PostCode;
-            this.City = address.City;
-            this.Country = address.Country;
+            Addressee = address.Addressee;
+            FirstLine = address.FirstLine;
+            SecondLine = address.SecondLine;
+            PostCode = address.PostCode;
+            City = address.City;
+            Country = address.Country;
+            Latitude = address.Latitude;
+            Longitude = address.Longitude;
         }
     }
 }
