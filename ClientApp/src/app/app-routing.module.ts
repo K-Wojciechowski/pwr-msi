@@ -26,6 +26,7 @@ import {ManageIndexComponent} from "./pages/manage/manage-index/manage-index.com
 import {ManageMenuCategoriesComponent} from "./pages/manage/manage-menu-categories/manage-menu-categories.component";
 import {ManageMenuItemsComponent} from "./pages/manage/manage-menu-items/manage-menu-items.component";
 import {BrowseRestaurantsComponent} from "./pages/browse/browse-restaurants/browse-restaurants.component";
+import {RestaurantsMenuComponent} from "./pages/browse/restaurants-menu/restaurants-menu.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -54,6 +55,7 @@ const routes: Routes = [
     {path: "manage/:restaurantId/menucategories", component: ManageMenuCategoriesComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
     {path: "manage/:restaurantId/menu", component: ManageMenuItemsComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
     {path: "browse", component: BrowseRestaurantsComponent, data: {sidebar: "browse", auth: AuthType.USER}},
+    {path: "browse/:restaurantId", component: RestaurantsMenuComponent, data: {sidebar: "browse", auth: AuthType.USER}},
 ];
 
 const routesWithActivators = routes.map(route => {

@@ -1,16 +1,18 @@
-<p>Przeglądanie ofert</p>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<div class = "row">
+    <div class="col-md-auto">
+        <label for="search-bar" >Search for:</label>
+    </div>
+    <div class="col-8">
+        <input  name="SearchBar" ngModel class="form-control" id="search-bar" (change)="searchFor()">
+    </div>
+</div>
 <app-progress-spinner-content [showLoading]="showLoading">
     <app-empty-state [empty]="!showLoading && items.length === 0">
         <table class="table table-hover">
-            <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-            </tr>
-            </thead>
             <tbody>
             <tr *ngFor="let restaurant of items">
-                <th scope="row"><a routerLink="/offer/restaurants/{{restaurant.restaurantId}}">{{restaurant.restaurantId}}</a></th>
+                <td style="height:100px;width:100px"><img src="{{restaurant.logo}}" alt="" border=3 height=100 width=100/></td>
                 <td><a routerLink="/offer/restaurants/{{restaurant.restaurantId}}">{{restaurant.name}}</a> </td>
             </tr>
             </tbody>
