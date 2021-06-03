@@ -1,4 +1,4 @@
-import {RestaurantMenuItemOptionList} from "./restaurant-menu-management/restaurant-menu-item-option-list";
+import {RestaurantMenuItemOptionList} from "./menu/restaurant-menu-item-option-list";
 import {MenuItemOptionItemWrapper} from "./menu-item-option-item-wrapper";
 import {MenuItemWrapper} from "./menu-item-wrapper";
 

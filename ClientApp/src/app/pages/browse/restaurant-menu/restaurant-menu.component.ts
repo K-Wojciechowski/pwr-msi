@@ -1,12 +1,12 @@
 import {Component, OnInit, TemplateRef} from '@angular/core';
 import {RestaurantFull} from "../../../models/restaurant-full";
-import {RestaurantMenuCategoryWithItems} from "../../../models/restaurant-menu-management/restaurant-menu-category-with-items";
+import {RestaurantMenuCategoryWithItems} from "../../../models/menu/restaurant-menu-category-with-items";
 import {HttpClient} from "@angular/common/http";
 import {ToastService} from "../../../services/toast.service";
 import {ActivatedRoute} from "@angular/router";
 import {SimpleMenuCategory} from "../../../models/simple-menu-category";
 import {cloneDeep, flatMap, isEqual, sortBy, sumBy} from "lodash";
-import {RestaurantMenuItem} from "../../../models/restaurant-menu-management/restaurant-menu-item";
+import {RestaurantMenuItem} from "../../../models/menu/restaurant-menu-item";
 import {MenuItemWrapper} from 'src/app/models/menu-item-wrapper';
 import {MenuItemOptionListWrapper} from "../../../models/menu-item-option-list-wrapper";
 import {MenuItemOptionItemWrapper} from "../../../models/menu-item-option-item-wrapper";

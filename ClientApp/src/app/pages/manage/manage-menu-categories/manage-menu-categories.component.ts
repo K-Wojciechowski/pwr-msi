@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {max, sortBy} from "lodash";
 import {DateTime} from "luxon";
 import {EditableWrapper} from "../../../models/editable-wrapper";
-import {RestaurantMenuCategory} from "../../../models/restaurant-menu-management/restaurant-menu-category";
+import {RestaurantMenuCategory} from "../../../models/menu/restaurant-menu-category";
 import {HttpClient} from "@angular/common/http";
 import {ToastService} from "../../../services/toast.service";
 import {RestaurantContextHelperService} from "../../../services/restaurant-context-helper.service";

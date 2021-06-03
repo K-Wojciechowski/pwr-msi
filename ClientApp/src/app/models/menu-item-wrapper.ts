@@ -1,4 +1,4 @@
-import {RestaurantMenuItem} from "./restaurant-menu-management/restaurant-menu-item";
+import {RestaurantMenuItem} from "./menu/restaurant-menu-item";
 import {MenuItemOptionListWrapper} from "./menu-item-option-list-wrapper";
 import {flatMap, sumBy} from "lodash";
 
