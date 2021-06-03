@@ -37,6 +37,7 @@ namespace pwr_msi.Models {
             Cuisines = Cuisines.ToList(),
         };
         public RestaurantDetailDto AsDetailDto() => new () {
+            RestaurantId = RestaurantId,
             Logo = Logo,
             Cuisines = Cuisines,
             Name = Name,

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace pwr_msi.Models.Dto {
     public class RestaurantDetailDto {
+        public int RestaurantId { get; set; }
         public string Name { get; set; }
         public string Website { get; set; }
         public string Description { get; set; }
