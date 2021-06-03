@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 
@@ -14,8 +15,9 @@ namespace pwr_msi {
             return res ? i : null;
         }
 
-        public static User UserFromContext(HttpContext context) {
-            return (User) context.Items[key: "User"];
+        public static ZonedDateTime Now() {
+            var now = SystemClock.Instance.GetCurrentInstant();
+            return now.InUtc();
         }
 
         public static async Task<Page<TO>> Paginate<TD, TO>(IQueryable<TD> queryable, int pageRaw,

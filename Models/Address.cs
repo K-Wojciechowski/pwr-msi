@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using pwr_msi.Models.Dto;
 
 namespace pwr_msi.Models {
     public class Address {
@@ -11,18 +10,21 @@ namespace pwr_msi.Models {
         public string PostCode { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
+        public float Latitude { get; set; }
+        public float Longitude { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<User> Users { get; set; }
+        public ICollection<User> Users { get; set; }
 
-        public AddressDto AsDto() => new AddressDto() {
-            AddressId = AddressId,
-            Addressee = Addressee,
-            FirstLine = FirstLine,
-            SecondLine = SecondLine,
-            PostCode = PostCode,
-            City = City,
-            Country = Country
-        };
+        public void Update(Address address) {
+            Addressee = address.Addressee;
+            FirstLine = address.FirstLine;
+            SecondLine = address.SecondLine;
+            PostCode = address.PostCode;
+            City = address.City;
+            Country = address.Country;
+            Latitude = address.Latitude;
+            Longitude = address.Longitude;
+        }
     }
 }

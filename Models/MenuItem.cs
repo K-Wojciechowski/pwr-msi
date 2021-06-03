@@ -1,7 +1,9 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using NodaTime;
 using pwr_msi.Models.Dto;
+using pwr_msi.Models.Dto.RestaurantMenu;
 
 namespace pwr_msi.Models {
     public class MenuItem {
@@ -17,28 +19,46 @@ namespace pwr_msi.Models {
         public int MenuOrder { get; set; }
 
         public int MenuCategoryId { get; set; }
-        public virtual MenuCategory MenuCategory { get; set; } = null!;
+        public MenuCategory MenuCategory { get; set; } = null!;
 
-        public virtual ICollection<MenuItemOptionList> Options { get; set; } = null!;
+        public int RestaurantId { get; set; }
+        public Restaurant Restaurant { get; set; } = null!;
 
-        public RestaurantMenuItemDto AsManageItemDto() => new () {
+        public ICollection<MenuItemOptionList> Options { get; set; } = null!;
+
+        public MenuItemDto AsDto() => new() {
+            MenuItemId = MenuItemId,
             Name = Name,
             Description = Description,
+            Image = Image,
             Price = Price,
             Amount = Amount,
             AmountUnit = AmountUnit,
             ValidFrom = ValidFrom,
             ValidUntil = ValidUntil,
-            MenuCategory = MenuCategory,
-            Options = Options,
+            MenuCategoryId = MenuCategoryId,
+            Options = Options.Select(ol => ol.AsDto()).ToList(),
         };
-        public void UpdateWithRestaurantMenuItemDto(RestaurantMenuItemDto mcDto) {
+
+        public void UpdateWithRestaurantMenuItemDto(MenuItemDto mcDto) {
             ValidUntil = mcDto.ValidFrom;
         }
-        public void MakeMenuItemNonValid() {
-            ValidUntil = new ZonedDateTime();
+
+        public void Invalidate(ZonedDateTime? validUntil = null) {
+            ValidUntil = validUntil ?? Utils.Now();
         }
 
- 
+
+        public MenuItem CreateNewWithCategory(int menuCategoryId, ZonedDateTime validFrom) => new() {
+            Name = Name,
+            Description = Description,
+            Image = Image,
+            Price = Price,
+            Amount = Amount,
+            AmountUnit = AmountUnit,
+            ValidFrom = validFrom,
+            ValidUntil = ValidUntil,
+            MenuCategoryId = menuCategoryId,
+        };
     }
 }

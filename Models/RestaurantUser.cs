@@ -8,8 +8,8 @@ namespace pwr_msi.Models {
         public bool CanAcceptOrders { get; set; }
         public bool CanDeliverOrders { get; set; }
 
-        public virtual Restaurant Restaurant { get; set; }
-        public virtual User User { get; set; }
+        public Restaurant Restaurant { get; set; }
+        public User User { get; set; }
 
         public RestaurantUserDto AsDto() => new() {
             Restaurant = Restaurant.AsBasicDto(),
@@ -17,6 +17,11 @@ namespace pwr_msi.Models {
             CanManage = CanManage,
             CanAcceptOrders = CanAcceptOrders,
             CanDeliverOrders = CanDeliverOrders,
+        };
+        public DelivererDto AsDelivererDto(int activeTasks) => new() {
+            Restaurant = Restaurant.AsBasicDto(),
+            User = User.AsBasicDto(),
+            ActiveTasks = activeTasks
         };
     }
 }

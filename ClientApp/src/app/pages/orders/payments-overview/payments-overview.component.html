@@ -5,7 +5,7 @@
     <div class="card-body">
         <h5 class="card-title">Current balance: <strong>{{ balance|currency }}</strong></h5>
         <p class="card-text">Your balance may be used to pay for orders. You can also ask for the balance to be returned to your bank account.</p>
-        <p class="card-text" *ngIf="balance > 0"><a routerLink="/orders/payments/repay" standardButton icon="wallet2" btnType="primary" text="Request balance repayment"></a></p>
+        <p class="card-text" *ngIf="balance > 0"><a routerLink="/payments/repay" standardButton icon="wallet2" btnType="primary" text="Request balance repayment"></a></p>
     </div>
 </div>
 

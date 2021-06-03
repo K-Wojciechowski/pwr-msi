@@ -24,10 +24,16 @@ namespace pwr_msi.Controllers {
             _paymentService = paymentService;
         }
 
+        private IQueryable<Payment> GetPaymentBaseQueryable() {
+            return _dbContext.Payments.Include(p => p.Order).Include("Order.Customer").Include("Order.Restaurant");
+        }
+
         [Route("")]
         public async Task<Page<PaymentDto>> Payments([FromQuery] int page = 1) {
             return await Utils.Paginate(
-                queryable: _dbContext.Payments.Where(p => p.UserId == MsiUserId)
+                queryable:
+                GetPaymentBaseQueryable()
+                    .Where(p => p.UserId == MsiUserId)
                     .OrderByDescending(p => p.Created),
                 pageRaw: page,
                 converter: p => p.AsDto()
@@ -36,7 +42,7 @@ namespace pwr_msi.Controllers {
 
         [Route("pending/")]
         public async Task<IEnumerable<PaymentDto>> PendingPayments() {
-            var paymentsQuery = _dbContext.Payments.Where(p =>
+            var paymentsQuery = GetPaymentBaseQueryable().Where(p =>
                 p.UserId == MsiUserId &&
                 (p.Status == PaymentStatus.CREATED || p.Status == PaymentStatus.REQUESTED));
             var payments = await paymentsQuery.ToListAsync();
@@ -46,7 +52,7 @@ namespace pwr_msi.Controllers {
         [Route("{id}/")]
         [HttpGet]
         public async Task<PaymentDto> GetPayment([FromRoute] int id) {
-            var payment = await _dbContext.Payments.Where(p => p.UserId == MsiUserId && p.PaymentId == id
+            var payment = await GetPaymentBaseQueryable().Where(p => p.UserId == MsiUserId && p.PaymentId == id
             ).FirstOrDefaultAsync();
             payment = await _paymentService.RefreshStatusFromApi(payment);
             return payment.AsDto();
@@ -71,7 +77,7 @@ namespace pwr_msi.Controllers {
             if (!payment.CanPay) return BadRequest();
             payment.Status = PaymentStatus.CANCELLED;
             payment.ErrorMessage = "USER_CANCELLED";
-            payment.Updated = new ZonedDateTime();
+            payment.Updated = Utils.Now();
             await _dbContext.SaveChangesAsync();
             return Ok();
         }

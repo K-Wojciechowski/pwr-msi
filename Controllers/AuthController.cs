@@ -37,7 +37,7 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<AuthResult>> Authenticate([FromBody] AuthInput authInput) {
             try {
                 var user = await _dbContext.Users.SingleAsync(predicate: u =>
-                    u.Username == authInput.Username && u.IsVerified && u.IsActive == true);
+                    u.Username == authInput.Username && u.IsVerified && u.IsActive);
                 var result = _authService.VerifyHashedPassword(user, authInput.Password);
 
                 // ReSharper disable once ConvertIfStatementToSwitchStatement
@@ -110,10 +110,10 @@ namespace pwr_msi.Controllers {
         [Authorize]
         [Route(template: "access/")]
         public async Task<ActionResult<UserAccessDto>> GetAccess() {
-            var userPermissions = _dbContext.RestaurantUsers.Where(predicate: ru => ru.UserId == MsiUserId);
+            var userPermissions = _dbContext.RestaurantUsers.Include(ru => ru.Restaurant).Where(predicate: ru => ru.UserId == MsiUserId);
             var manage = await userPermissions.Where(predicate: ru => ru.CanManage).ToListAsync();
-            var accept = await userPermissions.Where(predicate: ru => ru.CanManage).ToListAsync();
-            var deliver = await userPermissions.Where(predicate: ru => ru.CanManage).ToListAsync();
+            var accept = await userPermissions.Where(predicate: ru => ru.CanAcceptOrders).ToListAsync();
+            var deliver = await userPermissions.Where(predicate: ru => ru.CanDeliverOrders).ToListAsync();
             return new UserAccessDto {
                 Profile = MsiUser.AsProfile(),
                 Admin = MsiUser.IsAdmin,
@@ -169,7 +169,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "verify/{token}/")]
         public async Task<ActionResult> VerifyEmail([FromRoute] string token) {
             var verificationToken =
-                await _dbContext.VerificationTokens.FirstOrDefaultAsync(predicate: t => t.Token == token);
+                await _dbContext.VerificationTokens.Include(t => t.User).Where(t => t.Token == token).FirstOrDefaultAsync();
             if (verificationToken == null) return NotFound();
 
             if (!verificationToken.IsValid) return BadRequest();
@@ -183,7 +183,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "reset/{token}/")]
         public async Task<ActionResult> StartReset([FromRoute] string token) {
             var verificationToken =
-                await _dbContext.VerificationTokens.FirstOrDefaultAsync(predicate: t => t.Token == token);
+                await _dbContext.VerificationTokens.Where(t => t.Token == token).FirstOrDefaultAsync();
             if (verificationToken == null) return NotFound();
 
             return verificationToken.IsValid ? Ok() : BadRequest();
@@ -193,7 +193,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "reset/{token}/")]
         public async Task<ActionResult> VerifyEmail([FromRoute] string token, [FromBody] PasswordResetDto resetDto) {
             var verificationToken =
-                await _dbContext.VerificationTokens.FirstOrDefaultAsync(predicate: t => t.Token == token);
+                await _dbContext.VerificationTokens.Include(t => t.User).Where(t => t.Token == token).FirstOrDefaultAsync();
             if (verificationToken == null) return NotFound();
 
             if (!verificationToken.IsValid) return BadRequest();

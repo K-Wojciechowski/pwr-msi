@@ -3,36 +3,39 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using NodaTime;
+using Microsoft.Extensions.DependencyInjection;
 using pwr_msi.Models;
 using pwr_msi.Models.Enum;
 
 namespace pwr_msi.Services {
     public class OrderTaskService {
-        private MsiDbContext _dbContext;
+        private readonly MsiDbContext _dbContext;
+        private readonly IServiceProvider _services;
 
-        public OrderTaskService(MsiDbContext dbContext) {
+        public OrderTaskService(MsiDbContext dbContext, IServiceProvider services) {
             _dbContext = dbContext;
+            _services = services;
         }
 
         public async Task<bool> TryCompleteTask(Order order, OrderTaskType task, User? completedBy) {
             var canPerform = OrderTaskTypeSettings.allowedTransitions[order.LastTaskType].Contains(task);
             var userAllowed = await IsUserAllowedToPerform(task, order, completedBy);
             if (!canPerform || !userAllowed) return false;
-            var orderTask = await _dbContext.OrderTasks.Where(t => t.Order == order && t.Task == task)
+            var orderTask = await _dbContext.OrderTasks.Where(t => t.OrderId == order.OrderId && t.Task == task)
                 .FirstOrDefaultAsync();
             if (orderTask != null) {
-                orderTask.DateCompleted = new ZonedDateTime();
+                orderTask.DateCompleted = Utils.Now();
                 orderTask.CompletedBy = completedBy;
             } else {
                 orderTask = new OrderTask {
-                    Order = order, CompletedBy = completedBy, DateCompleted = new ZonedDateTime(),
+                    Order = order, CompletedBy = completedBy, DateCompleted = Utils.Now(),
                 };
                 await _dbContext.AddAsync(orderTask);
             }
 
             var oldStatus = order.Status;
             order.Status = OrderTaskTypeSettings.statusByTaskType[task];
+            order.Updated = Utils.Now();
             await _dbContext.SaveChangesAsync();
             await ReactToTaskCompletion(order, oldStatus, order.Status);
 
@@ -40,8 +43,15 @@ namespace pwr_msi.Services {
         }
 
         private async Task ReactToTaskCompletion(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
-            if (newStatus == OrderStatus.DELIVERED) {
-                await TryCompleteTask(order, OrderTaskType.COMPLETE, completedBy: null);
+            switch (newStatus) {
+                case OrderStatus.DELIVERED:
+                    await TryCompleteTask(order, OrderTaskType.COMPLETE, completedBy: null);
+                    break;
+                case OrderStatus.REJECTED:
+                    // This works around a dependency cycle.
+                    var task = _services.GetService<PaymentService>()?.ReturnOrderPayment(order);
+                    if (task != null) await task;
+                    break;
             }
         }
 

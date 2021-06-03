@@ -71,7 +71,7 @@ export class RestaurantsEditComponent implements OnInit {
 
     saveRestaurantUsers(restaurant: RestaurantAdmin, restaurantUsers: RestaurantUser[]) {
         const updatedRestaurantUsers = UsersRestaurantsEditorComponent.updateWithRestaurant(restaurantUsers, restaurant);
-        this.http.post<RestaurantUser[]>(this.restaurantUsersEndpoint, updatedRestaurantUsers).subscribe(restaurantUsers => {
+        this.http.put<RestaurantUser[]>(this.restaurantUsersEndpoint, updatedRestaurantUsers).subscribe(restaurantUsers => {
             this.restaurantUsers = restaurantUsers;
             this.toastService.showSuccess(`Permissions for ${restaurant.name} saved.`);
             this.showLoading = 0;

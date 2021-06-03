@@ -17,7 +17,7 @@ namespace pwr_msi.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("AddressUser", b =>
@@ -66,13 +66,19 @@ namespace pwr_msi.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("text");
 
-                    b.Property<string>("FirstLine")
+                    b.Property<string>("HouseNumber")
                         .HasColumnType("text");
+
+                    b.Property<float>("Latitude")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Longitude")
+                        .HasColumnType("real");
 
                     b.Property<string>("PostCode")
                         .HasColumnType("text");
 
-                    b.Property<string>("SecondLine")
+                    b.Property<string>("Street")
                         .HasColumnType("text");
 
                     b.HasKey("AddressId");
@@ -101,6 +107,9 @@ namespace pwr_msi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("MenuCategoryOrder")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -154,6 +163,9 @@ namespace pwr_msi.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("integer");
+
                     b.Property<ZonedDateTime>("ValidFrom")
                         .HasColumnType("timestamp with time zone");
 
@@ -164,6 +176,8 @@ namespace pwr_msi.Migrations
 
                     b.HasIndex("MenuCategoryId");
 
+                    b.HasIndex("RestaurantId");
+
                     b.ToTable("MenuItems");
                 });
 
@@ -173,6 +187,9 @@ namespace pwr_msi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("MenuItemOptionItemOrder")
+                        .HasColumnType("integer");
 
                     b.Property<int>("MenuItemOptionListId")
                         .HasColumnType("integer");
@@ -201,6 +218,9 @@ namespace pwr_msi.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<int>("MenuItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MenuItemOptionListOrder")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -233,6 +253,7 @@ namespace pwr_msi.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeliveryNotes")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("DeliveryPersonId")
@@ -275,6 +296,10 @@ namespace pwr_msi.Migrations
 
                     b.Property<int>("MenuItemId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("integer");
@@ -594,7 +619,15 @@ namespace pwr_msi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("pwr_msi.Models.Restaurant", "Restaurant")
+                        .WithMany("MenuItems")
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("MenuCategory");
+
+                    b.Navigation("Restaurant");
                 });
 
             modelBuilder.Entity("pwr_msi.Models.MenuItemOptionItem", b =>
@@ -661,7 +694,7 @@ namespace pwr_msi.Migrations
                         .IsRequired();
 
                     b.HasOne("pwr_msi.Models.Order", "Order")
-                        .WithMany()
+                        .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -680,7 +713,7 @@ namespace pwr_msi.Migrations
                         .IsRequired();
 
                     b.HasOne("pwr_msi.Models.OrderItem", "OrderItem")
-                        .WithMany()
+                        .WithMany("Customizations")
                         .HasForeignKey("OrderItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -799,9 +832,21 @@ namespace pwr_msi.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("pwr_msi.Models.Order", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("pwr_msi.Models.OrderItem", b =>
+                {
+                    b.Navigation("Customizations");
+                });
+
             modelBuilder.Entity("pwr_msi.Models.Restaurant", b =>
                 {
                     b.Navigation("MenuCategories");
+
+                    b.Navigation("MenuItems");
 
                     b.Navigation("RestaurantUsers");
                 });

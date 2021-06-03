@@ -23,6 +23,7 @@ namespace pwr_msi.Controllers {
         public async Task<IActionResult> paymentGatewayCallback([FromBody] PaymentCallbackDto paymentCallbackDto) {
             var payment = await _dbContext.Payments.Where(p => p.ExternalPaymentId == paymentCallbackDto.Id)
                 .FirstOrDefaultAsync();
+
             if (payment == null) {
                 return NotFound();
             }

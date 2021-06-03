@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using pwr_msi.Models;
-using pwr_msi.Models.Dto;
 
 namespace pwr_msi.Controllers {
     [Authorize]
@@ -20,14 +20,21 @@ namespace pwr_msi.Controllers {
         }
         
         [Route(template: "")]
-        public async Task<ActionResult<List<AddressDto>>> GetAddresses() {
-            List<Address> addresses = MsiUser.Addresses.ToList();
-            return  addresses.Select(a => a.AsDto()).ToList();
+        public async Task<ActionResult<List<Address>>> GetAddresses() {
+            var user = await _dbContext.Users.Include(u => u.Addresses).Where(u => u.UserId == MsiUserId)
+                .FirstOrDefaultAsync();
+            return user.Addresses.ToList();
         }
-        
+
+        [Route(template: "default/")]
+        public async Task<ActionResult<Address>> GetDefaultAddress() {
+            if (MsiUser.BillingAddressId == null) return NotFound();
+            return await _dbContext.Addresses.FindAsync(MsiUser.BillingAddressId);
+        }
+
         [Route(template: "")]
         [HttpPost]
-        public async Task<ActionResult<AddressDto>> AddAddress([FromBody] AddressDto ad) {
+        public async Task<ActionResult<Address>> AddAddress([FromBody] Address ad) {
             var address =  await _dbContext.Addresses.FirstAsync(a => a.Addressee == ad.Addressee
                                                                       && a.City == ad.City
                                                                       && a.Country == ad.Country
@@ -35,16 +42,18 @@ namespace pwr_msi.Controllers {
                                                                       && a.SecondLine == ad.SecondLine
                                                                       && a.PostCode == ad.PostCode);
             if (address==null) {
-                address = ad.AsNewAddress();
-                await _dbContext.Addresses.AddAsync(address);
+                ad.Users.Add(MsiUser);
+                await _dbContext.Addresses.AddAsync(ad);
+                await _dbContext.SaveChangesAsync();
+                return ad;
             }
             address.Users.Add(MsiUser);
             await _dbContext.SaveChangesAsync();
-            return address.AsDto();
+            return address;
         }
         [Route(template: "{id}/")]
         [HttpPut]
-        public async Task<ActionResult<AddressDto>> ModifyAddress([FromBody] AddressDto ad, [FromRoute] int id) {
+        public async Task<ActionResult<Address>> ModifyAddress([FromBody] Address ad, [FromRoute] int id) {
             var address =  await _dbContext.Addresses.FirstAsync(a => a.Addressee == ad.Addressee
                                                                       && a.City == ad.City
                                                                       && a.Country == ad.Country
@@ -52,8 +61,10 @@ namespace pwr_msi.Controllers {
                                                                       && a.SecondLine == ad.SecondLine
                                                                       && a.PostCode == ad.PostCode);
             if (address==null) {
-                address = ad.AsNewAddress();
-                await _dbContext.Addresses.AddAsync(address);
+                ad.Users.Add(MsiUser);
+                await _dbContext.Addresses.AddAsync(ad);
+                await _dbContext.SaveChangesAsync();
+                return ad;
             }
 
             var oldAddress = await  _dbContext.Addresses.FindAsync(id);
@@ -63,19 +74,19 @@ namespace pwr_msi.Controllers {
             }
             address.Users.Add(MsiUser);
             await _dbContext.SaveChangesAsync();
-            return address.AsDto();
+            return address;
         }
         
         [Route(template: "{id}/")]
         [HttpDelete]
-        public async Task<ActionResult<AddressDto>> DeleteAddress([FromRoute] int id) {
+        public async Task<ActionResult<Address>> DeleteAddress([FromRoute] int id) {
             var oldAddress = await  _dbContext.Addresses.FindAsync(id);
             oldAddress.Users.Remove(MsiUser);
             if (oldAddress.Users.IsNullOrEmpty()) {
                 _dbContext.Addresses.Remove(oldAddress);
             }
             await _dbContext.SaveChangesAsync();
-            return oldAddress.AsDto();
+            return oldAddress;
         }
         
     }
