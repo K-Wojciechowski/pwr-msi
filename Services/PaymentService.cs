@@ -28,7 +28,7 @@ namespace pwr_msi.Services {
 
         private string _gatewayEndpointBase => _appConfig.PayUrl.TrimEnd('/') + '/';
         private string _gatewayEndpointNew => _gatewayEndpointBase + "api/new/";
-        private string _gatewayEndpointInfo(string externalId) => _gatewayEndpointBase + $"api/payment/{externalId}";
+        private string _gatewayEndpointInfo(string externalId) => _gatewayEndpointBase + $"api/payment/{externalId}/";
 
         private static readonly JsonSerializerSettings _gatewayJsonSerializerSettings = new() {
             FloatParseHandling = FloatParseHandling.Decimal,
