@@ -19,11 +19,18 @@ namespace pwr_msi.Controllers {
             _dbContext = dbContext;
         }
         
-        [Route(template: "")]
-        public async Task<ActionResult<List<Address>>> GetAddresses() {
+        [Route(template: "all/")]
+        public async Task<ActionResult<List<Address>>> GetAllAddresses() {
             var user = await _dbContext.Users.Include(u => u.Addresses).Where(u => u.UserId == MsiUserId)
                 .FirstOrDefaultAsync();
             return user.Addresses.ToList();
+        }
+        
+        [Route(template: "/")]
+        public async Task<ActionResult<Page<Address>>> GetAddresses([FromQuery] int page) {
+            var user = await _dbContext.Users.Include(u => u.Addresses).Where(u => u.UserId == MsiUserId)
+                .FirstOrDefaultAsync();
+            return await Utils.Paginate(user.Addresses.AsQueryable(), page, a => a);
         }
 
         [Route(template: "default/")]
@@ -45,6 +52,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "")]
         [HttpPost]
         public async Task<ActionResult<Address>> AddAddress([FromBody] Address address) {
+            address.Users = new List<User>();
             address.Users.Add(MsiUser);
             await _dbContext.Addresses.AddAsync(address);
             await _dbContext.SaveChangesAsync();

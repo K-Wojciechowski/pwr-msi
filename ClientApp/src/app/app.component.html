@@ -117,6 +117,23 @@
                     </li>
                 </ul>
             </ng-container>
+            <ng-container *ngSwitchCase="'account'">
+                <h1>Manage</h1>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item sidebar-context" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                        <a class="sidebar-nav-link" routerLink="/account">
+                            <bs-icon name="person"></bs-icon>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/account/address">
+                            <bs-icon name="globe"></bs-icon>
+                            <span>Addresses</span>
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
         </div>
         <div [class.col-main-sidebar]="sidebar != null" [class.col-main-full]="sidebar == null">
             <router-outlet></router-outlet>

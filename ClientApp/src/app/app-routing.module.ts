@@ -25,7 +25,10 @@ import {ManagePickContextComponent} from "./pages/manage/manage-pick-context/man
 import {ManageIndexComponent} from "./pages/manage/manage-index/manage-index.component";
 import {ManageMenuCategoriesComponent} from "./pages/manage/manage-menu-categories/manage-menu-categories.component";
 import {ManageMenuItemsComponent} from "./pages/manage/manage-menu-items/manage-menu-items.component";
-import {RestaurantMenuComponent} from "./pages/browse/restaurant-menu/restaurant-menu.component";
+import {ProfileEditorComponent} from "./pages/account/profile-editor/profile-editor.component";
+import {AddressListComponent} from "./pages/account/address-list/address-list.component";
+import {AddressEditComponent} from "./pages/account/address-edit/address-edit.component";
+import {AddressAddComponent} from "./pages/account/address-add/address-add.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -42,7 +45,6 @@ const routes: Routes = [
     {path: "admin/restaurants/add", component: RestaurantsAddComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/restaurants/:id", component: RestaurantsEditComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/cuisines", component: CuisinesListComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
-    {path: "browse/:id", component: RestaurantMenuComponent, data: {hideSidebar: true, sidebar: null, auth: AuthType.USER}},
     {path: "orders", component: OrdersOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "orders/:id", component: OrdersInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "payments", component: PaymentsOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
@@ -54,6 +56,10 @@ const routes: Routes = [
     {path: "manage/:restaurantId/start", component: ManageIndexComponent, data: {sidebar: "manage", auth: AuthType.ACCEPT_OR_MANAGE}},
     {path: "manage/:restaurantId/menucategories", component: ManageMenuCategoriesComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
     {path: "manage/:restaurantId/menu", component: ManageMenuItemsComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
+    {path: "account", component: ProfileEditorComponent, data: {sidebar: "account", auth: AuthType.USER}},
+    {path: "account/address", component: AddressListComponent, data: {sidebar: "account", auth: AuthType.USER}},
+    {path: "account/address/add", component: AddressAddComponent, data: {sidebar: "account", auth: AuthType.USER}},
+    {path: "account/address/:id", component: AddressEditComponent, data: {sidebar: "account", auth: AuthType.USER}},
 ];
 
 const routesWithActivators = routes.map(route => {
