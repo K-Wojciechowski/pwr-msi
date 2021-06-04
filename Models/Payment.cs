@@ -19,7 +19,7 @@ namespace pwr_msi.Models {
         public ZonedDateTime Updated { get; set; }
 
         public int? UserId { get; set; }
-        public User User { get; set; } = null!;
+        public User? User { get; set; } = null!;
 
         public int? OrderId { get; set; }
         public Order? Order { get; set; }
@@ -28,9 +28,27 @@ namespace pwr_msi.Models {
         public decimal AbsAmount => Math.Abs(Amount);
         public bool IsUnsuccessful => Status == PaymentStatus.FAILED || Status == PaymentStatus.CANCELLED;
 
-        private string PayerName => IsBalanceRepayment ? "SYS" : IsReturn ? User.FullName : Order?.Restaurant.Name ?? "?";
-        private string PayeeName => IsBalanceRepayment || IsReturn ? User.FullName : Order?.Restaurant.Name ?? "?";
-        private string Description => IsBalanceRepayment ? "Balance Repayment": IsReturn ? $"MSI order return {OrderId}" : $"MSI order {OrderId}";
+        private string PayerName {
+            get {
+                if (IsBalanceRepayment) return "SYS";
+                if (IsReturn) return User?.FullName ?? "?";
+                return Order?.Restaurant.Name ?? "?";
+            }
+        }
+
+        private string PayeeName {
+            get {
+                if (IsBalanceRepayment || IsReturn) return User?.FullName ?? "?";
+                return Order?.Restaurant.Name ?? "?";
+            }
+        }
+
+        private string Description {
+            get {
+                if (IsBalanceRepayment) return "Balance Repayment";
+                return IsReturn ? $"MSI order return {OrderId}" : $"MSI order {OrderId}";
+            }
+        }
 
         public PaymentRequestDto AsRequestDto() => new() {
             Amount = AbsAmount,
@@ -48,7 +66,7 @@ namespace pwr_msi.Models {
             Updated = Utils.Now();
         }
 
-        public PaymentDto AsDto() => new() {
+        public PaymentDto AsDto(OrderBasicDto? order) => new() {
             PaymentId = PaymentId,
             IsReturn = IsReturn,
             IsTargettingBalance = IsTargettingBalance,
@@ -56,7 +74,7 @@ namespace pwr_msi.Models {
             Amount = Amount,
             Status = Status,
             ErrorMessage = ErrorMessage,
-            Order = Order?.AsBasicDto(),
+            Order = order,
             Created = Created,
             Updated = Updated,
         };

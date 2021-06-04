@@ -8,11 +8,11 @@ import {RestaurantContextHelperService} from "../../../services/restaurant-conte
 import {flatten, max, sortBy} from "lodash";
 import {BulkSaveDto} from "../../../models/bulk-save-dto";
 import {SimpleMenuCategory} from "../../../models/simple-menu-category";
-import {RestaurantMenuItem} from "../../../models/restaurant-menu-management/restaurant-menu-item";
+import {RestaurantMenuItem} from "../../../models/menu/restaurant-menu-item";
 import {AmountUnit} from "../../../models/enum/amount-unit";
-import {RestaurantMenuCategoryWithItems} from "../../../models/restaurant-menu-management/restaurant-menu-category-with-items";
-import {RestaurantMenuItemOptionList} from "../../../models/restaurant-menu-management/restaurant-menu-item-option-list";
-import {RestaurantMenuItemOptionItem} from "../../../models/restaurant-menu-management/restaurant-menu-item-option-item";
+import {RestaurantMenuCategoryWithItems} from "../../../models/menu/restaurant-menu-category-with-items";
+import {RestaurantMenuItemOptionList} from "../../../models/menu/restaurant-menu-item-option-list";
+import {RestaurantMenuItemOptionItem} from "../../../models/menu/restaurant-menu-item-option-item";
 import {ResultDto} from "../../../models/result-dto";
 
 @Component({

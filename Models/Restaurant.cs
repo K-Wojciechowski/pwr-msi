@@ -26,7 +26,7 @@ namespace pwr_msi.Models {
 
         public RestaurantBasicDto AsBasicDto() => new (RestaurantId, Name, Logo);
 
-        public RestaurantAdminDto AsAdminDto() => new () {
+        public RestaurantFullDto AsAdminDto() => new () {
             RestaurantId = RestaurantId,
             Name = Name,
             Website = Website,
@@ -44,7 +44,7 @@ namespace pwr_msi.Models {
             Address = Address,
         };
 
-        public async Task UpdateWithAdminDto(RestaurantAdminDto raDto, DbSet<Cuisine> cuisineSource) {
+        public async Task UpdateWithAdminDto(RestaurantFullDto raDto, DbSet<Cuisine> cuisineSource) {
             Name = raDto.Name;
             Website = raDto.Website;
             Description = raDto.Description;

@@ -6,6 +6,7 @@ using pwr_msi.Models.Dto.RestaurantMenu;
 
 namespace pwr_msi.Models.Dto {
     public class OrderItemDto {
+        public int OrderItemId { get; set; }
         public decimal Amount { get; set; }
         public decimal TotalPrice { get; set; }
         public string Notes { get; set; } = null!;

@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {ToastService} from "../../../services/toast.service";
 import {Router} from "@angular/router";
 import {RestaurantEditorOutput} from "../../../models/restaurant-editor-output";
-import {RestaurantAdmin} from "../../../models/restaurant-admin";
+import {RestaurantFull} from "../../../models/restaurant-full";
 import {RestaurantUser} from "../../../models/restaurant-user";
 import {UsersRestaurantsEditorComponent} from "../users-restaurants-editor/users-restaurants-editor.component";
 
@@ -24,7 +24,7 @@ export class RestaurantsAddComponent implements OnInit {
     addRestaurant(restaurantEditorOutput: RestaurantEditorOutput) {
         const {restaurant, restaurantUsers} = restaurantEditorOutput;
         this.showLoading = true;
-        this.http.post<RestaurantAdmin>("/api/admin/restaurants/", restaurant).subscribe(async newRestaurant => {
+        this.http.post<RestaurantFull>("/api/admin/restaurants/", restaurant).subscribe(async newRestaurant => {
             this.toastService.showSuccess(`Restaurant ${newRestaurant.name} created.`);
             this.saveRestaurantUsers(newRestaurant, restaurantUsers);
         }, error => {
@@ -33,7 +33,7 @@ export class RestaurantsAddComponent implements OnInit {
         });
     }
 
-    saveRestaurantUsers(restaurant: RestaurantAdmin, restaurantUsers: RestaurantUser[]) {
+    saveRestaurantUsers(restaurant: RestaurantFull, restaurantUsers: RestaurantUser[]) {
         const updatedRestaurantUsers = UsersRestaurantsEditorComponent.updateWithRestaurant(restaurantUsers, restaurant);
         this.http.post<RestaurantUser[]>(`/api/admin/restaurants/${restaurant.restaurantId}/users/`, updatedRestaurantUsers).subscribe(async () => {
             this.toastService.showSuccess(`Permissions for ${restaurant.name} saved.`);

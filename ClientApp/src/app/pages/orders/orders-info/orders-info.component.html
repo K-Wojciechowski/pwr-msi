@@ -1,1 +1,5 @@
-<p>orders-info works!</p>
+<h1>Order Details</h1>
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<app-empty-state [empty]="!order" *ngIf="!showLoading">
+{{order.orderId}}
+</app-empty-state>

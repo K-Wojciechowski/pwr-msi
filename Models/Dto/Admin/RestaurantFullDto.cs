@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace pwr_msi.Models.Dto.Admin {
-    public class RestaurantAdminDto {
+    public class RestaurantFullDto {
         public int? RestaurantId { get; init; }
         public string Name { get; init; }
         public string Website { get; init; }

@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using pwr_msi.Models.Dto;
@@ -17,6 +17,7 @@ namespace pwr_msi.Models {
         public ICollection<OrderItemCustomization> Customizations { get; set; } = null!;
 
         public OrderItemDto AsDto() => new OrderItemDto() {
+            OrderItemId = OrderItemId,
             Notes = Notes,
             Amount = Amount,
             TotalPrice = TotalPrice,

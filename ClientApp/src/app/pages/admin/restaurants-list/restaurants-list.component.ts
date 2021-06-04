@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {UserAdmin} from "../../../models/user-admin";
 import {MsiHttpService} from "../../../services/msi-http.service";
 import {ToastService} from "../../../services/toast.service";
-import {RestaurantAdmin} from "../../../models/restaurant-admin";
+import {RestaurantFull} from "../../../models/restaurant-full";
 
 @Component({
     selector: 'app-restaurants-list',
@@ -10,7 +10,7 @@ import {RestaurantAdmin} from "../../../models/restaurant-admin";
     styleUrls: ['./restaurants-list.component.scss']
 })
 export class RestaurantsListComponent implements OnInit {
-    items: RestaurantAdmin[] = [];
+    items: RestaurantFull[] = [];
     showLoading = true;
     pageNumber: number = 1;
     totalItems!: number;
@@ -24,7 +24,7 @@ export class RestaurantsListComponent implements OnInit {
 
     loadItems() {
         this.showLoading = true;
-        this.msiHttp.getPage<RestaurantAdmin>("/api/admin/restaurants/", this.pageNumber).subscribe(res => {
+        this.msiHttp.getPage<RestaurantFull>("/api/admin/restaurants/", this.pageNumber).subscribe(res => {
             this.showLoading = false;
             this.items = res.items;
             this.pageNumber = res.page;

@@ -6,7 +6,9 @@ import {Component, Input, OnInit} from '@angular/core';
     styleUrls: ['./empty-state.component.scss']
 })
 export class EmptyStateComponent implements OnInit {
+    @Input("text") text: string = "No items found.";
     @Input("empty") empty!: boolean;
+    @Input("fontSize") fontSize: number = 2;
 
     constructor() {
     }

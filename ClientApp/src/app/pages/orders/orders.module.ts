@@ -9,11 +9,12 @@ import { OrdersInfoComponent } from './orders-info/orders-info.component';
 import { PaymentsTableComponent } from './payments-table/payments-table.component';
 import { PaymentsMakeComponent } from './payments-make/payments-make.component';
 import { PaymentsCheckComponent } from './payments-check/payments-check.component';
+import { OrdersMakePaymentComponent } from './orders-make-payment/orders-make-payment.component';
 
 
 
 @NgModule({
-  declarations: [OrdersOverviewComponent, PaymentsOverviewComponent, PaymentsInfoComponent, OrdersInfoComponent, PaymentsTableComponent, PaymentsMakeComponent, PaymentsCheckComponent],
+  declarations: [OrdersOverviewComponent, PaymentsOverviewComponent, PaymentsInfoComponent, OrdersInfoComponent, PaymentsTableComponent, PaymentsMakeComponent, PaymentsCheckComponent, OrdersMakePaymentComponent],
   imports: [
     CommonModule,
       WidgetsModule,

@@ -32,6 +32,8 @@ namespace pwr_msi.Services {
                 .Include(o => o.DeliveryPerson)
                 .Include("Items")
                 .Include("Items.MenuItem")
+                .Include("Items.MenuItem.Options")
+                .Include("Items.MenuItem.Options.Items")
                 .Include("Items.Customizations")
                 .Include("Items.Customizations.MenuItemOptionItem");
             var order = await queryable.Where(o => o.OrderId == orderId).FirstOrDefaultAsync();

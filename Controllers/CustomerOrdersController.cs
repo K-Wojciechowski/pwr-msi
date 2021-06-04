@@ -35,11 +35,20 @@ namespace pwr_msi.Controllers {
             return _dbContext.Orders.Include(o => o.Customer).Include(o => o.Restaurant).Include(o => o.Address);
         }
 
+        private async Task<IEnumerable<OrderBasicDto>> GetBasicOrders(IEnumerable<int> ids) {
+            var orders = await Task.WhenAll(ids.Select(i =>_orderDetailsService.GetOrderById(i, includeDeliveryPerson: false)));
+            return orders.Select(o => o.AsBasicDto());
+        }
+
+        private async Task<List<OrderBasicDto>> GetBasicOrders(IQueryable<Order> orders) {
+            var ids = await orders.Select(o => o.OrderId).ToListAsync();
+            return (await GetBasicOrders(ids)).ToList();
+        }
+
         [Route(template: "")]
         public async Task<ActionResult<List<OrderBasicDto>>> AllOrders() {
-            var query = OrderBasicQuery().Where(o => o.CustomerId == MsiUserId);
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
+            var query = _dbContext.Orders.Where(o => o.CustomerId == MsiUserId);
+            return await GetBasicOrders(query);
         }
 
         [Route(template: "")]
@@ -48,8 +57,7 @@ namespace pwr_msi.Controllers {
             var query = OrderBasicQuery().Where(
                 o => o.CustomerId == MsiUserId &&
                      o.Status == parsedStatus);
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
+            return await GetBasicOrders(query);
         }
 
         [Route(template: "active/")]
@@ -59,8 +67,7 @@ namespace pwr_msi.Controllers {
                     o.Status != OrderStatus.REJECTED &&
                     o.Status != OrderStatus.CANCELLED &&
                     o.Status != OrderStatus.COMPLETED);
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
+            return await GetBasicOrders(query);
         }
 
         [Route(template: "{id}/")]
@@ -100,8 +107,9 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "{id}/pay/")]
         [HttpPost]
-        public async Task<ActionResult<PaymentGroupInfo>> PayForOrder([FromRoute] int id, [FromQuery] bool useBalance) {
+        public async Task<ActionResult<PaymentGroupInfo>> PayForOrder([FromRoute] int id, [FromQuery] bool useBalance = true) {
             var order = await _dbContext.Orders.Include(o => o.Customer)
+                .Include(o => o.Restaurant)
                 .Where(o => o.OrderId == id && o.CustomerId == MsiUserId).FirstOrDefaultAsync();
             if (order == null) {
                 return NotFound();

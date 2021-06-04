@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {PaymentAttempt} from "../../../models/payment-attempt";
 import {PaymentStatus} from "../../../models/enum/payment-status";
-import {PlatformLocation} from "@angular/common";
 
 @Component({
     selector: 'app-payments-make',
@@ -16,18 +15,18 @@ export class PaymentsMakeComponent implements OnInit {
     public showHttpError = false;
     public isBalanceRepayment = false;
 
-    constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private platformLocation: PlatformLocation) {
+    constructor(private http: HttpClient, private route: ActivatedRoute) {
     }
 
     ngOnInit(): void {
         const paymentId = this.route.snapshot.paramMap.get("id");
-        this.isBalanceRepayment =this.route.snapshot.data.isBalanceRepayment === true;
+        this.isBalanceRepayment = this.route.snapshot.data.isBalanceRepayment === true;
         const endpoint = this.isBalanceRepayment ? "/api/payments/balance/repay/" : `/api/payments/${paymentId}/`;
         this.showLoading = true;
 
         this.http.post<PaymentAttempt>(endpoint, null).subscribe(
             attempt => this.handleAttempt(attempt),
-            error => {
+            () => {
                 this.showSuccess = false;
                 this.showHttpError = true;
                 this.showLoading = false;
