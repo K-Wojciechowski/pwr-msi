@@ -4,6 +4,7 @@ import {UserProfile} from "../models/user-profile";
 import {UserAccess} from "../models/user-access";
 import {AuthResult} from "../models/auth-result";
 import {RefreshResult} from "../models/refresh-result";
+import {UserBasic} from "../models/user-basic";
 
 @Injectable({
     providedIn: 'root'

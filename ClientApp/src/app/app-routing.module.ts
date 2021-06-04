@@ -26,6 +26,7 @@ import {ManageIndexComponent} from "./pages/manage/manage-index/manage-index.com
 import {ManageMenuCategoriesComponent} from "./pages/manage/manage-menu-categories/manage-menu-categories.component";
 import {ManageMenuItemsComponent} from "./pages/manage/manage-menu-items/manage-menu-items.component";
 import {RestaurantMenuComponent} from "./pages/browse/restaurant-menu/restaurant-menu.component";
+import {OrdersMakePaymentComponent} from "./pages/orders/orders-make-payment/orders-make-payment.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -45,6 +46,7 @@ const routes: Routes = [
     {path: "browse/:id", component: RestaurantMenuComponent, data: {hideSidebar: true, sidebar: null, auth: AuthType.USER}},
     {path: "orders", component: OrdersOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "orders/:id", component: OrdersInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "orders/:id/pay", component: OrdersMakePaymentComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "payments", component: PaymentsOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "payments/repay", component: PaymentsMakeComponent, data: {sidebar: "orders", isBalanceRepayment: true, auth: AuthType.USER}},
     {path: "payments/:id", component: PaymentsInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},

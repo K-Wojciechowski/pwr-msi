@@ -1,4 +1,6 @@
 #nullable enable
+using System;
+using System.Collections.Generic;
 using NodaTime;
 using pwr_msi.Models.Enum;
 
@@ -11,6 +13,8 @@ namespace pwr_msi.Models.Dto {
         public OrderStatus Status { get; set; }
         public decimal TotalPrice { get; set; }
         public string? DeliveryNotes { get; set; }
+
+        public ICollection<string> ItemNames { get; set; } = new List<string>();
 
         public ZonedDateTime Created { get; set; }
         public ZonedDateTime Updated { get; set; }

@@ -1,15 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
-import {PaymentAttempt} from "../../../models/payment-attempt";
-import {PaymentStatus} from "../../../models/enum/payment-status";
+import {ActivatedRoute} from "@angular/router";
+import {PaymentGroupInfo} from "../../../models/payment-group-info";
 
 @Component({
-    selector: 'app-payments-make',
-    templateUrl: './payments-make.component.html',
-    styleUrls: ['./payments-make.component.scss']
+    selector: 'app-orders-make-payment',
+    templateUrl: './orders-make-payment.component.html',
+    styleUrls: ['./orders-make-payment.component.scss']
 })
-export class PaymentsMakeComponent implements OnInit {
+export class OrdersMakePaymentComponent implements OnInit {
+
     public showLoading = false;
     public showSuccess = false;
     public showHttpError = false;
@@ -19,12 +19,11 @@ export class PaymentsMakeComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        const paymentId = this.route.snapshot.paramMap.get("id");
-        this.isBalanceRepayment = this.route.snapshot.data.isBalanceRepayment === true;
-        const endpoint = this.isBalanceRepayment ? "/api/payments/balance/repay/" : `/api/payments/${paymentId}/`;
+        const orderId = this.route.snapshot.paramMap.get("id");
+        const endpoint = `/api/orders/${orderId}/pay`;
         this.showLoading = true;
 
-        this.http.post<PaymentAttempt>(endpoint, null).subscribe(
+        this.http.post<PaymentGroupInfo>(endpoint, null).subscribe(
             attempt => this.handleAttempt(attempt),
             () => {
                 this.showSuccess = false;
@@ -34,10 +33,10 @@ export class PaymentsMakeComponent implements OnInit {
         );
     }
 
-    handleAttempt(attempt: PaymentAttempt) {
+    handleAttempt(attempt: PaymentGroupInfo) {
         this.showHttpError = false;
         if (!!attempt.paymentUrl) {
-            const baseUrl = new URL(`/payments/${attempt.paymentId}/check`, window.location.toString());
+            const baseUrl = new URL(`/payments/${attempt.externalPaymentId}/check`, window.location.toString());
             const queryParams = new URLSearchParams();
             queryParams.set("next", baseUrl.toString());
             const destinationUrl = new URL(attempt.paymentUrl);
@@ -46,6 +45,6 @@ export class PaymentsMakeComponent implements OnInit {
             return;
         }
         this.showLoading = false;
-        this.showSuccess = attempt.paymentStatus == PaymentStatus.COMPLETED;
+        this.showSuccess = attempt.isPaid;
     }
 }

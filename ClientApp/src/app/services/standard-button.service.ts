@@ -25,6 +25,8 @@ export class StandardButtonService {
                 return {buttonClass: "success", iconName: "check-circle", text: "Save"};
             case "cancel":
                 return {buttonClass: "dark", iconName: "x-circle", text: "Cancel"};
+            case "orderprimary":
+                return {buttonClass: "primary", iconName: "bag", text: "Place Order"};
             case "order":
                 return {buttonClass: "success", iconName: "bag-check", text: "Place Order"};
             case "orderpay":

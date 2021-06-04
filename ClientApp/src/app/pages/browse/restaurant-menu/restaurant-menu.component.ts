@@ -3,15 +3,19 @@ import {RestaurantFull} from "../../../models/restaurant-full";
 import {RestaurantMenuCategoryWithItems} from "../../../models/menu/restaurant-menu-category-with-items";
 import {HttpClient} from "@angular/common/http";
 import {ToastService} from "../../../services/toast.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {SimpleMenuCategory} from "../../../models/simple-menu-category";
-import {cloneDeep, flatMap, isEqual, sortBy, sumBy} from "lodash";
+import {cloneDeep, flatMap, sortBy, sumBy} from "lodash";
 import {RestaurantMenuItem} from "../../../models/menu/restaurant-menu-item";
 import {MenuItemWrapper} from 'src/app/models/menu-item-wrapper';
 import {MenuItemOptionListWrapper} from "../../../models/menu-item-option-list-wrapper";
 import {MenuItemOptionItemWrapper} from "../../../models/menu-item-option-item-wrapper";
 import {Address} from "../../../models/address";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {Order} from "../../../models/order/order";
+import {OrderStatus} from "../../../models/enum/order-status";
+import {DateTime} from "luxon";
+import {AuthStoreService} from "../../../services/auth-store.service";
 
 @Component({
     selector: 'app-restaurant-menu',
@@ -35,7 +39,7 @@ export class RestaurantMenuComponent implements OnInit {
     payAfterOrder: boolean = true;
     addressModal: NgbModalRef | null = null;
 
-    constructor(private http: HttpClient, private toastService: ToastService, private route: ActivatedRoute, private modalService: NgbModal) {
+    constructor(private http: HttpClient, private toastService: ToastService, private router: Router, private route: ActivatedRoute, private authStore: AuthStoreService, private modalService: NgbModal) {
     }
 
     ngOnInit(): void {
@@ -43,7 +47,7 @@ export class RestaurantMenuComponent implements OnInit {
     }
 
     loadData() {
-        this.showLoading = 2;
+        this.showLoading = 4;
         const restaurantIdString = this.route.snapshot.paramMap.get("id");
         if (restaurantIdString === null) return;
         this.restaurantId = parseInt(restaurantIdString);
@@ -61,6 +65,22 @@ export class RestaurantMenuComponent implements OnInit {
             this.menuCategories = m;
             this.buildWrappedMenu();
             this.sortItems();
+            --this.showLoading;
+        }, err => {
+            this.toastService.handleHttpError(err);
+            --this.showLoading;
+        });
+        this.http.get<Address[]>(`/api/addresses/`).subscribe(a => {
+            this.addresses = a;
+            --this.showLoading;
+        }, err => {
+            this.toastService.handleHttpError(err);
+            --this.showLoading;
+        });
+        this.http.get<Address | null>(`/api/addresses/default/`).subscribe(a => {
+            if (a !== null) {
+                this.deliveryAddress = a;
+            }
             --this.showLoading;
         }, err => {
             this.toastService.handleHttpError(err);
@@ -104,7 +124,11 @@ export class RestaurantMenuComponent implements OnInit {
     }
 
     reloadAddressesSilently() {
-        // TODO
+        this.http.get<Address[]>(`/api/addresses/`).subscribe(a => {
+            this.addresses = a;
+        }, err => {
+            this.toastService.handleHttpError(err);
+        });
     }
 
     openAddressPicker(addressModal: TemplateRef<any>) {
@@ -118,6 +142,34 @@ export class RestaurantMenuComponent implements OnInit {
     }
 
     placeOrder() {
-        // TODO
+        const now = DateTime.now().toISO();
+        const items = this.cart.map(c => c.asOrderItem());
+        const order: Order = {
+            totalPrice: this.cartTotal.toString(),
+            deliveryNotes: this.deliveryNotes,
+            status: OrderStatus.CREATED,
+
+            created: now,
+            updated: now,
+
+            restaurant: {
+                restaurantId: this.restaurant!.restaurantId ?? -1,
+                name: this.restaurant!.name,
+            },
+            deliveryPerson: null,
+            address: this.deliveryAddress!,
+
+            items: items
+        };
+        this.showLoading += 1;
+        this.http.post<Order>("/api/orders/", order).subscribe(o => {
+            this.toastService.showSuccess("Order created successfully!");
+            this.showLoading -= 1;
+            const nextUrl = this.payAfterOrder ? ['orders', o.orderId, 'pay'] : ['orders', o.orderId];
+            this.router.navigate(nextUrl).then(_ => undefined);
+        }, err => {
+            this.toastService.handleHttpError(err);
+            this.showLoading -= 1;
+        });
     }
 }

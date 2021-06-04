@@ -52,6 +52,7 @@ namespace pwr_msi.Models {
             DeliveryNotes = DeliveryNotes,
             Created = Created,
             Updated = Updated,
+            Delivered = Delivered,
             Items = Items.Select(item => item.AsDto()).ToList()
         };
     }

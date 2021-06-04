@@ -79,7 +79,8 @@ namespace pwr_msi.Services {
                     await ProcessNewBalancePayment(balancePayment);
                 }
 
-                string? paymentLink = null;
+                int? externalPaymentId = null;
+                string? paymentUrl = null;
                 if (paidExternally > 0) {
                     var externalPayment = new Payment {
                         Amount = paidExternally,
@@ -89,7 +90,8 @@ namespace pwr_msi.Services {
                         Created = Utils.Now(),
                         Updated = Utils.Now()
                     };
-                    paymentLink = await ProcessNewExternalPayment(externalPayment);
+                    paymentUrl = await ProcessNewExternalPayment(externalPayment);
+                    externalPaymentId = externalPayment.PaymentId;
                 }
 
                 var isPaid = paidExternally == 0;
@@ -100,7 +102,8 @@ namespace pwr_msi.Services {
                     PaidFromBalance = paidFromBalance,
                     PaidExternally = paidExternally,
                     IsPaid = isPaid,
-                    PaymentLink = paymentLink,
+                    PaymentUrl = paymentUrl,
+                    ExternalPaymentId = externalPaymentId,
                 };
             });
             return paymentGroupInfo;

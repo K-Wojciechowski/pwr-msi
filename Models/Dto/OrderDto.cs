@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,11 @@ namespace pwr_msi.Models.Dto {
 
         public ZonedDateTime Created { get; set; }
         public ZonedDateTime Updated { get; set; }
+        public ZonedDateTime? Delivered { get; set; }
 
         public RestaurantBasicDto Restaurant { get; set; } = null!;
-        public UserBasicDto Customer { get; set; } = null!;
-        public UserBasicDto? DeliveryPerson { get; set; } = null!;
+        public UserBasicDto? Customer { get; set; } = null!;
+        public UserBasicDto? DeliveryPerson { get; set; }
         public Address Address { get; set; } = null!;
 
         public ICollection<OrderItemDto> Items { get; set; } = null!;
@@ -56,6 +58,24 @@ namespace pwr_msi.Models.Dto {
                 Status = OrderStatus.CREATED,
                 Created = now,
                 Items = Items.Select(i => i.AsNewOrderItem(menuItemPriceMap[i.MenuItem.MenuItemId!.Value])).ToList(),
+            };
+        }
+
+        public OrderBasicDto AsBasicDto() {
+            Debug.Assert(Customer != null, nameof(Customer) + " != null");
+            return new OrderBasicDto {
+               OrderId = OrderId,
+               Restaurant = Restaurant,
+               Customer = Customer,
+               Address = Address,
+               Status = Status,
+               TotalPrice = TotalPrice,
+               DeliveryNotes = DeliveryNotes,
+               ItemNames = Items.ToList().Select(i => i.MenuItem.Name).ToList(),
+
+               Created = Created,
+               Updated = Updated,
+               Delivered = Delivered,
             };
         }
     }

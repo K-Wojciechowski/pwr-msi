@@ -35,5 +35,20 @@ namespace pwr_msi {
                 .ToListAsync();
             return new Page<TO> {Items = items.Select(converter), MaxPage = maxPage, ItemCount = itemCount, PageNumber = page};
         }
+
+
+        public static async Task<Page<TO>> PaginateAsync<TD, TO>(IQueryable<TD> queryable, int pageRaw,
+            Func<TD, Task<TO>> converter) where TD : class {
+            var itemCount = await queryable.CountAsync();
+            var maxPage = Math.Max(1, (int) Math.Ceiling(a: itemCount / (double) Constants.PageSize));
+            var page = pageRaw;
+            if (page <= 0) page = 1;
+            if (page > maxPage) page = maxPage;
+            var items = await queryable.Skip(count: (page - 1) * Constants.PageSize).Take(Constants.PageSize)
+                .ToListAsync();
+            var convertedItems = await Task.WhenAll(items.Select(converter));
+            return new Page<TO> {Items = convertedItems, MaxPage = maxPage, ItemCount = itemCount, PageNumber = page};
+        }
+
     }
 }

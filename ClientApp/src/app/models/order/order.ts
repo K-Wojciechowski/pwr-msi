@@ -16,7 +16,7 @@ export interface Order {
     restaurant: RestaurantBasic;
     customer?: UserBasic;
     deliveryPerson: UserBasic | null;
-    adddress: Address;
+    address: Address;
 
     items: OrderItem[];
 }

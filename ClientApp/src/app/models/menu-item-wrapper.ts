@@ -1,6 +1,7 @@
 import {RestaurantMenuItem} from "./menu/restaurant-menu-item";
 import {MenuItemOptionListWrapper} from "./menu-item-option-list-wrapper";
 import {flatMap, sumBy} from "lodash";
+import {OrderItem} from "./order/order-item";
 
 export class MenuItemWrapper {
     public value: RestaurantMenuItem;
@@ -26,5 +27,15 @@ export class MenuItemWrapper {
 
     toggle() {
         this.isHighlighted = !this.isHighlighted;
+    }
+
+    asOrderItem(): OrderItem {
+        return {
+            amount: "1", // no way in UI to order a different amount
+            totalPrice: this.total.toString(),
+            notes: this.notes,
+            menuItem: this.value,
+            customizations: flatMap(this.options, o => o.asOrderItemCustomizations())
+        };
     }
 }

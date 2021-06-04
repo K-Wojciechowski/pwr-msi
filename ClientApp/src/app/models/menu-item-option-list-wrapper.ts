@@ -1,6 +1,6 @@
 import {RestaurantMenuItemOptionList} from "./menu/restaurant-menu-item-option-list";
 import {MenuItemOptionItemWrapper} from "./menu-item-option-item-wrapper";
-import {MenuItemWrapper} from "./menu-item-wrapper";
+import {OrderItemCustomization} from "./order/order-item-customization";
 
 export class MenuItemOptionListWrapper {
    public value: RestaurantMenuItemOptionList;
@@ -21,4 +21,10 @@ export class MenuItemOptionListWrapper {
            return choiceItem === undefined ? [] : [choiceItem];
        }
    }
+
+    asOrderItemCustomizations(): OrderItemCustomization[] {
+        return this.getChoices().map(c => {
+            return {menuItemOptionItem: c.value};
+        });
+    }
 }

@@ -181,9 +181,9 @@
                 <input type="checkbox" [(ngModel)]="payAfterOrder"> Pay for this order immediately
             </label>
             <button *ngIf="payAfterOrder" type="button" (click)="placeOrder()" standardButton btnStyle="fullwidth-large"
-                    btnType="orderpay"></button>
+                    btnType="orderpay" [disabled]="this.cart.length === 0 || this.deliveryAddress === null"></button>
             <button *ngIf="!payAfterOrder" type="button" (click)="placeOrder()" standardButton
-                    btnStyle="fullwidth-large" btnType="order"></button>
+                    btnStyle="fullwidth-large" btnType="order" [disabled]="this.cart.length === 0 || this.deliveryAddress === null"></button>
         </div>
     </div>
 </app-empty-state>
