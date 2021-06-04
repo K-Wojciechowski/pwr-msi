@@ -128,6 +128,17 @@ namespace pwr_msi.Controllers {
         public ActionResult<UserProfileDto> GetProfile() {
             return MsiUser.AsProfile();
         }
+        
+        [Authorize]
+        [Route(template: "profile/edit/")]
+        [HttpPut]
+        public async Task<ActionResult<UserProfileDto>> ModifyProfile([FromBody] UserProfileDto dto) {
+            MsiUser.UpdateWithProfileDto(dto);
+            await _dbContext.SaveChangesAsync();
+            return MsiUser.AsProfile();
+        }
+        
+        
 
         [Authorize]
         [Route(template: "profile/")]

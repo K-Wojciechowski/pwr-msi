@@ -25,7 +25,7 @@ import {ManagePickContextComponent} from "./pages/manage/manage-pick-context/man
 import {ManageIndexComponent} from "./pages/manage/manage-index/manage-index.component";
 import {ManageMenuCategoriesComponent} from "./pages/manage/manage-menu-categories/manage-menu-categories.component";
 import {ManageMenuItemsComponent} from "./pages/manage/manage-menu-items/manage-menu-items.component";
-import {ProfileEditorComponent} from "./pages/account/profile-editor/profile-editor.component";
+import {ProfileEditComponent} from "./pages/account/profile-edit/profile-edit.component";
 import {AddressListComponent} from "./pages/account/address-list/address-list.component";
 import {AddressEditComponent} from "./pages/account/address-edit/address-edit.component";
 import {AddressAddComponent} from "./pages/account/address-add/address-add.component";
@@ -56,7 +56,7 @@ const routes: Routes = [
     {path: "manage/:restaurantId/start", component: ManageIndexComponent, data: {sidebar: "manage", auth: AuthType.ACCEPT_OR_MANAGE}},
     {path: "manage/:restaurantId/menucategories", component: ManageMenuCategoriesComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
     {path: "manage/:restaurantId/menu", component: ManageMenuItemsComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
-    {path: "account", component: ProfileEditorComponent, data: {sidebar: "account", auth: AuthType.USER}},
+    {path: "account", component: ProfileEditComponent, data: {sidebar: "account", auth: AuthType.USER}},
     {path: "account/address", component: AddressListComponent, data: {sidebar: "account", auth: AuthType.USER}},
     {path: "account/address/add", component: AddressAddComponent, data: {sidebar: "account", auth: AuthType.USER}},
     {path: "account/address/:id", component: AddressEditComponent, data: {sidebar: "account", auth: AuthType.USER}},

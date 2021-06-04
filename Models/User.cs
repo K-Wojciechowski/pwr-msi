@@ -79,5 +79,10 @@ namespace pwr_msi.Models {
                 BillingAddress = userAdminDto.BillingAddress;
             }
         }
+        public void UpdateWithProfileDto(UserProfileDto dto) {
+            Username = dto.Username;
+            FirstName = dto.FirstName;
+            LastName = dto.LastName;
+        }
     }
 }

@@ -1,0 +1,24 @@
+<form #f="ngForm" ngNativeValidate>
+    <div class="form-group" >
+        <label class="sr-only" for="username">Username</label>
+        <input ngModel class="form-control" name="username" id="username" placeholder="Username" [required]="required">
+    </div>
+    <div class="form-group">
+        <label class="sr-only" for="firstName">First name</label>
+        <label class="sr-only" for="lastName">Last name</label>
+        <div class="input-group">
+            <input ngModel class="form-control" name="firstName" id="firstName" placeholder="First Name" [required]="required">
+            <input ngModel class="form-control" name="lastName" id="lastName" placeholder="Last Name" [required]="required">
+        </div>
+    </div>
+    <div class="form-group">
+        <a ngModel class="text-body" name="email" id="email"></a>
+    </div>
+   
+    
+    
+    <div class="btn-box">
+        <button type="submit" standardButton btnStyle="form" btnType="save" [disabled]="!f.valid" (click)="submit()"></button>
+    </div>
+</form>
+

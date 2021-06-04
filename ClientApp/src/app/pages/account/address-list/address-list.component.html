@@ -1,0 +1,17 @@
+<app-heading-buttons name="Address">
+    <a standardButton btnStyle="heading" routerLink="/account/address/add" btnType="add" text="Add"></a>
+</app-heading-buttons>
+<app-progress-spinner-content [showLoading]="showLoading">
+    <app-empty-state [empty]="!showLoading && items.length === 0">
+        <table class="table table-hover">
+            <tbody>
+            <tr *ngFor="let address of items">
+                <td><app-address-display [address]="address" routerLink="/account/address/{{address.addressId}}"></app-address-display></td>
+                <td standardButton routerLink="/account/address/{{address.addressId}}" btnStyle="table" btnType="edit"></td>
+                <td standardButton (click)="deleteAddress(address)"  btnStyle="cancel" btnType="delete"></td>
+            </tr>
+            </tbody>
+        </table>
+    </app-empty-state>
+</app-progress-spinner-content>
+<app-pager [page]="pageNumber" (pageChange)="goToPage($event)" [totalItems]="totalItems"></app-pager>
