@@ -42,6 +42,9 @@ export class StandardButtonComponent implements OnInit, OnChanges {
             case "tablecolorful":
                 btnClassBase = "btn btn-singleline btn-sm btn-";
                 break;
+            case "outline":
+                btnClassBase = "btn btn-outline-";
+                break;
             case "minor":
                 btnClassBase = "btn btn-sm btn-outline-";
                 break;
@@ -54,6 +57,9 @@ export class StandardButtonComponent implements OnInit, OnChanges {
                 break;
             case "outline-large":
                 btnClassBase = "btn btn-lg btn-outline-";
+                break;
+            case "fullwidth-large":
+                btnClassBase = "btn btn-lg btn-fullwidth btn-";
                 break;
             default:
                 btnClassBase = "btn btn-";

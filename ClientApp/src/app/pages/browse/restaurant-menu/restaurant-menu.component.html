@@ -1,0 +1,214 @@
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<app-empty-state [empty]="!showLoading && restaurant === null" text="Unknown restaurant.">
+    <div class="row">
+        <div class="col-md-9">
+            <div id="restaurant-header" *ngIf="restaurant !== null">
+                <h1 id="restaurant-heading">
+                    <img class="restaurant-logo" src="{{restaurant!.logo}}" *ngIf="!!restaurant?.logo"
+                         alt="{{restaurant!.name}}">
+                    <span class="restaurant-name">{{restaurant!.name}}</span>
+                </h1>
+                <div id="restaurant-details">
+                    <span class="restaurant-address">{{restaurant!.address|singleLineAddress}}</span>
+                    <span *ngIf="restaurant.website" class="restaurant-website"><a
+                        href="{{restaurant.website}}">{{restaurant.website}}</a></span>
+                </div>
+                <div id="restaurant-description">
+                    {{restaurant.description}}
+                </div>
+            </div>
+            <app-empty-state [empty]="!showLoading && menu.length === 0">
+                <app-menu-category-tabs navClass="mb-4" [categories]="menuCategories"
+                                        (selection)="selectCategory($event)"></app-menu-category-tabs>
+                <div class="card mb-2" *ngFor="let item of catItems">
+                    <div class="card-body d-flex">
+                        <div class="menu-img-box d-flex flex-direction-column justify-content-center"
+                             [ngClass]="{'menu-img-expanded': item.isHighlighted}"
+                             *ngIf="!!item.value.image; else imgPlaceholder">
+                            <img class="menu-img" src="{{item.value.image}}" alt="{{item.value.name}}" lightbox>
+                        </div>
+                        <ng-template #imgPlaceholder>
+                            <div class="menu-img-placeholder"
+                                 [ngClass]="{'menu-img-expanded': item.isHighlighted}"></div>
+                        </ng-template>
+                        <div class="menu-item-name">{{item.value.name}}</div>
+
+                        <div class="menu-price-amount mr-2">
+                            <div class="price">{{ item.value.price | currency:"PLN" }}</div>
+                            <div class="amount">{{ item.value.amount | amount: item.value.amountUnit }}</div>
+                        </div>
+
+                        <div class="btn-group menu-buttons flex-shrink-0">
+                            <button type="button" (click)="add(item)" class="btn btn-outline-success">
+                                <bs-icon name="plus-circle"></bs-icon>
+                                <span class="d-none-xs d-inline-md">&nbsp;Add</span>
+                            </button>
+                            <button type="button" (click)="item.toggle()" class="btn"
+                                    [ngClass]="{'btn-primary': item.isHighlighted, 'btn-outline-primary': !item.isHighlighted}">
+                                <bs-icon *ngIf="!item.isHighlighted" name="chevron-right"></bs-icon>
+                                <bs-icon *ngIf="item.isHighlighted" name="chevron-down"></bs-icon>
+                                <span class="d-none-xs d-inline-md">&nbsp;More</span>
+                            </button>
+                        </div>
+
+                    </div>
+                    <div class="menu-subcard-container" [(ngbCollapse)]="!item.isHighlighted">
+                        <div class="menu-subcard">
+                            <dl class="row">
+                                <dt class="col-sm-3">Price</dt>
+                                <dd class="col-sm-9">{{ item.value.price | currency:"PLN" }}</dd>
+                                <dt class="col-sm-3">Amount</dt>
+                                <dd class="col-sm-9">{{item.value.amount | amount: item.value.amountUnit }}</dd>
+                            </dl>
+                            <p>{{item.value.description}}</p>
+
+                            <ng-container *ngIf="item.options.length > 0">
+                                <h4>Customize</h4>
+                                <ul class="menu-options">
+                                    <li *ngFor="let opt of item.options">
+                                        <span class="menu-option-title">{{opt.value.name}}</span>
+                                        <ng-container *ngIf="opt.value.isMultipleChoice">
+                                            <label *ngFor="let oi of opt.items">
+                                                <input type="checkbox"
+                                                       [(ngModel)]="oi.checked"
+                                                       [value]="true"
+                                                       (ngModelChange)="item.recalculateTotal()">
+                                                {{oi.value.name}}
+                                                <em>({{oi.value.price | currency: "PLN"}})</em>
+                                            </label>
+                                        </ng-container>
+                                        <ng-container *ngIf="!opt.value.isMultipleChoice">
+                                            <label><input [(ngModel)]="opt.choice" type="radio"
+                                                          name="{{opt.value.menuItemId}}-{{opt.value.menuItemOptionListId}}"
+                                                          [value]="0" (change)="item.recalculateTotal()"> —</label>
+                                            <label *ngFor="let oi of opt.items">
+                                                <input type="radio"
+                                                       [(ngModel)]="opt.choice"
+                                                       [attr.name]="opt.value.menuItemId + '-' + opt.value.menuItemOptionListId"
+                                                       [value]="oi.value.menuItemOptionItemId"
+                                                       (ngModelChange)="item.recalculateTotal()">
+                                                {{oi.value.name}}
+                                                <em>({{oi.value.price | currency: "PLN"}})</em>
+                                            </label>
+                                        </ng-container>
+                                    </li>
+                                </ul>
+                            </ng-container>
+
+                            <div class="menu-add-box">
+                                <div class="menu-add-box-price">{{ item.total | currency: "PLN" }}</div>
+                                <button type="button" (click)="add(item)" standardButton btnType="add"
+                                        btnStyle="form"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </app-empty-state>
+        </div>
+        <div class="col-md-3">
+            <div class="delivery-setup">
+                    <h5>Delivery</h5>
+                    <label class="text-muted" for="delivery-address-btn">Deliver to:</label>
+                    <div class="delivery-address-container">
+                        <div class="delivery-address" *ngIf="deliveryAddress !== null"
+                             [innerHTML]="deliveryAddress|multiLineAddress">
+                        </div>
+                        <div class="delivery-address" *ngIf="deliveryAddress === null">
+                            <span class="text-warning">No delivery address specified</span>
+                        </div>
+                        <button type="button" id="delivery-address-btn" (click)="openAddressPicker(addressModal)"
+                                standardButton
+                                btnStyle="outline" btnType="edit" [noText]="true"></button>
+                    </div>
+                    <label for="delivery-notes" class="text-muted mt-2">Delivery notes:</label>
+                    <textarea id="delivery-notes" class="form-control" placeholder="Delivery notes"
+                              [(ngModel)]="deliveryNotes"></textarea>
+                </div>
+            <div class="mt-4 order-items">
+                <h5>Your order</h5>
+                <app-empty-state [fontSize]="1.1" text="Nothing yet — add items to your order from the restaurant menu."
+                                 [empty]="cart.length === 0">
+                    <div class="card mb-2" *ngFor="let item of cart; index as i">
+                        <div class="card-body d-flex">
+                            <div class="menu-img-box d-flex flex-direction-column justify-content-center"
+                                 *ngIf="!!item.value.image; else imgPlaceholder">
+                                <img class="menu-img" src="{{item.value.image}}" alt="{{item.value.name}}" lightbox>
+                            </div>
+                            <ng-template #imgPlaceholder>
+                                <div class="menu-img-placeholder"></div>
+                            </ng-template>
+                            <div class="order-item-rest">
+                                <div class="order-item-info d-flex">
+                                    <div class="menu-item-name ml-2">{{item.value.name}}</div>
+
+                                    <div class="menu-price-amount mr-2">
+                                        <div class="price">{{ item.total | currency:"PLN" }}</div>
+                                        <div
+                                            class="amount">{{ item.value.amount | amount: item.value.amountUnit }}</div>
+                                    </div>
+
+                                    <div class="btn-group menu-buttons flex-shrink-0">
+
+                                    </div>
+                                </div>
+                                <div *ngIf="item.options.length > 0">
+                                    <ul class="order-item-options">
+                                        <ng-container *ngFor="let opt of item.options">
+                                            <li *ngIf="opt.getChoices().length > 0">
+                                                <span class="order-item-options-title">{{opt.value.name}}</span>
+                                                <ul>
+                                                    <li *ngFor="let choice of opt.getChoices()">{{choice.value.name}}</li>
+                                                </ul>
+                                            </li>
+                                        </ng-container>
+                                    </ul>
+                                </div>
+                            </div>
+                        <button type="button" (click)="delete(i)" standardButton btnStyle="table" extraClass="order-delete-btn"
+                                  btnType="delete" [noText]="true"></button>
+                        </div>
+                    </div>
+                </app-empty-state>
+            </div>
+            <div class="mt-4 order-total">
+                <span class="total">Total</span>
+                <span class="price">{{cartTotal | currency: "PLN"}}</span>
+            </div>
+            <label>
+                <input type="checkbox" [(ngModel)]="payAfterOrder"> Pay for this order immediately
+            </label>
+            <button *ngIf="payAfterOrder" type="button" (click)="placeOrder()" standardButton btnStyle="fullwidth-large"
+                    btnType="orderpay"></button>
+            <button *ngIf="!payAfterOrder" type="button" (click)="placeOrder()" standardButton
+                    btnStyle="fullwidth-large" btnType="order"></button>
+        </div>
+    </div>
+</app-empty-state>
+
+
+<ng-template #addressModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Choose delivery address</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body address-selector-modal-body">
+        <app-empty-state [empty]="addresses.length === 0">
+            <div class="row">
+                <div *ngFor="let address of addresses" class="col-md-4 address-selector-card-holder">
+                    <div (click)="selectAddress(address)" class="card address-selector-card"
+                         [ngClass]="{'active': deliveryAddress?.addressId === address.addressId}">
+                        <div class="card-body" [innerHTML]="address|multiLineAddress"></div>
+                    </div>
+                </div>
+            </div>
+        </app-empty-state>
+    </div>
+    <div class="modal-footer">
+        <a target="_blank" routerLink="/profile/addresses" title="Page opens in new tab">Manage addresses in your
+            profile
+            <bs-icon name="box-arrow-up-right"></bs-icon>
+        </a>
+    </div>
+</ng-template>

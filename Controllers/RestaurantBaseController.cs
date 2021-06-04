@@ -17,12 +17,14 @@ namespace pwr_msi.Controllers {
         }
 
         [Route(template: "{id}/")]
-        public async Task<ActionResult<RestaurantAdminDto>> GetRestaurantInfo(int id) {
+        public async Task<ActionResult<RestaurantFullDto>> GetRestaurantInfo(int id) {
             var restaurant = await _dbContext.Restaurants
                 .Include(r => r.Address)
                 .Include(r => r.Cuisines)
                 .Where(r => r.RestaurantId == id)
+                .Where(r => r.IsActive)
                 .FirstOrDefaultAsync();
+            if (restaurant == null) return NotFound();
             return restaurant.AsAdminDto();
         }
     }

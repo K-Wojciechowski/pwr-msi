@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace pwr_msi.Services {
             var mis = await miQuery.ToListAsync();
             var mcDates = mcs.SelectMany(mc => ValidDateList(mc.ValidFrom, mc.ValidUntil));
             var miDates = mis.SelectMany(mi => ValidDateList(mi.ValidFrom, mi.ValidUntil));
-            return mcDates.Concat(miDates);
+            return mcDates.Concat(miDates).Where(date => ZonedDateTime.Comparer.Instant.Compare(date, validAt) > 0);
         }
 
         public async Task<ZonedDateTime?> GetMenuExpirationDate(int restaurantId, ZonedDateTime validAt) {
@@ -79,7 +80,6 @@ namespace pwr_msi.Services {
             return validityDates.Any() ? validityDates.Max(dt => dt.ToInstant()).InUtc() : null;
         }
 
-
         private static IEnumerable<ZonedDateTime> ValidDateList(ZonedDateTime first, ZonedDateTime? second) {
             return second.HasValue ? new List<ZonedDateTime> {first, second.Value} : new List<ZonedDateTime> {first};
         }
@@ -88,10 +88,18 @@ namespace pwr_msi.Services {
             var dbMenu = await GetMenuFromDb(restaurantId, validAt);
             var menu = dbMenu.Select(mc => mc.AsMenuDto()).ToList();
             var expirationDate = await GetMenuExpirationDate(restaurantId, validAt);
-            var cacheEntry = new MenuCacheEntry(menu, validAt, expirationDate);
-            var cacheEntryString =
-                JsonConvert.SerializeObject(cacheEntry, MsiSerializerSettings.jsonSerializerSettings);
-            await _cache.SetStringAsync("menu:" + restaurantId, cacheEntryString);
+
+            if (menu.Count > 0) {
+                var cacheEntry = new MenuCacheEntry(menu, validAt, expirationDate);
+                var cacheEntryString =
+                    JsonConvert.SerializeObject(cacheEntry, MsiSerializerSettings.jsonSerializerSettings);
+                var options = new DistributedCacheEntryOptions();
+                if (expirationDate != null) {
+                    options.SetAbsoluteExpiration(expirationDate.Value.ToDateTimeOffset());
+                }
+
+                await _cache.SetStringAsync("menu:" + restaurantId, cacheEntryString, options);
+            }
 
             return menu;
         }
@@ -103,7 +111,7 @@ namespace pwr_msi.Services {
                 return await GetMenuFromDbAndCache(restaurantId, validAt);
             }
 
-            var cacheEntry = JsonConvert.DeserializeObject<MenuCacheEntry>(cacheEntryString);
+            var cacheEntry = JsonConvert.DeserializeObject<MenuCacheEntry>(cacheEntryString, MsiSerializerSettings.jsonSerializerSettings);
             if (ZonedDateTime.Comparer.Instant.Compare(validAt, cacheEntry.validAt) < 0) {
                 // Going backwards, avoid cache
             var dbMenu = await GetMenuFromDb(restaurantId, validAt);
