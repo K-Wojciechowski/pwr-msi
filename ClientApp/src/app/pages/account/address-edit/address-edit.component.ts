@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {ToastService} from "../../../services/toast.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Address} from "../../../models/address";
 import {RestaurantFull} from "../../../models/restaurant-full";
 import {RestaurantUser} from "../../../models/restaurant-user";
+import {UserProfile} from "../../../models/user-profile";
 
 @Component({
   selector: 'app-address-edit',
@@ -15,10 +16,12 @@ export class AddressEditComponent implements OnInit {
     showLoading: boolean = false;
     address: Address | undefined;
     addressId: number | undefined;
+    isBillingAddress: boolean = false;
     constructor(private http: HttpClient, private toastService: ToastService, private router: Router, private route: ActivatedRoute) { }
 
     ngOnInit(): void {
        this.loadAddress();
+       this.loadBillingAddress();
     }
     
     
@@ -34,11 +37,30 @@ export class AddressEditComponent implements OnInit {
             this.showLoading = false ;
             this.toastService.handleHttpError(error);
         });
+        
+    }
+    loadBillingAddress() {
+        this.showLoading = true;
+        this.http.get<Address>("/api/address/default/").subscribe(res => {
+            this.showLoading = false;
+            this.toastService.showSuccess(" billing ");
+            this.toastService.showSuccess(" billing "+res.addressId);
+            this.isBillingAddress = res.addressId == this.address?.addressId;
+        }, error => {
+            this.showLoading = false;
+            this.toastService.handleHttpError(error);
+        });
+
     }
     editAddress(address: Address) {
         this.showLoading = true;
         this.http.put<Address>("/api/address/"+this.addressId+"/", address).subscribe(async newAddress => {
             this.toastService.showSuccess(`Address ${newAddress.firstLine} ${newAddress.secondLine} ${newAddress.city} changed.`);
+        }, error => {
+            this.showLoading = false;
+            this.toastService.handleHttpError(error);
+        });
+        this.http.post<Address>("/api/address/default/", {input: this.addressId}).subscribe(async newAddress => {
         }, error => {
             this.showLoading = false;
             this.toastService.handleHttpError(error);

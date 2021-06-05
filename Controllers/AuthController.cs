@@ -138,8 +138,6 @@ namespace pwr_msi.Controllers {
             return MsiUser.AsProfile();
         }
         
-        
-
         [Authorize]
         [Route(template: "profile/")]
         [HttpPut]

@@ -44,8 +44,10 @@ namespace pwr_msi.Controllers {
         [HttpPost]
         public async Task<ActionResult<Address>> SetDefaultAddress([FromBody] InputDto<int> addressIdInput) {
             var user = await _dbContext.Users.FindAsync(MsiUserId);
-            user.BillingAddressId = addressIdInput.Input;
+            var address = await _dbContext.Addresses.FindAsync(addressIdInput.Input);
+            user.BillingAddress = address;
             await _dbContext.SaveChangesAsync();
+            var user1 = await _dbContext.Users.FindAsync(MsiUserId);
             return await _dbContext.Addresses.FindAsync(user.BillingAddressId);
         }
 

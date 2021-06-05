@@ -1,2 +1,7 @@
 <p>Edit address</p>
+<label class="msi-form-check">
+    <input id="isBillingAddress" [(ngModel)]="isBillingAddress" [ngModelOptions]="{standalone: true}"
+           type="checkbox">
+    Use this address as billing address
+</label>
 <app-address-editor (addressChange)="editAddress($event)" [address]="address"></app-address-editor>

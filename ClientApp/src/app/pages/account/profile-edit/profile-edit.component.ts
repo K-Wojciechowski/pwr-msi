@@ -14,6 +14,9 @@ export class ProfileEditComponent implements OnInit {
     showLoading: boolean = false;
     user: UserProfile | undefined;
     userId: number | undefined;
+    billingAddressDefined: boolean = false;
+    
+    
     constructor(private http: HttpClient, private toastService: ToastService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
@@ -29,7 +32,8 @@ export class ProfileEditComponent implements OnInit {
             this.showLoading = false ;
             this.toastService.handleHttpError(error);
         });
-        this.toastService.showSuccess("user"+this.user?.firstName)
+        this.billingAddressDefined = (this.user?.billingAddress!=undefined)
+        this.toastService.showSuccess("billing"+this.billingAddressDefined)
     }
     editUser(user: UserProfile) {
         this.showLoading = true;

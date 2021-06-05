@@ -1,23 +1,28 @@
 <form #f="ngForm" ngNativeValidate>
     <div class="form-group" >
-        <label class="sr-only" for="username">Username</label>
-        <input ngModel class="form-control" name="username" id="username" placeholder="Username" [required]="required">
+        <app-form-input ngModel ngDefaultControl name="username" desc="Username" type="text"
+                        [required]="true"></app-form-input>
+        <app-form-input ngModel ngDefaultControl name="firstName" desc="First name" type="text"
+                        [required]="true"></app-form-input>
+        <app-form-input ngModel ngDefaultControl name="lastName" desc="Last name" type="text"
+                        [required]="true"></app-form-input>
     </div>
-    <div class="form-group">
-        <label class="sr-only" for="firstName">First name</label>
-        <label class="sr-only" for="lastName">Last name</label>
-        <div class="input-group">
-            <input ngModel class="form-control" name="firstName" id="firstName" placeholder="First Name" [required]="required">
-            <input ngModel class="form-control" name="lastName" id="lastName" placeholder="Last Name" [required]="required">
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">E-mail: </label>
+        <div class="col-sm-10">
+            <p>{{user?.email}}</p>
         </div>
     </div>
-    <div>
-        <p>E-mail: {{user?.email}}</p>
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Balance: </label>
+        <div class="col-sm-10">
+            <p>{{user?.balance}}</p>
+        </div>
     </div>
     
-    
+
     <div class="btn-box">
-        <button type="submit" standardButton btnStyle="form" btnType="save" [disabled]="!f.valid" (click)="submit()"></button>
+        <button type="submit" standardButton btnStyle="form" btnType="save" [disabled]="!f.valid" (click)="submit() "></button>
     </div>
 </form>
 

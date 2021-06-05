@@ -3,6 +3,7 @@ import {NgForm} from "@angular/forms";
 import {setFormValues} from "../../../../utils";
 import {UserProfile} from "../../../models/user-profile";
 import {Address} from "../../../models/address";
+import {ToastService} from "../../../services/toast.service";
 
 @Component({
   selector: 'app-profile-editor',
@@ -16,9 +17,11 @@ export class ProfileEditorComponent implements OnInit {
     @ViewChild("f", {static: true}) form!: NgForm;
     user: UserProfile = this.newUser();
     userId: number | undefined;
+   
 
 
-    constructor() { }
+    constructor(private toast: ToastService) {
+    }
 
     ngOnInit(): void {
         if (this.userInput !== undefined) {
@@ -28,7 +31,8 @@ export class ProfileEditorComponent implements OnInit {
             this.user = this.getUser(v);
         });
     }
-    submit(){
+
+    submit() {
         this.userChange.emit(this.user);
     }
 
@@ -43,10 +47,12 @@ export class ProfileEditorComponent implements OnInit {
             userId: this.userId,
             ...this.userInput,
             ...formValue,
-          
+
         };
     }
+
     newUser(): UserProfile {
+        this.toast.showSuccess("new user created")
         return {
             userId: this.userId,
             firstName: "",
@@ -55,10 +61,12 @@ export class ProfileEditorComponent implements OnInit {
             email: "",
             balance: 0,
             billingAddress: this.newAddress()
-         
+
         }
     }
+
     newAddress(): Address {
+        this.toast.showSuccess("new address created")
         return {
             addressee: "",
             firstLine: "",
@@ -68,6 +76,4 @@ export class ProfileEditorComponent implements OnInit {
             country: "PL"
         }
     }
-
-
 }
