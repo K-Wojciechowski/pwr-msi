@@ -26,7 +26,6 @@ export class ProfileEditorComponent implements OnInit {
         }
         this.form.valueChanges?.subscribe(v => {
             this.user = this.getUser(v);
-
         });
     }
     submit(){
@@ -34,8 +33,7 @@ export class ProfileEditorComponent implements OnInit {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.userInput.previousValue !== changes.userInput.currentValue && this.userInput !== undefined) {
-            console.log(this.user);
+        if (changes.userInput.previousValue !== changes.userInput.currentValue && changes.userInput.currentValue !== undefined) {
             setTimeout(() => setFormValues(changes.userInput.currentValue, this.form), 0);
         }
     }
@@ -43,6 +41,7 @@ export class ProfileEditorComponent implements OnInit {
     getUser(formValue: any): UserProfile {
         return {
             userId: this.userId,
+            ...this.userInput,
             ...formValue,
           
         };
