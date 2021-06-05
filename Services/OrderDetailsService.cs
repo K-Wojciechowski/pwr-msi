@@ -29,6 +29,7 @@ namespace pwr_msi.Services {
                 .Include(o => o.Address)
                 .Include(o => o.Customer)
                 .Include(o => o.Restaurant)
+                .Include(o => o.Restaurant.Address)
                 .Include(o => o.DeliveryPerson)
                 .Include("Items")
                 .Include("Items.MenuItem")

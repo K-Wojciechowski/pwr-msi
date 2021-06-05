@@ -30,9 +30,12 @@ import {MenuCategoryTabsComponent} from "./menu-category-tabs/menu-category-tabs
 import {PipesModule} from "../pipes/pipes.module";
 import {OrderItemsComponent} from "./order/order-items/order-items.component";
 import {OrderCardBaseComponent} from "./order/order-card-base/order-card-base.component";
+import {OrderCardBaseNoborderComponent} from "./order/order-card-base-noborder/order-card-base-noborder.component";
 import {OrderCardActionsComponent} from "./order/order-card-actions/order-card-actions.component";
 import {OrderCardAddressComponent} from "./order/order-card-address/order-card-address.component";
 import {OrderCardNotesComponent} from "./order/order-card-notes/order-card-notes.component";
+import {OrderCardProgressComponent} from "./order/order-card-progress/order-card-progress.component";
+import {OrderCardProgressIconComponent} from "./order/order-card-progress-icon/order-card-progress-icon.component";
 import {OrderCardRestaurantComponent} from "./order/order-card-restaurant/order-card-restaurant.component";
 import {CrystalLightboxModule} from "@crystalui/angular-lightbox";
 
@@ -50,9 +53,12 @@ const components = [
     MenuCategoryTabsComponent,
     OrderItemsComponent,
     OrderCardBaseComponent,
+    OrderCardBaseNoborderComponent,
     OrderCardActionsComponent,
     OrderCardAddressComponent,
     OrderCardNotesComponent,
+    OrderCardProgressComponent,
+    OrderCardProgressIconComponent,
     OrderCardRestaurantComponent,
     PagerComponent,
     ProgressSpinnerComponent,

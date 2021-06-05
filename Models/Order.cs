@@ -43,7 +43,7 @@ namespace pwr_msi.Models {
 
         public OrderDto AsDto() => new() {
             OrderId = OrderId,
-            Restaurant = Restaurant.AsBasicDto(),
+            Restaurant = Restaurant.AsBasicAddressDto(),
             Customer = Customer.AsBasicDto(),
             DeliveryPerson = DeliveryPerson?.AsBasicDto(),
             Address = Address,

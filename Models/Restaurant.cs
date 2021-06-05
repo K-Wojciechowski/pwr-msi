@@ -25,6 +25,7 @@ namespace pwr_msi.Models {
         public List<RestaurantUser> RestaurantUsers { get; set; } = null!;
 
         public RestaurantBasicDto AsBasicDto() => new (RestaurantId, Name, Logo);
+        public RestaurantBasicAddressDto AsBasicAddressDto() => new (RestaurantId, Name, Address, Logo);
 
         public RestaurantFullDto AsAdminDto() => new () {
             RestaurantId = RestaurantId,

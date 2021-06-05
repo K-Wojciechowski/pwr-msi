@@ -20,7 +20,6 @@ export class OrderItemsComponent implements OnInit {
     }
 
     groupCustomizations(orderItem: OrderItem): OrderItemCustomizationGroup[] {
-        debugger;
         const groups = groupBy(orderItem.customizations, c => c.menuItemOptionItem.menuItemOptionListId);
         return flatMap(orderItem.menuItem.options, ol => {
             // @ts-ignore

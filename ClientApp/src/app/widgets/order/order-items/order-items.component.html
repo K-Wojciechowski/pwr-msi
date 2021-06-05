@@ -17,14 +17,10 @@
                         class="amount">{{ item.menuItem.amount | amount: item.menuItem.amountUnit }}</div>
                 </div>
 
-                <div class="btn-group menu-buttons flex-shrink-0">
-
-                </div>
             </div>
             <div *ngIf="item.customizations.length > 0 || item.notes.trim().length > 0">
                 <ul class="order-item-options">
                     <li *ngIf="item.notes.trim().length > 0" class="order-item-notes">{{item.notes.trim()}}</li>
-                    <li>TODO TODO broken customizations</li>
                     <ng-container *ngFor="let cgroup of groupCustomizations(item)">
                         <li>
                             <span class="order-item-options-title">{{cgroup.list.name}}</span>

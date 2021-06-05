@@ -2,6 +2,7 @@
 <h1 *ngIf="!!order">Order {{order.orderId}}</h1>
 <app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
 <app-empty-state [empty]="!order" *ngIf="!showLoading">
+    <app-order-card-progress [order]="order"></app-order-card-progress>
     <app-order-card-actions [order]="order" formFactor="mobileIfImportant"></app-order-card-actions>
     <div class="row">
         <div class="col-md-9">
