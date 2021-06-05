@@ -15,7 +15,7 @@ import {RestaurantsEditComponent} from "./pages/admin/restaurants-edit/restauran
 import {CuisinesListComponent} from "./pages/admin/cuisines-list/cuisines-list.component";
 import {AuthType} from "./models/enum/auth-type";
 import {OrdersOverviewComponent} from "./pages/orders/orders-overview/orders-overview.component";
-import {OrdersInfoComponent} from "./pages/orders/orders-info/orders-info.component";
+import {OrdersDetailsComponent} from "./pages/orders/orders-details/orders-details.component";
 import {PaymentsOverviewComponent} from "./pages/orders/payments-overview/payments-overview.component";
 import {PaymentsInfoComponent} from "./pages/orders/payments-info/payments-info.component";
 import {PaymentsMakeComponent} from "./pages/orders/payments-make/payments-make.component";
@@ -45,7 +45,7 @@ const routes: Routes = [
     {path: "admin/cuisines", component: CuisinesListComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "browse/:id", component: RestaurantMenuComponent, data: {hideSidebar: true, sidebar: null, auth: AuthType.USER}},
     {path: "orders", component: OrdersOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
-    {path: "orders/:id", component: OrdersInfoComponent, data: {sidebar: "orders", auth: AuthType.USER}},
+    {path: "orders/:id", component: OrdersDetailsComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "orders/:id/pay", component: OrdersMakePaymentComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "payments", component: PaymentsOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "payments/repay", component: PaymentsMakeComponent, data: {sidebar: "orders", isBalanceRepayment: true, auth: AuthType.USER}},

@@ -1,0 +1,40 @@
+<div class="card mb-2" *ngFor="let item of order.items; index as i">
+    <div class="card-body d-flex">
+        <div class="menu-img-box d-flex flex-direction-column justify-content-center"
+             *ngIf="!!item.menuItem.image; else imgPlaceholder">
+            <img class="menu-img" src="{{item.menuItem.image}}" alt="{{item.menuItem.name}}" lightbox>
+        </div>
+        <ng-template #imgPlaceholder>
+            <div class="menu-img-placeholder"></div>
+        </ng-template>
+        <div class="order-item-rest">
+            <div class="order-item-info d-flex">
+                <div class="menu-item-name ml-2">{{item.menuItem.name}}</div>
+
+                <div class="menu-price-amount mr-2">
+                    <div class="price">{{ item.totalPrice | currency:"PLN" }}</div>
+                    <div
+                        class="amount">{{ item.menuItem.amount | amount: item.menuItem.amountUnit }}</div>
+                </div>
+
+                <div class="btn-group menu-buttons flex-shrink-0">
+
+                </div>
+            </div>
+            <div *ngIf="item.customizations.length > 0 || item.notes.trim().length > 0">
+                <ul class="order-item-options">
+                    <li *ngIf="item.notes.trim().length > 0" class="order-item-notes">{{item.notes.trim()}}</li>
+                    <li>TODO TODO broken customizations</li>
+                    <ng-container *ngFor="let cgroup of groupCustomizations(item)">
+                        <li>
+                            <span class="order-item-options-title">{{cgroup.list.name}}</span>
+                            <ul>
+                                <li *ngFor="let choice of cgroup.items">{{choice.name}}</li>
+                            </ul>
+                        </li>
+                    </ng-container>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -28,6 +28,13 @@ import {ContextPickerComponent} from "./context-picker/context-picker.component"
 import {SelectEditDateComponent} from "./select-edit-date/select-edit-date.component";
 import {MenuCategoryTabsComponent} from "./menu-category-tabs/menu-category-tabs.component";
 import {PipesModule} from "../pipes/pipes.module";
+import {OrderItemsComponent} from "./order/order-items/order-items.component";
+import {OrderCardBaseComponent} from "./order/order-card-base/order-card-base.component";
+import {OrderCardActionsComponent} from "./order/order-card-actions/order-card-actions.component";
+import {OrderCardAddressComponent} from "./order/order-card-address/order-card-address.component";
+import {OrderCardNotesComponent} from "./order/order-card-notes/order-card-notes.component";
+import {OrderCardRestaurantComponent} from "./order/order-card-restaurant/order-card-restaurant.component";
+import {CrystalLightboxModule} from "@crystalui/angular-lightbox";
 
 const components = [
     AddressDisplayComponent,
@@ -41,6 +48,12 @@ const components = [
     HeadingButtonsComponent,
     ImageUploadComponent,
     MenuCategoryTabsComponent,
+    OrderItemsComponent,
+    OrderCardBaseComponent,
+    OrderCardActionsComponent,
+    OrderCardAddressComponent,
+    OrderCardNotesComponent,
+    OrderCardRestaurantComponent,
     PagerComponent,
     ProgressSpinnerComponent,
     ProgressSpinnerContentComponent,
@@ -64,6 +77,7 @@ const components = [
         NgbTimepickerModule,
         NgbDatepickerModule,
         PipesModule,
+        CrystalLightboxModule,
     ],
 })
 export class WidgetsModule {

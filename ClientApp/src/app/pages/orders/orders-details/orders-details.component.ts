@@ -5,11 +5,11 @@ import {Order} from "../../../models/order/order";
 import {ToastService} from "../../../services/toast.service";
 
 @Component({
-    selector: 'app-orders-info',
-    templateUrl: './orders-info.component.html',
-    styleUrls: ['./orders-info.component.scss']
+    selector: 'app-orders-details',
+    templateUrl: './orders-details.component.html',
+    styleUrls: ['./orders-details.component.scss']
 })
-export class OrdersInfoComponent implements OnInit {
+export class OrdersDetailsComponent implements OnInit {
     showLoading: boolean = false;
     order!: Order;
 

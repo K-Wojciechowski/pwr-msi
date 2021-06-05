@@ -1,0 +1,17 @@
+<h1 *ngIf="order === undefined">Order Details</h1>
+<h1 *ngIf="!!order">Order {{order.orderId}}</h1>
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<app-empty-state [empty]="!order" *ngIf="!showLoading">
+    <app-order-card-actions [order]="order" formFactor="mobileIfImportant"></app-order-card-actions>
+    <div class="row">
+        <div class="col-md-9">
+            <app-order-items [order]="order"></app-order-items>
+        </div>
+        <div class="col-md-3">
+            <app-order-card-actions [order]="order" formFactor="desktopOrUnimportant"></app-order-card-actions>
+            <app-order-card-notes [order]="order"></app-order-card-notes>
+            <app-order-card-address [order]="order"></app-order-card-address>
+            <app-order-card-restaurant [order]="order"></app-order-card-restaurant>
+        </div>
+    </div>
+</app-empty-state>
