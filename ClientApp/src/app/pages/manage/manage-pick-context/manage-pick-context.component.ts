@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthStoreService} from "../../../services/auth-store.service";
 import {RestaurantBasic} from "../../../models/restaurant-basic";
-import {concat, sortBy, sortedUniq} from "lodash";
+import {concat, sortBy, uniqBy} from "lodash";
 
 @Component({
     selector: 'app-manage-pick-context',
@@ -20,7 +20,7 @@ export class ManagePickContextComponent implements OnInit {
                 return;
             }
 
-            this.restaurants = sortedUniq(sortBy(concat(access.manage, access.accept), r => r.name));
+            this.restaurants = uniqBy(sortBy(concat(access.manage, access.accept), r => r.name), r => r.restaurantId);
         })
     }
 

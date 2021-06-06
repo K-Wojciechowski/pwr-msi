@@ -7,10 +7,12 @@ export interface OrderBasic {
     orderId: number;
     restaurant: RestaurantBasic;
     customer: UserBasic;
+    deliveryPerson?: UserBasic | null;
     address: Address;
-    stauts: OrderStatus;
+    status: OrderStatus;
     totalPrice: string;
     deliveryNotes: string | null;
+    itemNames: string[];
 
     created: string;
     updated: string;
