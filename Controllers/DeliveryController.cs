@@ -84,7 +84,7 @@ namespace pwr_msi.Controllers {
             return await GetBasicOrders(query);
         }
 
-        [Route(template: "active/{id}/complete/")]
+        [Route(template: "order/{id}/complete/")]
         [HttpPost]
         public async Task<ActionResult<OrderBasicDto?>> MarkAsDelivered([FromRoute] int id) {
             var orderQuery = _dbContext.Orders
@@ -98,7 +98,7 @@ namespace pwr_msi.Controllers {
             return await _orderDetailsService.GetBasicOrderById(order.OrderId, IncludeDeliveryPerson);
         }
 
-        [Route(template: "waiting/{id}/assign/")]
+        [Route(template: "order/{id}/assign/")]
         [HttpPost]
         public async Task<ActionResult<OrderBasicDto?>> AssignToSelf([FromRoute] int id) {
             var restaurants = await _dbContext.RestaurantUsers
