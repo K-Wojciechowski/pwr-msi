@@ -27,9 +27,7 @@ namespace pwr_msi.Services {
                 orderTask.DateCompleted = Utils.Now();
                 orderTask.CompletedBy = completedBy;
             } else {
-                orderTask = new OrderTask {
-                    Order = order, CompletedBy = completedBy, DateCompleted = Utils.Now(),
-                };
+                orderTask = new OrderTask {Order = order, CompletedBy = completedBy, DateCompleted = Utils.Now(),};
                 await _dbContext.AddAsync(orderTask);
             }
 
@@ -38,19 +36,46 @@ namespace pwr_msi.Services {
             order.Updated = Utils.Now();
             await _dbContext.SaveChangesAsync();
             await ReactToTaskCompletion(order, oldStatus, order.Status);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        private async Task<bool> TryRegisterTask(Order order, OrderTaskType task, AssigneeType? assigneeType = null,
+            int? assigneeUserId = null,
+            int? assigneeRestaurantId = null) {
+            var canPerform = OrderTaskTypeSettings.allowedTransitions[order.LastTaskType].Contains(task);
+            if (!canPerform) return false;
+            var orderTask = new OrderTask {
+                Order = order,
+                AssigneeType = assigneeType,
+                AssigneeRestaurantId = assigneeRestaurantId,
+                AssigneeUserId = assigneeUserId,
+            };
+            await _dbContext.AddAsync(orderTask);
+            order.Updated = Utils.Now();
+            await _dbContext.SaveChangesAsync();
 
             return true;
         }
 
         private async Task ReactToTaskCompletion(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
             switch (newStatus) {
+                case OrderStatus.PAID:
+                    await TryRegisterTask(order, OrderTaskType.DECIDE, AssigneeType.RESTAURANT,
+                        assigneeRestaurantId: order.RestaurantId);
+                    break;
                 case OrderStatus.DELIVERED:
                     await TryCompleteTask(order, OrderTaskType.COMPLETE, completedBy: null);
                     break;
+                case OrderStatus.CANCELLED:
                 case OrderStatus.REJECTED:
                     // This works around a dependency cycle.
                     var task = _services.GetService<PaymentService>()?.ReturnOrderPayment(order);
-                    if (task != null) await task;
+                    if (task != null) {
+                        await task;
+                        order.Updated = Utils.Now();
+                    }
                     break;
             }
         }
@@ -82,8 +107,9 @@ namespace pwr_msi.Services {
             var completedPayments = _dbContext.Payments.Where(p =>
                 p.OrderId == orderId && !p.IsReturn && p.Status == PaymentStatus.COMPLETED);
             var alreadyPaid = await completedPayments.SumAsync(p => p.Amount);
+            var completed = false;
             if (alreadyPaid >= order.TotalPrice) {
-                await TryCompleteTask(order, OrderTaskType.PAY, order.Customer);
+                completed = await TryCompleteTask(order, OrderTaskType.PAY, order.Customer);
             }
         }
     }

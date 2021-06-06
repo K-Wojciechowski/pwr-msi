@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -76,7 +77,7 @@ namespace pwr_msi.Services {
                         Created = Utils.Now(),
                         Updated = Utils.Now()
                     };
-                    await ProcessNewBalancePayment(balancePayment);
+                    await ProcessNewBalancePayment(balancePayment, transaction);
                 }
 
                 int? externalPaymentId = null;
@@ -138,21 +139,29 @@ namespace pwr_msi.Services {
         }
 
         public async Task<Payment> ReturnOrderPayment(Order order) {
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-            var amountToReturn = await _dbContext.Payments
-                .Where(p => p.OrderId == order.OrderId && p.Status == PaymentStatus.COMPLETED).SumAsync(p => p.Amount);
-            var payment = new Payment {
-                Amount = -amountToReturn,
-                OrderId = order.OrderId,
-                UserId = order.CustomerId,
-                Status = PaymentStatus.CREATED,
-                IsTargettingBalance = true,
-                Created = Utils.Now(),
-                Updated = Utils.Now()
-            };
-            await ProcessNewBalancePayment(payment);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
+            Payment payment = null!;
+
+            var executionStrategy = _dbContext.Database.CreateExecutionStrategy();
+            await executionStrategy.ExecuteAsync(async () => {
+                await using var transaction =
+                    await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+                var amountToReturn = await _dbContext.Payments
+                    .Where(p => p.OrderId == order.OrderId && p.Status == PaymentStatus.COMPLETED)
+                    .SumAsync(p => p.Amount);
+                payment = new Payment {
+                    Amount = -amountToReturn,
+                    OrderId = order.OrderId,
+                    UserId = order.CustomerId,
+                    Status = PaymentStatus.CREATED,
+                    IsTargettingBalance = true,
+                    IsReturn = true,
+                    Created = Utils.Now(),
+                    Updated = Utils.Now()
+                };
+                await ProcessNewBalancePayment(payment, transaction);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+            });
             return payment;
         }
 
@@ -218,15 +227,22 @@ namespace pwr_msi.Services {
             return paymentInfo;
         }
 
-        private async Task ProcessNewBalancePayment(Payment payment) {
+        private async Task ProcessNewBalancePayment(Payment payment, IDbContextTransaction transaction) {
             await _dbContext.AddAsync(payment);
             await _dbContext.SaveChangesAsync();
-            await MakeBalancePayment(payment);
+            await MakeBalancePayment(payment, transaction);
         }
 
         private async Task MakeBalancePayment(Payment payment) {
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+            var executionStrategy = _dbContext.Database.CreateExecutionStrategy();
+            await executionStrategy.ExecuteAsync(async () => {
+                await using var transaction =
+                    await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+                await MakeBalancePayment(payment, transaction);
+            });
+        }
 
+        private async Task MakeBalancePayment(Payment payment, IDbContextTransaction transaction) {
             if (payment.Status != PaymentStatus.CREATED && payment.Status != PaymentStatus.REQUESTED) {
                 throw new Exception("Invalid payment status");
             }
@@ -245,7 +261,6 @@ namespace pwr_msi.Services {
             }
 
             await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
             if (payment.OrderId.HasValue) {
                 await _orderTaskService.TryMarkAsPaid(payment.OrderId.Value);
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -36,7 +37,6 @@ namespace pwr_msi {
             return new Page<TO> {Items = items.Select(converter), MaxPage = maxPage, ItemCount = itemCount, PageNumber = page};
         }
 
-
         public static async Task<Page<TO>> PaginateAsync<TD, TO>(IQueryable<TD> queryable, int pageRaw,
             Func<TD, Task<TO>> converter) where TD : class {
             var itemCount = await queryable.CountAsync();
@@ -46,7 +46,10 @@ namespace pwr_msi {
             if (page > maxPage) page = maxPage;
             var items = await queryable.Skip(count: (page - 1) * Constants.PageSize).Take(Constants.PageSize)
                 .ToListAsync();
-            var convertedItems = await Task.WhenAll(items.Select(converter));
+            var convertedItems = new List<TO>();
+            foreach (var item in items) {
+                convertedItems.Add(await converter(item));
+            }
             return new Page<TO> {Items = convertedItems, MaxPage = maxPage, ItemCount = itemCount, PageNumber = page};
         }
 

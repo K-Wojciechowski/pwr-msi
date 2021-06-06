@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Order} from "../../../models/order/order";
 import {OrderItem} from "../../../models/order/order-item";
 import {OrderItemCustomization} from "../../../models/order/order-item-customization";
-import {flatMap, groupBy} from "lodash";
+import {flatMap, groupBy, sumBy} from "lodash";
 import {OrderItemCustomizationGroup} from "../../../models/order/order-item-customization-group";
 
 @Component({
@@ -12,6 +12,7 @@ import {OrderItemCustomizationGroup} from "../../../models/order/order-item-cust
 })
 export class OrderItemsComponent implements OnInit {
     @Input("order") order!: Order;
+    @Input("showTotal") showTotal: boolean = true;
 
     constructor() {
     }

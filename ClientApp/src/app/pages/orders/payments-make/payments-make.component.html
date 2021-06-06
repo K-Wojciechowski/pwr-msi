@@ -3,9 +3,21 @@
 <app-progress-spinner-fullwidth *ngIf="showLoading"></app-progress-spinner-fullwidth>
 <p *ngIf="showLoading" class="payments-make-text">Payment in progress…</p>
 <ng-container *ngIf="!showLoading">
-    <p class="text-danger" *ngIf="showHttpError && isBalanceRepayment">Unable to initiate balance repayment. Your
-        balance might be insufficient to request a repayment.</p>
-    <p class="text-danger" *ngIf="showHttpError && !isBalanceRepayment">There was an error making the request.</p>
-    <p class="text-danger" *ngIf="!showHttpError && !showSuccess">Unable to make payment. It might have already been processed.</p>
-    <p class="text-success" *ngIf="showSuccess">Payment successful!</p>
+    <div *ngIf="showHttpError || (!showHttpError && !showSuccess)" class="payments-check-box payments-check-box-failure">
+        <div class="payments-check-box-icon"><bs-icon name="x-circle-fill"></bs-icon></div>
+        <div class="payments-check-box-text">Payment failed.</div>
+        <div class="payments-check-box-text" *ngIf="showHttpError && isBalanceRepayment">Unable to initiate balance repayment. Your balance might be insufficient to request a repayment.</div>
+        <div class="payments-check-box-text" *ngIf="showHttpError && !isBalanceRepayment">There was an error making the request.</div>
+        <div class="payments-check-box-text" *ngIf="!showHttpError && !showSuccess">Unable to make payment. It might have already been processed.</div>
+        <div class="payments-check-box-buttons">
+            <a class="ml-2 mr-2" routerLink="/payments/{{paymentId}}" standardButton btnStyle="outline-large" btnType="undefined" icon="cash" text="Go to Payment Page"></a>
+        </div>
+    </div>
+    <div *ngIf="showSuccess" class="payments-check-box payments-check-box-success">
+        <div class="payments-check-box-icon"><bs-icon name="check-circle-fill"></bs-icon></div>
+        <div class="payments-check-box-text">Payment processed successfully.</div>
+        <div class="payments-check-box-buttons">
+            <a class="ml-2 mr-2" routerLink="/payments/{{paymentId}}" standardButton btnStyle="outline-large" btnType="undefined" icon="cash" text="Go to Payment Page"></a>
+        </div>
+    </div>
 </ng-container>

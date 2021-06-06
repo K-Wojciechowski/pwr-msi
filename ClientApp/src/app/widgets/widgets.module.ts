@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, CurrencyPipe} from '@angular/common';
 import {BsIconComponent} from "./bs-icon/bs-icon.component";
 import {DashboardAppBoxComponent} from "./dashboard-app-box/dashboard-app-box.component";
 import {FormInputComponent} from "./form-input/form-input.component";
@@ -85,6 +85,7 @@ const components = [
         PipesModule,
         CrystalLightboxModule,
     ],
+    providers: [CurrencyPipe],
 })
 export class WidgetsModule {
 }

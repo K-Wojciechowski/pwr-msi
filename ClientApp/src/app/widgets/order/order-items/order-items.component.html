@@ -9,9 +9,9 @@
         </ng-template>
         <div class="order-item-rest">
             <div class="order-item-info d-flex">
-                <div class="menu-item-name ml-2">{{item.menuItem.name}}</div>
+                <div class="menu-item-name">{{item.menuItem.name}}</div>
 
-                <div class="menu-price-amount mr-2">
+                <div class="menu-price-amount">
                     <div class="price">{{ item.totalPrice | currency:"PLN" }}</div>
                     <div
                         class="amount">{{ item.menuItem.amount | amount: item.menuItem.amountUnit }}</div>
@@ -33,4 +33,8 @@
             </div>
         </div>
     </div>
+</div>
+<div class="mt-4 order-total">
+    <span class="total">Total</span>
+    <span class="price">{{order.totalPrice | currency: "PLN"}}</span>
 </div>

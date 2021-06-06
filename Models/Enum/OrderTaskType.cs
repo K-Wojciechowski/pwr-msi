@@ -25,11 +25,14 @@ namespace pwr_msi.Models.Enum {
         public readonly static ImmutableDictionary<OrderTaskType, List<OrderTaskType>> allowedTransitions =
             new Dictionary<OrderTaskType, List<OrderTaskType>>() {
                 {OrderTaskType.CREATE, new List<OrderTaskType> {OrderTaskType.PAY, OrderTaskType.CANCEL}},
-                {OrderTaskType.PAY, new List<OrderTaskType> {OrderTaskType.DECIDE}},
+                {OrderTaskType.PAY, new List<OrderTaskType> {OrderTaskType.DECIDE, OrderTaskType.CANCEL, OrderTaskType.ACCEPT, OrderTaskType.REJECT}},
                 {OrderTaskType.DECIDE, new List<OrderTaskType> {OrderTaskType.ACCEPT, OrderTaskType.REJECT}},
                 {OrderTaskType.ACCEPT, new List<OrderTaskType> {OrderTaskType.PREPARE}},
                 {OrderTaskType.PREPARE, new List<OrderTaskType> {OrderTaskType.DELIVER}},
                 {OrderTaskType.DELIVER, new List<OrderTaskType> {OrderTaskType.COMPLETE}},
+                {OrderTaskType.COMPLETE, new List<OrderTaskType>()},
+                {OrderTaskType.REJECT, new List<OrderTaskType>()},
+                {OrderTaskType.CANCEL, new List<OrderTaskType>()},
             }.ToImmutableDictionary();
 
         public readonly static ImmutableDictionary<OrderTaskType, List<OrderTaskPerformer>> allowedPerformers = new Dictionary<OrderTaskType, List<OrderTaskPerformer>> {

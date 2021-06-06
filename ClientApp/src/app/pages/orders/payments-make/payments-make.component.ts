@@ -14,14 +14,15 @@ export class PaymentsMakeComponent implements OnInit {
     public showSuccess = false;
     public showHttpError = false;
     public isBalanceRepayment = false;
+    public paymentId: string = "";
 
     constructor(private http: HttpClient, private route: ActivatedRoute) {
     }
 
     ngOnInit(): void {
-        const paymentId = this.route.snapshot.paramMap.get("id");
+        this.paymentId = this.route.snapshot.paramMap.get("id") ?? "";
         this.isBalanceRepayment = this.route.snapshot.data.isBalanceRepayment === true;
-        const endpoint = this.isBalanceRepayment ? "/api/payments/balance/repay/" : `/api/payments/${paymentId}/`;
+        const endpoint = this.isBalanceRepayment ? "/api/payments/balance/repay/" : `/api/payments/${this.paymentId}/`;
         this.showLoading = true;
 
         this.http.post<PaymentAttempt>(endpoint, null).subscribe(
@@ -37,6 +38,7 @@ export class PaymentsMakeComponent implements OnInit {
     handleAttempt(attempt: PaymentAttempt) {
         this.showHttpError = false;
         if (!!attempt.paymentUrl) {
+            this.paymentId = attempt.paymentId.toString();
             const baseUrl = new URL(`/payments/${attempt.paymentId}/check`, window.location.toString());
             const queryParams = new URLSearchParams();
             queryParams.set("next", baseUrl.toString());

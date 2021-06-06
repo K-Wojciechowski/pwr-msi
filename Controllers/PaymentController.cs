@@ -58,8 +58,13 @@ namespace pwr_msi.Controllers {
                 return new List<PaymentDto>();
             }
 
-            var paymentTasks = payments!.Select(async p => p.AsDto(await GetOrderBasicById(p.OrderId)));
-            return await Task.WhenAll(paymentTasks);
+            var paymentDtos = new List<PaymentDto>();
+            foreach (var payment in payments) {
+                var paymentDto = payment.AsDto(await GetOrderBasicById(payment.OrderId));
+                paymentDtos.Add(paymentDto);
+            }
+
+            return paymentDtos;
         }
 
         [Route("{id}/")]

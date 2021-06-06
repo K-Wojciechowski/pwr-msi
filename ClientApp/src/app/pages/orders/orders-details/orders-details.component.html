@@ -1,18 +1,35 @@
 <h1 *ngIf="order === undefined">Order Details</h1>
 <h1 *ngIf="!!order">Order {{order.orderId}}</h1>
 <app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
-<app-empty-state [empty]="!order" *ngIf="!showLoading">
+<app-empty-state [empty]="!order" *ngIf="!!order">
     <app-order-card-progress [order]="order"></app-order-card-progress>
-    <app-order-card-actions [order]="order" formFactor="mobileIfImportant"></app-order-card-actions>
+    <app-order-card-actions [order]="order" formFactor="mobileIfImportant" (act)="handleAction($event)"></app-order-card-actions>
     <div class="row">
         <div class="col-md-9">
             <app-order-items [order]="order"></app-order-items>
         </div>
         <div class="col-md-3">
-            <app-order-card-actions [order]="order" formFactor="desktopOrUnimportant"></app-order-card-actions>
+            <app-order-card-actions [order]="order" formFactor="desktopOrUnimportant" (act)="handleAction($event)"></app-order-card-actions>
             <app-order-card-notes [order]="order"></app-order-card-notes>
             <app-order-card-address [order]="order"></app-order-card-address>
             <app-order-card-restaurant [order]="order"></app-order-card-restaurant>
         </div>
     </div>
 </app-empty-state>
+
+<ng-template #confirmCancel let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Confirm order cancellation</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        Are you sure you want to cancel this order?
+        <ng-container *ngIf="order.status === 'PAID'">Your payment will be refunded into your balance.</ng-container>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('close')">Close</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('ok')">Cancel my order</button>
+    </div>
+</ng-template>

@@ -10,6 +10,7 @@ import {OrderStatus} from "../../../models/enum/order-status";
 export class OrderCardProgressComponent implements OnInit, OnChanges {
     @Input("order") order!: Order;
     orderProgress: number = 0;
+    showCancellation: boolean = false;
     showRejection: boolean = false;
 
     constructor() {
@@ -51,7 +52,8 @@ export class OrderCardProgressComponent implements OnInit, OnChanges {
 
     private updateOrderProgress(order: Order) {
         this.orderProgress = OrderCardProgressComponent.getOrderProgress(order.status);
-        this.showRejection = this.orderProgress < 0;
+        this.showCancellation = this.orderProgress == -1;
+        this.showRejection = this.orderProgress == -2;
         this.orderProgress = this.orderProgress < -1 ? -this.orderProgress : this.orderProgress;
     }
 }

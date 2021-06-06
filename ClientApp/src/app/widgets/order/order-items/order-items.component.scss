@@ -93,7 +93,7 @@ ul.menu-options label {
 
 ul.order-item-options {
     margin: 0;
-    padding-left: 0.5rem;
+    padding-left: 1.25rem;
     font-size: 0.85rem;
 }
 
@@ -122,5 +122,20 @@ ul.order-item-options li ul li:only-child {
 }
 
 .order-item-options-title {
+    font-weight: bolder;
+}
+
+.order-total {
+    display: flex;
+    flex-direction: row;
+    font-size: $h5-font-size;
+    margin-bottom: 1rem;
+}
+
+.order-total .total {
+    flex-grow: 1;
+}
+
+.order-total .price {
     font-weight: bolder;
 }

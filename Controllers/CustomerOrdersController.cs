@@ -36,7 +36,8 @@ namespace pwr_msi.Controllers {
         }
 
         private async Task<IEnumerable<OrderBasicDto>> GetBasicOrders(IEnumerable<int> ids) {
-            var orders = await Task.WhenAll(ids.Select(i =>_orderDetailsService.GetOrderById(i, includeDeliveryPerson: false)));
+            var orders =
+                await Task.WhenAll(ids.Select(i => _orderDetailsService.GetOrderById(i, includeDeliveryPerson: false)));
             return orders.Select(o => o.AsBasicDto());
         }
 
@@ -82,15 +83,18 @@ namespace pwr_msi.Controllers {
         public async Task<ActionResult<OrderDto>> CancelOrder([FromRoute] int id) {
             var order = await _dbContext.Orders.FindAsync(id);
             if (order == null) return NotFound();
+            var cancelled = false;
             if (order.Status == OrderStatus.PAID || order.Status == OrderStatus.CREATED) {
-                await _orderTaskService.TryCompleteTask(order, OrderTaskType.CANCEL, MsiUser);
-                await _paymentService.ReturnOrderPayment(order);
-                order.Updated = new ZonedDateTime();
-                await _dbContext.SaveChangesAsync();
-                return await _orderDetailsService.GetOrderById(order.OrderId, includeDeliveryPerson: false);
+                cancelled = await _orderTaskService.TryCompleteTask(order, OrderTaskType.CANCEL, MsiUser);
             }
 
-            return BadRequest();
+            if (!cancelled) return BadRequest();
+
+            await _dbContext.SaveChangesAsync();
+            // await _paymentService.ReturnOrderPayment(order);
+            order.Updated = Utils.Now();
+            await _dbContext.SaveChangesAsync();
+            return await _orderDetailsService.GetOrderById(order.OrderId, includeDeliveryPerson: false);
         }
 
         [Route(template: "")]
@@ -107,7 +111,8 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "{id}/pay/")]
         [HttpPost]
-        public async Task<ActionResult<PaymentGroupInfo>> PayForOrder([FromRoute] int id, [FromQuery] bool useBalance = true) {
+        public async Task<ActionResult<PaymentGroupInfo>> PayForOrder([FromRoute] int id,
+            [FromQuery] bool useBalance = true) {
             var order = await _dbContext.Orders.Include(o => o.Customer)
                 .Include(o => o.Restaurant)
                 .Where(o => o.OrderId == id && o.CustomerId == MsiUserId).FirstOrDefaultAsync();

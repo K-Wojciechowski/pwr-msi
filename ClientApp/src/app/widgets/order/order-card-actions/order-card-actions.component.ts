@@ -4,6 +4,7 @@ import {OrderAction} from "../../../models/order/order-action";
 import {OrderStatus} from "../../../models/enum/order-status";
 import {OrderUserRole} from "../../../models/enum/OrderUserRole";
 import {AuthStoreService} from "../../../services/auth-store.service";
+import {CurrencyPipe} from "@angular/common";
 
 @Component({
     selector: 'app-order-card-actions',
@@ -21,7 +22,7 @@ export class OrderCardActionsComponent implements OnInit, OnChanges {
 
     private currentUserId: number | null = null;
 
-    constructor(private authStore: AuthStoreService) {
+    constructor(private authStore: AuthStoreService, private currencyPipe: CurrencyPipe) {
     }
 
     ngOnInit(): void {
@@ -44,7 +45,7 @@ export class OrderCardActionsComponent implements OnInit, OnChanges {
         const actions = [];
         let isImportant = true;
         if (order.status == OrderStatus.CREATED && this.userRole == OrderUserRole.CUSTOMER) {
-            actions.push(new OrderAction("pay", "Pay for the order"));
+            actions.push(new OrderAction("pay", "Pay " + this.currencyPipe.transform(order.totalPrice, "PLN")));
         }
         if ((order.status == OrderStatus.CREATED || order.status == OrderStatus.PAID) && this.userRole == OrderUserRole.CUSTOMER) {
             actions.push(new OrderAction("cancel", "Cancel order", "danger"));
