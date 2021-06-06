@@ -6,7 +6,7 @@ import {Observable, of, OperatorFunction} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, switchMap, tap} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
 import {UserAdmin} from "../../../models/user-admin";
-import {RestaurantAdmin} from "../../../models/restaurant-admin";
+import {RestaurantFull} from "../../../models/restaurant-full";
 
 @Component({
     selector: 'app-users-restaurants-editor',
@@ -119,7 +119,7 @@ export class UsersRestaurantsEditorComponent implements OnInit, OnChanges {
         });
     }
 
-    static updateWithRestaurant(restaurantUsers: RestaurantUser[], restaurant: RestaurantAdmin) {
+    static updateWithRestaurant(restaurantUsers: RestaurantUser[], restaurant: RestaurantFull) {
         if (restaurant.restaurantId === undefined) return restaurantUsers;
         const restaurantBasic = {restaurantId: restaurant.restaurantId, name: restaurant.name};
         return restaurantUsers.map(ru => {

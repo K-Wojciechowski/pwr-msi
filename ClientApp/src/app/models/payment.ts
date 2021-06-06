@@ -1,5 +1,5 @@
 import {PaymentStatus} from "./enum/payment-status";
-import {OrderBasic} from "./order-basic";
+import {OrderBasic} from "./order/order-basic";
 
 export interface Payment {
     paymentId: number;

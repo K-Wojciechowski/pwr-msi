@@ -20,12 +20,13 @@ namespace pwr_msi.Models {
 
         public ICollection<Cuisine> Cuisines { get; set; } = null!;
         public ICollection<MenuCategory> MenuCategories { get; set; } = null!;
+        public ICollection<MenuItem> MenuItems { get; set; } = null!;
         public ICollection<User> Users { get; set; } = null!;
         public List<RestaurantUser> RestaurantUsers { get; set; } = null!;
 
         public RestaurantBasicDto AsBasicDto() => new (RestaurantId, Name, Logo);
 
-        public RestaurantAdminDto AsAdminDto() => new () {
+        public RestaurantFullDto AsAdminDto() => new () {
             RestaurantId = RestaurantId,
             Name = Name,
             Website = Website,
@@ -35,8 +36,15 @@ namespace pwr_msi.Models {
             IsActive = IsActive,
             Cuisines = Cuisines.ToList(),
         };
+        public RestaurantDetailDto AsDetailDto() => new () {
+            Cuisines = Cuisines,
+            Name = Name,
+            Website = Website,
+            Description = Description,
+            Address = Address,
+        };
 
-        public async Task UpdateWithAdminDto(RestaurantAdminDto raDto, DbSet<Cuisine> cuisineSource) {
+        public async Task UpdateWithAdminDto(RestaurantFullDto raDto, DbSet<Cuisine> cuisineSource) {
             Name = raDto.Name;
             Website = raDto.Website;
             Description = raDto.Description;

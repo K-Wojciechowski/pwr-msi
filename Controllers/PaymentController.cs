@@ -18,10 +18,18 @@ namespace pwr_msi.Controllers {
     public class PaymentController : MsiControllerBase {
         private MsiDbContext _dbContext;
         private PaymentService _paymentService;
+        private OrderDetailsService _orderDetailsService;
 
-        public PaymentController(MsiDbContext dbContext, PaymentService paymentService) {
+        public PaymentController(MsiDbContext dbContext, PaymentService paymentService, OrderDetailsService orderDetailsService) {
             _dbContext = dbContext;
             _paymentService = paymentService;
+            _orderDetailsService = orderDetailsService;
+        }
+
+        private async Task<OrderBasicDto?> GetOrderBasicById(int? id) {
+            if (id == null) return null;
+            var order = await _orderDetailsService.GetOrderById(id.Value, includeDeliveryPerson: false);
+            return order?.AsBasicDto();
         }
 
         private IQueryable<Payment> GetPaymentBaseQueryable() {
@@ -30,13 +38,13 @@ namespace pwr_msi.Controllers {
 
         [Route("")]
         public async Task<Page<PaymentDto>> Payments([FromQuery] int page = 1) {
-            return await Utils.Paginate(
+            return await Utils.PaginateAsync(
                 queryable:
                 GetPaymentBaseQueryable()
                     .Where(p => p.UserId == MsiUserId)
                     .OrderByDescending(p => p.Created),
                 pageRaw: page,
-                converter: p => p.AsDto()
+                converter: async p => p.AsDto(await GetOrderBasicById(p.OrderId))
             );
         }
 
@@ -46,7 +54,12 @@ namespace pwr_msi.Controllers {
                 p.UserId == MsiUserId &&
                 (p.Status == PaymentStatus.CREATED || p.Status == PaymentStatus.REQUESTED));
             var payments = await paymentsQuery.ToListAsync();
-            return payments.Select(p => p.AsDto());
+            if (payments == null) {
+                return new List<PaymentDto>();
+            }
+
+            var paymentTasks = payments!.Select(async p => p.AsDto(await GetOrderBasicById(p.OrderId)));
+            return await Task.WhenAll(paymentTasks);
         }
 
         [Route("{id}/")]
@@ -55,7 +68,7 @@ namespace pwr_msi.Controllers {
             var payment = await GetPaymentBaseQueryable().Where(p => p.UserId == MsiUserId && p.PaymentId == id
             ).FirstOrDefaultAsync();
             payment = await _paymentService.RefreshStatusFromApi(payment);
-            return payment.AsDto();
+            return payment.AsDto(await GetOrderBasicById(payment.OrderId));
         }
 
         [Route("{id}/")]

@@ -35,6 +35,7 @@ namespace pwr_msi {
             services.AddScoped<AccountEmailService, AccountEmailService>();
             services.AddScoped<AdminCommonService, AdminCommonService>();
             services.AddScoped<MenuService, MenuService>();
+            services.AddScoped<OrderDetailsService, OrderDetailsService>();
             services.AddScoped<OrderTaskService, OrderTaskService>();
             services.AddScoped<PaymentService, PaymentService>();
             services.AddScoped<S3Service, S3Service>();
@@ -74,6 +75,10 @@ namespace pwr_msi {
                     o.TokenValidationParameters = appConfig.JwtValidationParameters;
                     o.Configuration = new OpenIdConnectConfiguration {Issuer = appConfig.ServerAddress};
                 });
+            services.AddStackExchangeRedisCache(options => {
+                options.Configuration = appConfig.RedisConnectionString;
+                options.InstanceName = appConfig.RedisInstanceName;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

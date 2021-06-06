@@ -15,6 +15,8 @@ namespace pwr_msi.Models {
             PayUrl = "http://localhost:5007/",
             EmailFromAddress = "noreply@msi.local",
             EmailFromName = "MSI",
+            RedisConnectionString = "localhost",
+            RedisInstanceName = "msi",
             SmtpHost = "localhost",
             SmtpPort = 1025,
             SmtpAuthenticate = false,
@@ -34,6 +36,8 @@ namespace pwr_msi.Models {
         public string PayUrl { get; set; }
         public string EmailFromName { get; set; }
         public string EmailFromAddress { get; set; }
+        public string RedisConnectionString { get; set; }
+        public string RedisInstanceName { get; set; }
         public string SmtpHost { get; set; }
         public int SmtpPort { get; set; }
         public bool SmtpAuthenticate { get; set; }
@@ -73,6 +77,8 @@ namespace pwr_msi.Models {
                 PayUrl = configuration.GetString(key: "PAY_URL", DefaultSource.PayUrl),
                 EmailFromAddress = configuration.GetString(key: "EMAIL_FROM_ADDRESS", DefaultSource.EmailFromAddress),
                 EmailFromName = configuration.GetString(key: "EMAIL_FROM_NAME", DefaultSource.EmailFromName),
+                RedisConnectionString = configuration.GetString("REDIS_CONNECTION_STRING", DefaultSource.RedisConnectionString),
+                RedisInstanceName = configuration.GetString("REDIS_INSTANCE_NAME", DefaultSource.RedisInstanceName),
                 SmtpHost = configuration.GetString(key: "SMTP_HOST", DefaultSource.SmtpHost),
                 SmtpPort = configuration.GetInt(key: "SMTP_PORT", DefaultSource.SmtpPort),
                 SmtpAuthenticate = configuration.GetBoolean(key: "SMTP_AUTHENTIATE", DefaultSource.SmtpAuthenticate),

@@ -1,7 +1,7 @@
-import {RestaurantAdmin} from "./restaurant-admin";
+import {RestaurantFull} from "./restaurant-full";
 import {RestaurantUser} from "./restaurant-user";
 
 export interface RestaurantEditorOutput {
-    restaurant: RestaurantAdmin;
+    restaurant: RestaurantFull;
     restaurantUsers: RestaurantUser[];
 }

@@ -1,5 +1,5 @@
-namespace pwr_msi.Models.Dto.RestaurantManagement {
-    public class RestaurantMenuItemOptionItemDto {
+namespace pwr_msi.Models.Dto.RestaurantMenu {
+    public class MenuItemOptionItemDto {
         public int MenuItemOptionItemId { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }

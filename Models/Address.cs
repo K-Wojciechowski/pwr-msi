@@ -17,12 +17,14 @@ namespace pwr_msi.Models {
         public ICollection<User> Users { get; set; }
 
         public void Update(Address address) {
-            this.Addressee = address.Addressee;
-            this.FirstLine = address.FirstLine;
-            this.SecondLine = address.SecondLine;
-            this.PostCode = address.PostCode;
-            this.City = address.City;
-            this.Country = address.Country;
+            Addressee = address.Addressee;
+            FirstLine = address.FirstLine;
+            SecondLine = address.SecondLine;
+            PostCode = address.PostCode;
+            City = address.City;
+            Country = address.Country;
+            Latitude = address.Latitude;
+            Longitude = address.Longitude;
         }
     }
 }
