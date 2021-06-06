@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,10 +14,9 @@ namespace pwr_msi.Controllers {
     [Authorize]
     [ApiController]
     [Route(template: "api/restaurants/")]
-    public class RestaurantOrderController : MsiControllerBase {
-        private readonly MsiDbContext _dbContext;
-        private readonly OrderDetailsService _orderDetailsService;
+    public class RestaurantOrderController : OrdersControllerBase {
         private readonly OrderTaskService _orderTaskService;
+        protected override bool IncludeDeliveryPerson => true;
 
         public RestaurantOrderController(MsiDbContext dbContext, OrderDetailsService orderDetailsService,
             OrderTaskService orderTaskService) {
@@ -27,33 +25,19 @@ namespace pwr_msi.Controllers {
             _orderTaskService = orderTaskService;
         }
 
-        private IQueryable<Order> OrderBasicQuery() {
-            return _dbContext.Orders.Include(o => o.Customer).Include(o => o.Restaurant).Include(o => o.Address);
-        }
 
         [AcceptOrdersRestaurantAuthorize("id")]
         [Route(template: "{id}/orders/")]
-        public async Task<ActionResult<List<OrderBasicDto>>> GetAllOrders([FromRoute] int id) {
-            var query = OrderBasicQuery().Where(o => o.RestaurantId == id);
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
-        }
-
-        [AcceptOrdersRestaurantAuthorize("id")]
-        [Route(template: "{id}/orders/")]
-        public async Task<ActionResult<List<OrderBasicDto>>> GetOrders([FromRoute] int id, [FromQuery] string status) {
-            if (!Enum.TryParse(status.ToUpper(), out OrderStatus parsedStatus)) return BadRequest();
-            var query = OrderBasicQuery().Where(o => o.RestaurantId == id && o.Status == parsedStatus);
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
+        public async Task<ActionResult<Page<OrderBasicDto>>> GetAllOrders([FromRoute] int id, [FromQuery] int page) {
+            var query = _dbContext.Orders.Where(o => o.RestaurantId == id);
+            return await PaginateBasicOrders(query, page);
         }
 
         [AcceptOrdersRestaurantAuthorize("id")]
         [Route(template: "{id}/orders/awaiting/")]
         public async Task<ActionResult<List<OrderBasicDto>>> GetAwaitingForAcceptanceOrders([FromRoute] int id) {
-            var query = OrderBasicQuery().Where(o => o.RestaurantId == id && o.Status == OrderStatus.PAID);
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
+            var query = _dbContext.Orders.Where(o => o.RestaurantId == id && o.Status == OrderStatus.PAID);
+            return await GetBasicOrders(query);
         }
 
         private async Task<ActionResult<OrderDto>> GetOrderById(int orderId, int restaurantId) {
@@ -72,7 +56,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/orders/{orderId}/accept/")]
         [HttpPost]
         public async Task<ActionResult<OrderDto>> AcceptOrder([FromRoute] int orderId, [FromRoute] int id) {
-            var order = await OrderBasicQuery().Where(o => o.RestaurantId == id && o.OrderId == orderId)
+            var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId)
                 .FirstOrDefaultAsync();
             if (order == null) return NotFound();
             await _orderTaskService.TryCompleteTask(order, OrderTaskType.ACCEPT, MsiUser);
@@ -84,7 +68,7 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/orders/{orderId}/prepare/")]
         [HttpPost]
         public async Task<ActionResult<OrderDto>> PrepareOrder([FromRoute] int orderId, [FromRoute] int id) {
-            var order = await OrderBasicQuery().Where(o => o.RestaurantId == id && o.OrderId == orderId)
+            var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId)
                 .FirstOrDefaultAsync();
             if (order == null) return NotFound();
             await _orderTaskService.TryCompleteTask(order, OrderTaskType.PREPARE, MsiUser);

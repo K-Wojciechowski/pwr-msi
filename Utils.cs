@@ -1,18 +1,16 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 
 namespace pwr_msi {
     public static class Utils {
-        public static int? TryParseInt(string s) {
-            int i;
-            var res = int.TryParse(s, out i);
+        public static int? TryParseInt(string? s) {
+            var res = int.TryParse(s, out var i);
             return res ? i : null;
         }
 
@@ -53,5 +51,16 @@ namespace pwr_msi {
             return new Page<TO> {Items = convertedItems, MaxPage = maxPage, ItemCount = itemCount, PageNumber = page};
         }
 
+        public static async Task<Page<TO>> PaginateAsyncNullable<TD, TO>(IQueryable<TD> queryable, int pageRaw,
+            Func<TD, Task<TO?>> converter) where TD : class {
+            var pageWithNulls = await PaginateAsync(queryable, pageRaw, converter);
+            var cleanedItems = pageWithNulls.Items.Where(i => i != null).Select(i => i!);
+            return new Page<TO> {
+                Items = cleanedItems,
+                MaxPage = pageWithNulls.MaxPage,
+                ItemCount = pageWithNulls.ItemCount,
+                PageNumber = pageWithNulls.PageNumber
+            };
+        }
     }
 }

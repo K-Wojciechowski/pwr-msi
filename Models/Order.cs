@@ -32,6 +32,7 @@ namespace pwr_msi.Models {
             OrderId = OrderId,
             Restaurant = Restaurant.AsBasicDto(),
             Customer = Customer.AsBasicDto(),
+            DeliveryPerson = DeliveryPerson?.AsBasicDto(),
             Address = Address,
             Status = Status,
             TotalPrice = TotalPrice,
