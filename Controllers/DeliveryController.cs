@@ -15,12 +15,12 @@ namespace pwr_msi.Controllers {
     [Authorize]
     [ApiController]
     [Route(template: "api/delivery/")]
-    public class DeliveryController : MsiControllerBase {
-        private readonly MsiDbContext _dbContext;
+    public class DeliveryController : OrdersControllerBase {
         private readonly OrderTaskService _orderTaskService;
-        private readonly OrderDetailsService _orderDetailsService;
+        protected override bool IncludeDeliveryPerson => true;
 
-        public DeliveryController(MsiDbContext dbContext, OrderTaskService orderTaskService, OrderDetailsService orderDetailsService) {
+        public DeliveryController(MsiDbContext dbContext, OrderTaskService orderTaskService,
+            OrderDetailsService orderDetailsService) {
             _dbContext = dbContext;
             _orderTaskService = orderTaskService;
             _orderDetailsService = orderDetailsService;
@@ -48,8 +48,7 @@ namespace pwr_msi.Controllers {
                 query = query.Where(o => o.RestaurantId == restaurant);
             }
 
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
+            return await GetBasicOrders(query);
         }
 
         [Route(template: "waiting/")]
@@ -58,21 +57,21 @@ namespace pwr_msi.Controllers {
             var restaurants = await _dbContext.RestaurantUsers
                 .Where(ru => ru.UserId == MsiUserId && ru.CanDeliverOrders)
                 .Select(ru => ru.RestaurantId).ToListAsync();
-            var query = _dbContext.Orders.Where(o => o.DeliveryPersonId == null)
+            var query = _dbContext.Orders
+                .OrderByDescending(o => o.Updated)
+                .Where(o => o.DeliveryPersonId == null)
                 .Where(o => restaurants.Contains(o.RestaurantId))
                 .Where(o =>
                     o.Status == OrderStatus.PREPARED || o.Status == OrderStatus.ACCEPTED);
 
-            List<Order> orders;
             if (range == 0) {
-                orders = await query.ToListAsync();
-            } else {
-                var enrichedQuery = query.Include(o => o.Restaurant).Include("Restaurant.Address");
-                var userAddress = new GeoCoordinate(lat, lng);
-                orders = await GetNearbyOrders(enrichedQuery, userAddress, range);
+                return await GetBasicOrders(query);
             }
 
-            return orders.Select(o => o.AsBasicDto()).ToList();
+            var enrichedQuery = query.Include(o => o.Restaurant).Include("Restaurant.Address");
+            var userAddress = new GeoCoordinate(lat, lng);
+            var orders = await GetNearbyOrders(enrichedQuery, userAddress, range);
+            return await GetBasicOrders(orders);
         }
 
         [Route(template: "history/")]
@@ -82,13 +81,12 @@ namespace pwr_msi.Controllers {
                 query = query.Where(o => o.RestaurantId == restaurant);
             }
 
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
+            return await GetBasicOrders(query);
         }
 
         [Route(template: "active/{id}/complete/")]
         [HttpPost]
-        public async Task<ActionResult<OrderBasicDto>> MarkAsDelivered([FromRoute] int id) {
+        public async Task<ActionResult<OrderBasicDto?>> MarkAsDelivered([FromRoute] int id) {
             var orderQuery = _dbContext.Orders
                 .Where(o => o.OrderId == id)
                 .Where(o => o.DeliveryPersonId == MsiUserId)
@@ -97,12 +95,12 @@ namespace pwr_msi.Controllers {
 
             if (order == null) return NotFound();
             await _orderTaskService.TryCompleteTask(order, OrderTaskType.DELIVER, MsiUser);
-            return order.AsBasicDto();
+            return await _orderDetailsService.GetBasicOrderById(order.OrderId, IncludeDeliveryPerson);
         }
 
         [Route(template: "waiting/{id}/assign/")]
         [HttpPost]
-        public async Task<ActionResult<OrderBasicDto>> AssignToSelf([FromRoute] int id) {
+        public async Task<ActionResult<OrderBasicDto?>> AssignToSelf([FromRoute] int id) {
             var restaurants = await _dbContext.RestaurantUsers
                 .Where(ru => ru.UserId == MsiUserId && ru.CanDeliverOrders)
                 .Select(ru => ru.RestaurantId).ToListAsync();
@@ -115,12 +113,15 @@ namespace pwr_msi.Controllers {
             var order = await orderQuery.FirstOrDefaultAsync();
 
             if (order == null) return NotFound();
-            order.DeliveryPersonId = MsiUserId;
-
-            // TODO register/assign order task
+            var res = await _orderTaskService.TryRegisterOrAssignTask(order, OrderTaskType.DELIVER, AssigneeType.DELIVERY,
+                assigneeRestaurantId: null, assigneeUserId: MsiUserId);
+            if (res) {
+                order.DeliveryPersonId = MsiUserId;
+                order.Updated = Utils.Now();
+            }
 
             await _dbContext.SaveChangesAsync();
-            return order.AsBasicDto();
+            return await _orderDetailsService.GetBasicOrderById(order.OrderId, IncludeDeliveryPerson);
         }
 
         [Route("order/{id}/")]
@@ -133,7 +134,8 @@ namespace pwr_msi.Controllers {
                 .Where(o => o.OrderId == id)
                 .Where(o => o.DeliveryPersonId == null || o.DeliveryPersonId == MsiUserId)
                 .Where(o => restaurants.Contains(o.RestaurantId))
-                .Where(o => o.DeliveryPersonId == MsiUserId || o.Status == OrderStatus.PREPARED || o.Status == OrderStatus.ACCEPTED);
+                .Where(o => o.DeliveryPersonId == MsiUserId || o.Status == OrderStatus.PREPARED ||
+                            o.Status == OrderStatus.ACCEPTED);
 
             var order = await orderQuery.FirstOrDefaultAsync();
 

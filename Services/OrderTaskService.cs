@@ -41,9 +41,8 @@ namespace pwr_msi.Services {
             return true;
         }
 
-        private async Task<bool> TryRegisterTask(Order order, OrderTaskType task, AssigneeType? assigneeType = null,
-            int? assigneeUserId = null,
-            int? assigneeRestaurantId = null) {
+        public async Task<bool> TryRegisterTask(Order order, OrderTaskType task, AssigneeType? assigneeType = null,
+            int? assigneeRestaurantId = null, int? assigneeUserId = null) {
             var canPerform = OrderTaskTypeSettings.allowedTransitions[order.LastTaskType].Contains(task);
             if (!canPerform) return false;
             var orderTask = new OrderTask {
@@ -59,6 +58,25 @@ namespace pwr_msi.Services {
             return true;
         }
 
+        public async Task<bool> TryRegisterOrAssignTask(Order order, OrderTaskType task, AssigneeType assigneeType,
+            int? assigneeRestaurantId = null, int? assigneeUserId = null) {
+            var canPerform = OrderTaskTypeSettings.allowedTransitions[order.LastTaskType].Contains(task);
+            if (!canPerform) return false;
+            var existingTask = await _dbContext.OrderTasks.Where(ot => ot.OrderId == order.OrderId && ot.Task == task)
+                .FirstOrDefaultAsync();
+            if (existingTask == null) {
+                return await TryRegisterTask(order, task, assigneeType, assigneeRestaurantId: assigneeRestaurantId,
+                    assigneeUserId: assigneeUserId);
+            }
+
+            existingTask.AssigneeType = assigneeType;
+            existingTask.AssigneeRestaurantId = assigneeRestaurantId;
+            existingTask.AssigneeUserId = assigneeUserId;
+            order.Updated = Utils.Now();
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
         private async Task ReactToTaskCompletion(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
             switch (newStatus) {
                 case OrderStatus.PAID:
@@ -66,6 +84,8 @@ namespace pwr_msi.Services {
                         assigneeRestaurantId: order.RestaurantId);
                     break;
                 case OrderStatus.DELIVERED:
+                    order.Delivered = Utils.Now();
+                    await _dbContext.SaveChangesAsync();
                     await TryCompleteTask(order, OrderTaskType.COMPLETE, completedBy: null);
                     break;
                 case OrderStatus.CANCELLED:
@@ -76,6 +96,7 @@ namespace pwr_msi.Services {
                         await task;
                         order.Updated = Utils.Now();
                     }
+
                     break;
             }
         }
