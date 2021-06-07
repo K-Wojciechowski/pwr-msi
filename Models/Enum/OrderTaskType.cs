@@ -24,7 +24,7 @@ namespace pwr_msi.Models.Enum {
     public static class OrderTaskTypeSettings {
         public readonly static ImmutableDictionary<OrderTaskType, List<OrderTaskType>> allowedTransitions =
             new Dictionary<OrderTaskType, List<OrderTaskType>>() {
-                {OrderTaskType.CREATE, new List<OrderTaskType> {OrderTaskType.PAY, OrderTaskType.CANCEL}},
+                {OrderTaskType.CREATE, new List<OrderTaskType> {OrderTaskType.CREATE, OrderTaskType.PAY, OrderTaskType.CANCEL, OrderTaskType.REJECT}},
                 {OrderTaskType.PAY, new List<OrderTaskType> {OrderTaskType.DECIDE, OrderTaskType.CANCEL, OrderTaskType.ACCEPT, OrderTaskType.REJECT}},
                 {OrderTaskType.DECIDE, new List<OrderTaskType> {OrderTaskType.ACCEPT, OrderTaskType.REJECT}},
                 {OrderTaskType.ACCEPT, new List<OrderTaskType> {OrderTaskType.PREPARE}},

@@ -86,6 +86,7 @@ namespace pwr_msi.Controllers {
             var order = await orderDto.AsNewOrder(MsiUserId.Value, _dbContext);
 
             await _dbContext.Orders.AddAsync(order);
+            await _dbContext.SaveChangesAsync();
             await _orderTaskService.TryCompleteTask(order, OrderTaskType.CREATE, MsiUser);
             await _dbContext.SaveChangesAsync();
             return await _orderDetailsService.GetOrderById(order.OrderId, includeDeliveryPerson: false);
