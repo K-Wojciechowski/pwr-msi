@@ -1,0 +1,74 @@
+<h1 *ngIf="order === undefined">Order Details</h1>
+<h1 *ngIf="!!order">Order {{order.orderId}}</h1>
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
+<app-empty-state [empty]="!order" *ngIf="!!order">
+    <app-order-card-progress [order]="order"></app-order-card-progress>
+    <app-order-card-actions [order]="order" formFactor="mobileIfImportant" (act)="handleAction($event)"></app-order-card-actions>
+    <div class="row">
+        <div class="col-md-9">
+            <app-order-items [order]="order"></app-order-items>
+        </div>
+        <div class="col-md-3">
+            <app-order-card-actions [order]="order" [role]="role" formFactor="desktopOrUnimportant" (act)="handleAction($event)"></app-order-card-actions>
+            <app-order-card-delivery [order]="order"></app-order-card-delivery>
+            <app-order-card-notes [order]="order"></app-order-card-notes>
+            <app-order-card-address [order]="order"></app-order-card-address>
+            <app-order-card-restaurant [order]="order"></app-order-card-restaurant>
+        </div>
+    </div>
+</app-empty-state>
+
+<ng-template #confirmReject let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Confirm order rejection</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        Are you sure you want to reject this order?
+        <ng-container *ngIf="order.status === 'PAID'">The payment will be refunded into the customer’s balance.</ng-container>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('close')">Close</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('ok')">Reject order</button>
+    </div>
+</ng-template>
+
+<ng-template #assignDelivery let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Assign delivery person</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('close')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <label class="assign-label"><input type="radio" name="assigntype" [(ngModel)]="assignType" value="unassigned" aria-describedby="help-assign-unassigned"> No assignment</label>
+        <small id="help-assign-unassigned" class="form-text assign-help text-muted">
+            Any delivery person associated with this restaurant will see this order and be able to self-assign it.
+        </small>
+        <label class="assign-label"><input type="radio" name="assigntype" [(ngModel)]="assignType" value="auto" aria-describedby="help-assign-auto"> Assign automatically</label>
+        <small id="help-assign-auto" class="form-text assign-help text-muted">
+            The system will select the currently least busy delivery person and assign it to them.
+        </small>
+        <label class="assign-label"><input type="radio" name="assigntype" [(ngModel)]="assignType" value="specified" aria-describedby="help-assign-specified"> Assign specified person</label>
+        <small id="help-assign-specified" class="form-text assign-help text-muted">
+            You will be able to select a deliverer from a list.
+        </small>
+        <app-progress-spinner-content [showLoading]="showDeliverersLoading" *ngIf="assignType === 'specified'">
+            <h5 class="mt-3">Select assignee</h5>
+            <ul class="list-unstyled">
+                <li *ngFor="let deliverer of deliverers">
+                    <label class="deliverer-label">
+                    <input type="radio" name="deliverer" [(ngModel)]="assigneeId" [value]="deliverer.user.userId">&nbsp;{{deliverer.user.firstName}} {{deliverer.user.lastName}}
+                        <span class="deliverer-tasks">{{deliverer.activeTasks}} active orders</span>
+                    </label>
+                </li>
+            </ul>
+        </app-progress-spinner-content>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('close')">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="modal.close('ok')">Assign</button>
+    </div>
+</ng-template>

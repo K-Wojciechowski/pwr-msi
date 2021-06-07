@@ -32,6 +32,7 @@ import {OrderCardBaseComponent} from "./order/order-card-base/order-card-base.co
 import {OrderCardBaseNoborderComponent} from "./order/order-card-base-noborder/order-card-base-noborder.component";
 import {OrderCardActionsComponent} from "./order/order-card-actions/order-card-actions.component";
 import {OrderCardAddressComponent} from "./order/order-card-address/order-card-address.component";
+import {OrderCardDeliveryComponent} from "./order/order-card-delivery/order-card-delivery.component";
 import {OrderCardNotesComponent} from "./order/order-card-notes/order-card-notes.component";
 import {OrderCardProgressComponent} from "./order/order-card-progress/order-card-progress.component";
 import {OrderCardProgressIconComponent} from "./order/order-card-progress-icon/order-card-progress-icon.component";
@@ -56,6 +57,7 @@ const components = [
     OrderCardBaseNoborderComponent,
     OrderCardActionsComponent,
     OrderCardAddressComponent,
+    OrderCardDeliveryComponent,
     OrderCardNotesComponent,
     OrderCardProgressComponent,
     OrderCardProgressIconComponent,
