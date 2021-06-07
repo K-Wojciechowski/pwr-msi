@@ -1,4 +1,4 @@
-import {RestaurantMenuItemOptionItem} from "./restaurant-menu-management/restaurant-menu-item-option-item";
+import {RestaurantMenuItemOptionItem} from "./menu/restaurant-menu-item-option-item";
 
 export class MenuItemOptionItemWrapper {
     public value: RestaurantMenuItemOptionItem;

@@ -1,0 +1,4 @@
+<div class="mb-2" [ngClass]="{'d-xs-none d-md-block': (formFactor === 'desktop') || (formFactor === 'desktopOrUnimportant' && isImportant), 'd-xs-block d-md-none': (formFactor === 'mobile') || (formFactor === 'mobileIfImportant' && isImportant), 'd-none': formFactor === 'mobileIfImportant' && !isImportant}">
+    <h5 *ngIf="!hideTitle">{{cardTitle}}</h5>
+    <ng-content></ng-content>
+</div>

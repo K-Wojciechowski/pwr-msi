@@ -8,10 +8,12 @@ import {FormsModule} from "@angular/forms";
 import { ManageMenuItemsComponent } from './manage-menu-items/manage-menu-items.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {PipesModule} from "../../pipes/pipes.module";
+import { ManageOrdersListComponent } from './manage-orders-list/manage-orders-list.component';
+import { ManageOrdersDetailsComponent } from './manage-orders-details/manage-orders-details.component';
 
 
 @NgModule({
-    declarations: [ManageIndexComponent, ManagePickContextComponent, ManageMenuCategoriesComponent, ManageMenuItemsComponent],
+    declarations: [ManageIndexComponent, ManagePickContextComponent, ManageMenuCategoriesComponent, ManageMenuItemsComponent, ManageOrdersListComponent, ManageOrdersDetailsComponent],
     imports: [
         CommonModule,
         WidgetsModule,

@@ -11,7 +11,7 @@ using pwr_msi.Models.Dto;
 namespace pwr_msi.Controllers {
     [Authorize]
     [ApiController]
-    [Route(template: "api/address/")]
+    [Route(template: "api/addresses/")]
     public class ClientAddressController : MsiControllerBase {
         private readonly MsiDbContext _dbContext;
         

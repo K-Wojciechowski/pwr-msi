@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,8 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NodaTime;
-using pwr_msi.Models;
 using pwr_msi.Models.Dto;
 using pwr_msi.Models.Enum;
 using pwr_msi.Services;
@@ -16,11 +15,10 @@ namespace pwr_msi.Controllers {
     [Authorize]
     [ApiController]
     [Route(template: "api/orders/")]
-    public class CustomerOrdersController : MsiControllerBase {
-        private readonly MsiDbContext _dbContext;
+    public class CustomerOrdersController : OrdersControllerBase {
         private readonly PaymentService _paymentService;
-        private readonly OrderDetailsService _orderDetailsService;
         private readonly OrderTaskService _orderTaskService;
+        protected override bool IncludeDeliveryPerson => false;
 
         public CustomerOrdersController(MsiDbContext dbContext, PaymentService paymentService,
             OrderDetailsService orderDetailsService,
@@ -31,68 +29,64 @@ namespace pwr_msi.Controllers {
             _orderTaskService = orderTaskService;
         }
 
-        private IQueryable<Order> OrderBasicQuery() {
-            return _dbContext.Orders.Include(o => o.Customer).Include(o => o.Restaurant).Include(o => o.Address);
+        [Route(template: "")]
+        public async Task<ActionResult<Page<OrderBasicDto>>> AllOrders([FromQuery] int page) {
+            var query = _dbContext.Orders.Where(o => o.CustomerId == MsiUserId);
+            return await PaginateBasicOrders(query, page);
         }
 
-        [Route(template: "")]
-        public async Task<ActionResult<List<OrderBasicDto>>> AllOrders() {
-            var query = OrderBasicQuery().Where(o => o.CustomerId == MsiUserId);
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
-        }
-
-        [Route(template: "")]
-        public async Task<ActionResult<List<OrderBasicDto>>> FilteredOrders([FromQuery] string status) {
+        [Route(template: "by-status/{status}/")]
+        public async Task<ActionResult<Page<OrderBasicDto>>> FilteredOrders([FromRoute] string status,
+            [FromQuery] int page) {
             if (!Enum.TryParse(status.ToUpper(), out OrderStatus parsedStatus)) return BadRequest();
-            var query = OrderBasicQuery().Where(
-                o => o.CustomerId == MsiUserId &&
-                     o.Status == parsedStatus);
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
+            var query = _dbContext.Orders.Where(o => o.CustomerId == MsiUserId && o.Status == parsedStatus);
+            return await PaginateBasicOrders(query, page);
         }
 
         [Route(template: "active/")]
         public async Task<ActionResult<List<OrderBasicDto>>> ActiveOrders() {
-            var query = OrderBasicQuery().Where(o => o.CustomerId == MsiUserId)
+            var query = _dbContext.Orders.Where(o => o.CustomerId == MsiUserId)
                 .Where(o =>
                     o.Status != OrderStatus.REJECTED &&
                     o.Status != OrderStatus.CANCELLED &&
                     o.Status != OrderStatus.COMPLETED);
-            var oList = await query.ToListAsync();
-            return oList.Select(o => o.AsBasicDto()).ToList();
+            return await GetBasicOrders(query);
         }
 
         [Route(template: "{id}/")]
         public async Task<ActionResult<OrderDto>> GetOrder([FromRoute] int id) {
-            OrderDto orderDto = await _orderDetailsService.GetOrderById(id, includeDeliveryPerson: false);
-            if (orderDto == null || orderDto.Customer.UserId != MsiUserId) return NotFound();
+            OrderDto? orderDto = await _orderDetailsService.GetOrderById(id, includeDeliveryPerson: false);
+            if (orderDto == null || orderDto.Customer?.UserId != MsiUserId) return NotFound();
             return orderDto;
         }
 
         [Route(template: "{id}/")]
         [HttpDelete]
-        public async Task<ActionResult<OrderDto>> CancelOrder([FromRoute] int id) {
+        public async Task<ActionResult<OrderDto?>> CancelOrder([FromRoute] int id) {
             var order = await _dbContext.Orders.FindAsync(id);
             if (order == null) return NotFound();
+            var cancelled = false;
             if (order.Status == OrderStatus.PAID || order.Status == OrderStatus.CREATED) {
-                await _orderTaskService.TryCompleteTask(order, OrderTaskType.CANCEL, MsiUser);
-                await _paymentService.ReturnOrderPayment(order);
-                order.Updated = new ZonedDateTime();
-                await _dbContext.SaveChangesAsync();
-                return await _orderDetailsService.GetOrderById(order.OrderId, includeDeliveryPerson: false);
+                cancelled = await _orderTaskService.TryCompleteTask(order, OrderTaskType.CANCEL, MsiUser);
             }
 
-            return BadRequest();
+            if (!cancelled) return BadRequest();
+
+            await _dbContext.SaveChangesAsync();
+            // await _paymentService.ReturnOrderPayment(order);
+            order.Updated = Utils.Now();
+            await _dbContext.SaveChangesAsync();
+            return await _orderDetailsService.GetOrderById(order.OrderId, includeDeliveryPerson: false);
         }
 
         [Route(template: "")]
         [HttpPost]
-        public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] OrderDto orderDto) {
+        public async Task<ActionResult<OrderDto?>> CreateOrder([FromBody] OrderDto orderDto) {
             Debug.Assert(MsiUserId != null, nameof(MsiUserId) + " != null");
             var order = await orderDto.AsNewOrder(MsiUserId.Value, _dbContext);
 
             await _dbContext.Orders.AddAsync(order);
+            await _dbContext.SaveChangesAsync();
             await _orderTaskService.TryCompleteTask(order, OrderTaskType.CREATE, MsiUser);
             await _dbContext.SaveChangesAsync();
             return await _orderDetailsService.GetOrderById(order.OrderId, includeDeliveryPerson: false);
@@ -100,8 +94,10 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "{id}/pay/")]
         [HttpPost]
-        public async Task<ActionResult<PaymentGroupInfo>> PayForOrder([FromRoute] int id, [FromQuery] bool useBalance) {
+        public async Task<ActionResult<PaymentGroupInfo>> PayForOrder([FromRoute] int id,
+            [FromQuery] bool useBalance = true) {
             var order = await _dbContext.Orders.Include(o => o.Customer)
+                .Include(o => o.Restaurant)
                 .Where(o => o.OrderId == id && o.CustomerId == MsiUserId).FirstOrDefaultAsync();
             if (order == null) {
                 return NotFound();

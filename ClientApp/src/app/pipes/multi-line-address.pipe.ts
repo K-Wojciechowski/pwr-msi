@@ -10,7 +10,11 @@ export class MultiLineAddressPipe implements PipeTransform {
     }
 
     transform(value: Address, ...args: unknown[]): SafeHtml {
-        const items = [value.addressee, value.firstLine, value.secondLine, value.postCode + " " + value.city];
+        const items = [];
+        if (args[0] !== "skipAddressee") {
+            items.push(value.addressee);
+        }
+        items.push(value.firstLine, value.secondLine, value.postCode + " " + value.city);
         return this.sanitizer.bypassSecurityTrustHtml(items.map(i => i === undefined ? "" : this.sanitizer.sanitize(SecurityContext.HTML, i.trim())).filter(i => i).join("<br>"));
     }
 

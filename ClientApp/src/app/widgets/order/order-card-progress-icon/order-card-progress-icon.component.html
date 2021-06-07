@@ -1,0 +1,6 @@
+<div class="order-icon" [ngClass]="{'text-primary': highlighted}">
+    <bs-icon [name]="icon"></bs-icon>
+    <span class="text">{{text}}</span>
+</div>
+<div *ngIf="showLine" class="order-line d-xs-none d-md-block" [ngClass]="{'order-line-done': highlighted}"></div>
+<div *ngIf="showLine" class="order-line-mobile d-xs-block d-md-none" [ngClass]="{'text-primary': highlighted}">»</div>

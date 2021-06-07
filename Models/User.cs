@@ -77,6 +77,9 @@ namespace pwr_msi.Models {
                 BillingAddress.Update(userAdminDto.BillingAddress);
             } else {
                 BillingAddress = userAdminDto.BillingAddress;
+                if (BillingAddress != null) {
+                    BillingAddress.Users = new List<User> {this};
+                }
             }
         }
         public void UpdateWithProfileDto(UserProfileDto dto) {

@@ -21,7 +21,7 @@ export class PaymentsCheckComponent implements OnInit {
     public showFailure: boolean = false;
     public showTimeWarning: boolean = false;
     public showGoToOrder: boolean = false;
-    public orderId: number = 0;
+    public orderId: number | null = null;
     public paymentId: number = 0;
     private attemptCounter = 0;
 
@@ -41,6 +41,8 @@ export class PaymentsCheckComponent implements OnInit {
             this.showSuccess = payment.status == PaymentStatus.COMPLETED;
             this.showFailure = payment.status == PaymentStatus.FAILED || payment.status == PaymentStatus.CANCELLED || this.attemptCounter > ATTEMPTS_STOP_AFTER;
             this.showThankYou = !payment.isReturn && !payment.isBalanceRepayment;
+            this.orderId = payment.order?.orderId ?? null;
+            this.showGoToOrder = this.orderId !== null;
             this.showLoading = this.showLoading && !this.showSuccess && !this.showFailure;
             this.showTimeWarning = this.attemptCounter > ATTEMPTS_WARNING_AFTER;
             this.attemptCounter++;
