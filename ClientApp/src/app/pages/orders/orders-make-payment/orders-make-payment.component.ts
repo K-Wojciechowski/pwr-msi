@@ -9,18 +9,17 @@ import {PaymentGroupInfo} from "../../../models/payment-group-info";
     styleUrls: ['./orders-make-payment.component.scss']
 })
 export class OrdersMakePaymentComponent implements OnInit {
-
     public showLoading = false;
     public showSuccess = false;
     public showHttpError = false;
-    public isBalanceRepayment = false;
+    public orderId: string = "";
 
     constructor(private http: HttpClient, private route: ActivatedRoute) {
     }
 
     ngOnInit(): void {
-        const orderId = this.route.snapshot.paramMap.get("id");
-        const endpoint = `/api/orders/${orderId}/pay`;
+        this.orderId = this.route.snapshot.paramMap.get("id") ?? "";
+        const endpoint = `/api/orders/${this.orderId}/pay`;
         this.showLoading = true;
 
         this.http.post<PaymentGroupInfo>(endpoint, null).subscribe(

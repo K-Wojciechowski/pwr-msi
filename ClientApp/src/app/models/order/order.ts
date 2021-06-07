@@ -1,5 +1,5 @@
 import {OrderStatus} from "../enum/order-status";
-import {RestaurantBasic} from "../restaurant-basic";
+import {RestaurantBasicAddress} from "../restaurant-basic-address";
 import {UserBasic} from "../user-basic";
 import {Address} from "../address";
 import {OrderItem} from "./order-item";
@@ -13,7 +13,7 @@ export interface Order {
     created: string;
     updated: string;
 
-    restaurant: RestaurantBasic;
+    restaurant: RestaurantBasicAddress;
     customer?: UserBasic;
     deliveryPerson: UserBasic | null;
     address: Address;

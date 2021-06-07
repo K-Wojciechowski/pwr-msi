@@ -1,3 +1,5 @@
+#nullable enable
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +8,6 @@ using Newtonsoft.Json;
 using pwr_msi.Models.Dto;
 using pwr_msi.Serialization;
 
-#nullable enable
 namespace pwr_msi.Services {
     public class OrderDetailsService {
         private readonly MsiDbContext _dbContext;
@@ -29,6 +30,7 @@ namespace pwr_msi.Services {
                 .Include(o => o.Address)
                 .Include(o => o.Customer)
                 .Include(o => o.Restaurant)
+                .Include(o => o.Restaurant.Address)
                 .Include(o => o.DeliveryPerson)
                 .Include("Items")
                 .Include("Items.MenuItem")
@@ -67,6 +69,21 @@ namespace pwr_msi.Services {
             var order = await GetOrderFromDbAndSaveInCache(orderId);
             if (order != null && !includeDeliveryPerson) order.DeliveryPerson = null;
             return order;
+        }
+
+        public async Task<OrderBasicDto?> GetBasicOrderById(int id, bool includeDeliveryPerson) {
+            return (await GetOrderById(id, includeDeliveryPerson))?.AsBasicDto();
+        }
+
+        public async Task<List<OrderBasicDto>> GetBasicOrdersByIds(IEnumerable<int> ids, bool includeDeliveryPerson) {
+            var orders = new List<OrderBasicDto>();
+            foreach (var id in ids) {
+                var order = await GetOrderById(id, includeDeliveryPerson);
+                if (order != null) {
+                    orders.Add(order.AsBasicDto());
+                }
+            }
+            return orders;
         }
     }
 }

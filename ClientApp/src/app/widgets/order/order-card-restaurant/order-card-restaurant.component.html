@@ -1,0 +1,4 @@
+<app-order-card-base cardTitle="Restaurant" [formFactor]="formFactor">
+    <a href="/browse/{{order.restaurant.restaurantId}}" class="restaurant-name">{{order.restaurant.name}}</a>
+    <div *ngIf="order.restaurant.address" [innerHTML]="order.restaurant.address!|multiLineAddress:'skipAddressee'"></div>
+</app-order-card-base>

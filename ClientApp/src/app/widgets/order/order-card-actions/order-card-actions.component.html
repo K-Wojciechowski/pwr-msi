@@ -1,0 +1,3 @@
+<app-order-card-base-noborder cardTitle="" [hideTitle]="true" [formFactor]="formFactor" [isImportant]="isImportant" *ngIf="actions.length > 0">
+    <button *ngFor="let a of actions" class="btn btn-fullwidth btn-{{a.btnCls}}" [disabled]="a.disabled" (click)="actionClick(a)">{{a.text}}</button>
+</app-order-card-base-noborder>

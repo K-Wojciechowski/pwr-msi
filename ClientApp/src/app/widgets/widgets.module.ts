@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, CurrencyPipe} from '@angular/common';
 import {BsIconComponent} from "./bs-icon/bs-icon.component";
 import {DashboardAppBoxComponent} from "./dashboard-app-box/dashboard-app-box.component";
 import {FormInputComponent} from "./form-input/form-input.component";
@@ -28,6 +28,18 @@ import {ContextPickerComponent} from "./context-picker/context-picker.component"
 import {SelectEditDateComponent} from "./select-edit-date/select-edit-date.component";
 import {MenuCategoryTabsComponent} from "./menu-category-tabs/menu-category-tabs.component";
 import {PipesModule} from "../pipes/pipes.module";
+import {OrderCardBaseComponent} from "./order/order-card-base/order-card-base.component";
+import {OrderCardBaseNoborderComponent} from "./order/order-card-base-noborder/order-card-base-noborder.component";
+import {OrderCardActionsComponent} from "./order/order-card-actions/order-card-actions.component";
+import {OrderCardAddressComponent} from "./order/order-card-address/order-card-address.component";
+import {OrderCardDeliveryComponent} from "./order/order-card-delivery/order-card-delivery.component";
+import {OrderCardNotesComponent} from "./order/order-card-notes/order-card-notes.component";
+import {OrderCardProgressComponent} from "./order/order-card-progress/order-card-progress.component";
+import {OrderCardProgressIconComponent} from "./order/order-card-progress-icon/order-card-progress-icon.component";
+import {OrderCardRestaurantComponent} from "./order/order-card-restaurant/order-card-restaurant.component";
+import {OrderItemsComponent} from "./order/order-items/order-items.component";
+import {OrderTableComponent} from "./order/order-table/order-table.component";
+import {CrystalLightboxModule} from "@crystalui/angular-lightbox";
 
 const components = [
     AddressDisplayComponent,
@@ -41,6 +53,17 @@ const components = [
     HeadingButtonsComponent,
     ImageUploadComponent,
     MenuCategoryTabsComponent,
+    OrderCardBaseComponent,
+    OrderCardBaseNoborderComponent,
+    OrderCardActionsComponent,
+    OrderCardAddressComponent,
+    OrderCardDeliveryComponent,
+    OrderCardNotesComponent,
+    OrderCardProgressComponent,
+    OrderCardProgressIconComponent,
+    OrderCardRestaurantComponent,
+    OrderItemsComponent,
+    OrderTableComponent,
     PagerComponent,
     ProgressSpinnerComponent,
     ProgressSpinnerContentComponent,
@@ -64,7 +87,9 @@ const components = [
         NgbTimepickerModule,
         NgbDatepickerModule,
         PipesModule,
+        CrystalLightboxModule,
     ],
+    providers: [CurrencyPipe],
 })
 export class WidgetsModule {
 }

@@ -18,8 +18,8 @@ namespace pwr_msi.Models.Dto {
         public ZonedDateTime Updated { get; set; }
         public ZonedDateTime? Delivered { get; set; }
 
-        public RestaurantBasicDto Restaurant { get; set; } = null!;
-        public UserBasicDto? Customer { get; set; } = null!;
+        public RestaurantBasicAddressDto Restaurant { get; set; } = null!;
+        public UserBasicDto? Customer { get; set; }
         public UserBasicDto? DeliveryPerson { get; set; }
         public Address Address { get; set; } = null!;
 
@@ -65,8 +65,9 @@ namespace pwr_msi.Models.Dto {
             Debug.Assert(Customer != null, nameof(Customer) + " != null");
             return new OrderBasicDto {
                OrderId = OrderId,
-               Restaurant = Restaurant,
+               Restaurant = Restaurant.AsBasicDto(),
                Customer = Customer,
+               DeliveryPerson = DeliveryPerson,
                Address = Address,
                Status = Status,
                TotalPrice = TotalPrice,
