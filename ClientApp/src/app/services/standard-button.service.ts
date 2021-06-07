@@ -25,6 +25,12 @@ export class StandardButtonService {
                 return {buttonClass: "success", iconName: "check-circle", text: "Save"};
             case "cancel":
                 return {buttonClass: "dark", iconName: "x-circle", text: "Cancel"};
+            case "orderprimary":
+                return {buttonClass: "primary", iconName: "bag", text: "Place Order"};
+            case "order":
+                return {buttonClass: "success", iconName: "bag-check", text: "Place Order"};
+            case "orderpay":
+                return {buttonClass: "success", iconName: "bag-check", text: "Order & Pay"};
             case "pay":
                 return {buttonClass: "success", iconName: "cash", text: "Pay"};
             case "makepayment":
@@ -37,6 +43,8 @@ export class StandardButtonService {
                 return {buttonClass: "secondary", iconName: "arrow-down", text: "Move Down"};
             case "undo":
                 return {buttonClass: "warning", iconName: "arrow-counterclockwise", text: "Undo"}
+            case "secondary":
+                return {buttonClass: "secondary", iconName: "arrow-right-circle", text: "Continue"}
             default:
                 return {buttonClass: "dark", iconName: "question-diamond-fill", text: "Unknown"};
         }

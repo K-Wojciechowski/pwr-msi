@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {RestaurantAdmin} from "../../../models/restaurant-admin";
+import {RestaurantFull} from "../../../models/restaurant-full";
 import {RestaurantUser} from "../../../models/restaurant-user";
 import {HttpClient} from "@angular/common/http";
 import {ToastService} from "../../../services/toast.service";
@@ -14,7 +14,7 @@ import {UsersRestaurantsEditorComponent} from "../users-restaurants-editor/users
 })
 export class RestaurantsEditComponent implements OnInit {
     showLoading: number = 0;
-    restaurant: RestaurantAdmin | undefined;
+    restaurant: RestaurantFull | undefined;
     restaurantUsers: RestaurantUser[] | undefined;
     restaurantId!: number;
 
@@ -30,7 +30,7 @@ export class RestaurantsEditComponent implements OnInit {
         const restaurantIdString = this.route.snapshot.paramMap.get("id");
         if (restaurantIdString === null) return;
         this.restaurantId = parseInt(restaurantIdString);
-        this.http.get<RestaurantAdmin>(this.endpoint).subscribe(restaurant => {
+        this.http.get<RestaurantFull>(this.endpoint).subscribe(restaurant => {
             this.restaurant = restaurant;
             this.showLoading -= 1;
         }, error => {
@@ -57,7 +57,7 @@ export class RestaurantsEditComponent implements OnInit {
     editRestaurant(restaurantEditorOutput: RestaurantEditorOutput) {
         const {restaurant, restaurantUsers} = restaurantEditorOutput;
         this.showLoading = 2;
-        this.http.put<RestaurantAdmin>(this.endpoint, restaurant).subscribe(newRestaurant => {
+        this.http.put<RestaurantFull>(this.endpoint, restaurant).subscribe(newRestaurant => {
             this.showLoading -= 1;
             this.restaurant = newRestaurant;
             this.saveRestaurantUsers(newRestaurant, restaurantUsers);
@@ -69,7 +69,7 @@ export class RestaurantsEditComponent implements OnInit {
         });
     }
 
-    saveRestaurantUsers(restaurant: RestaurantAdmin, restaurantUsers: RestaurantUser[]) {
+    saveRestaurantUsers(restaurant: RestaurantFull, restaurantUsers: RestaurantUser[]) {
         const updatedRestaurantUsers = UsersRestaurantsEditorComponent.updateWithRestaurant(restaurantUsers, restaurant);
         this.http.put<RestaurantUser[]>(this.restaurantUsersEndpoint, updatedRestaurantUsers).subscribe(restaurantUsers => {
             this.restaurantUsers = restaurantUsers;

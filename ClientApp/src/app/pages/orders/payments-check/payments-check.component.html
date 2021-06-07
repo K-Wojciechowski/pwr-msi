@@ -8,7 +8,7 @@
     <div class="payments-check-box-text" *ngIf="showThankYou">Thank you for your payment!</div>
     <div class="payments-check-box-text" *ngIf="!showThankYou">Payment processed successfully.</div>
     <div class="payments-check-box-buttons">
-        <a *ngIf="showGoToOrder" routerLink="/orders/{{orderId}}" standardButton btnStyle="large" btnType="primary" text="Go to Order Page"></a>
+        <a *ngIf="showGoToOrder" routerLink="/orders/{{orderId}}" standardButton btnStyle="large" btnType="orderprimary" text="Go to Order Page" extraClass="mr-1"></a>
         <a class="ml-2 mr-2" routerLink="/payments/{{paymentId}}" standardButton btnStyle="outline-large" btnType="undefined" icon="cash" text="Go to Payment Page"></a>
     </div>
 </div>
@@ -16,7 +16,7 @@
     <div class="payments-check-box-icon"><bs-icon name="x-circle-fill"></bs-icon></div>
     <div class="payments-check-box-text">Payment failed.</div>
     <div class="payments-check-box-buttons">
-        <a *ngIf="showGoToOrder" routerLink="/orders/{{orderId}}" standardButton btnStyle="large" btnType="primary" text="Go to Order Page"></a>
+        <a *ngIf="showGoToOrder" routerLink="/orders/{{orderId}}" standardButton btnStyle="large" btnType="orderprimary" text="Go to Order Page" extraClass="mr-1"></a>
         <a class="ml-2 mr-2" routerLink="/payments/{{paymentId}}" standardButton btnStyle="outline-large" btnType="undefined" icon="cash" text="Go to Payment Page"></a>
     </div>
 </div>

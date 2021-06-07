@@ -14,6 +14,6 @@ namespace pwr_msi.Models.Dto {
         }
 
         public OrderItemCustomization AsNewCustomization() =>
-            new(OrderItemCustomizationId, MenuItemOptionItem.MenuItemOptionListId);
+            new(OrderItemCustomizationId, MenuItemOptionItem.MenuItemOptionItemId);
     }
 }

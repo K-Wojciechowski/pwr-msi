@@ -5,7 +5,7 @@ import {RestaurantUser} from "../../../models/restaurant-user";
 import {RestaurantEditorOutput} from "../../../models/restaurant-editor-output";
 import {Address} from "../../../models/address";
 import {setFormValues} from "../../../../utils";
-import {RestaurantAdmin} from "../../../models/restaurant-admin";
+import {RestaurantFull} from "../../../models/restaurant-full";
 import {Cuisine} from "../../../models/cuisine";
 import {RestaurantBasic} from "../../../models/restaurant-basic";
 import {Observable, of, OperatorFunction} from "rxjs";
@@ -21,7 +21,7 @@ import {HttpClient} from "@angular/common/http";
 export class RestaurantsEditorComponent implements OnInit, OnChanges {
     @ViewChild("f", {static: true}) form!: NgForm;
     @ViewChild("ruEditor", {static: true}) ruEditor!: UsersRestaurantsEditorComponent;
-    @Input("restaurant") restaurantInput!: RestaurantAdmin | undefined;
+    @Input("restaurant") restaurantInput!: RestaurantFull | undefined;
     @Input("restarantUsers") restaurantUsersInput!: RestaurantUser[] | undefined;
     @Input("isAdding") isAdding!: boolean;
     @Output("restaurantSubmit") submitEvent = new EventEmitter<RestaurantEditorOutput>();

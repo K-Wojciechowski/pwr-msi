@@ -25,8 +25,11 @@ export class AddressEditorComponent implements OnInit, OnChanges {
         }
         this.form.valueChanges?.subscribe(v => {
             this.address = this.getAddress(v);
-            this.addressChange.emit(this.address);
+            
         });
+    }
+    submit(){
+        this.addressChange.emit(this.address);
     }
 
     ngOnChanges(changes: SimpleChanges) {

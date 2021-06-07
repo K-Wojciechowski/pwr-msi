@@ -1,0 +1,5 @@
+<app-order-card-base cardTitle="Delivery Address" [formFactor]="formFactor"><div [innerHTML]="order.address | multiLineAddress"></div>
+<a href="https://maps.google.com/?q={{order.address | singleLineAddress}}" class="btn btn-fullwidth btn-xs btn-outline-secondary">
+    <bs-icon name="geo-alt"></bs-icon> Google Maps
+</a>
+</app-order-card-base>

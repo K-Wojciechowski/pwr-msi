@@ -1,0 +1,21 @@
+<h1>Pay for Order {{orderId}}</h1>
+<app-progress-spinner-fullwidth *ngIf="showLoading"></app-progress-spinner-fullwidth>
+<p *ngIf="showLoading" class="payments-make-text">Payment in progress…</p>
+<ng-container *ngIf="!showLoading">
+    <div *ngIf="showHttpError || (!showHttpError && !showSuccess)" class="payments-check-box payments-check-box-failure">
+        <div class="payments-check-box-icon"><bs-icon name="x-circle-fill"></bs-icon></div>
+        <div class="payments-check-box-text">Payment failed.</div>
+        <div class="payments-check-box-text" *ngIf="showHttpError">There was an error making the request.</div>
+        <div class="payments-check-box-text" *ngIf="!showHttpError && !showSuccess">Unable to make payment. It might have already been processed.</div>
+        <div class="payments-check-box-buttons">
+            <a routerLink="/orders/{{orderId}}" standardButton btnStyle="large" btnType="orderprimary" text="Go to Order Page" extraClass="mr-1"></a>
+        </div>
+    </div>
+    <div *ngIf="showSuccess" class="payments-check-box payments-check-box-success">
+        <div class="payments-check-box-icon"><bs-icon name="check-circle-fill"></bs-icon></div>
+        <div class="payments-check-box-text">Thank you for your payment!</div>
+        <div class="payments-check-box-buttons">
+            <a routerLink="/orders/{{orderId}}" standardButton btnStyle="large" btnType="orderprimary" text="Go to Order Page" extraClass="mr-1"></a>
+        </div>
+    </div>
+</ng-container>

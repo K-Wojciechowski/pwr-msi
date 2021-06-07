@@ -66,7 +66,7 @@ namespace pwr_msi.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("text");
 
-                    b.Property<string>("HouseNumber")
+                    b.Property<string>("FirstLine")
                         .HasColumnType("text");
 
                     b.Property<float>("Latitude")
@@ -78,7 +78,7 @@ namespace pwr_msi.Migrations
                     b.Property<string>("PostCode")
                         .HasColumnType("text");
 
-                    b.Property<string>("Street")
+                    b.Property<string>("SecondLine")
                         .HasColumnType("text");
 
                     b.HasKey("AddressId");

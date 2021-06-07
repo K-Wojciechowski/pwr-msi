@@ -1,0 +1,24 @@
+<h1>Orders in Restaurant</h1>
+
+<app-progress-spinner-content [showLoading]="showLoading > 0">
+    <ng-container *ngIf="ordersAwaiting.length > 0">
+        <h2>Orders waiting for approval</h2>
+        <app-order-table [showLoading]="showLoading > 0" [orders]="ordersAwaiting" [showCustomer]="true"></app-order-table>
+    </ng-container>
+
+    <ng-container *ngIf="ordersInPreparation.length > 0">
+        <h2>Orders in preparation</h2>
+        <app-order-table [showLoading]="showLoading > 0" [orders]="ordersInPreparation" [showCustomer]="true" [showDelivery]="true"></app-order-table>
+    </ng-container>
+
+
+    <ng-container *ngIf="ordersInDelivery.length > 0">
+        <h2>Orders in delivery</h2>
+        <app-order-table [showLoading]="showLoading > 0" [orders]="ordersInDelivery" [showCustomer]="true" [showDelivery]="true"></app-order-table>
+    </ng-container>
+
+    <h2>Order history</h2>
+
+    <app-order-table [showLoading]="showLoading > 0" [orders]="orderHistory" [showCustomer]="true" [showDelivery]="true"></app-order-table>
+    <app-pager [page]="historyPageNumber" (pageChange)="goToHistoryPage($event)" [totalItems]="historyTotalItems"></app-pager>
+</app-progress-spinner-content>

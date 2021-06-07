@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {PaymentAttempt} from "../../../models/payment-attempt";
 import {PaymentStatus} from "../../../models/enum/payment-status";
-import {PlatformLocation} from "@angular/common";
 
 @Component({
     selector: 'app-payments-make',
@@ -15,19 +14,20 @@ export class PaymentsMakeComponent implements OnInit {
     public showSuccess = false;
     public showHttpError = false;
     public isBalanceRepayment = false;
+    public paymentId: string = "";
 
-    constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private platformLocation: PlatformLocation) {
+    constructor(private http: HttpClient, private route: ActivatedRoute) {
     }
 
     ngOnInit(): void {
-        const paymentId = this.route.snapshot.paramMap.get("id");
-        this.isBalanceRepayment =this.route.snapshot.data.isBalanceRepayment === true;
-        const endpoint = this.isBalanceRepayment ? "/api/payments/balance/repay/" : `/api/payments/${paymentId}/`;
+        this.paymentId = this.route.snapshot.paramMap.get("id") ?? "";
+        this.isBalanceRepayment = this.route.snapshot.data.isBalanceRepayment === true;
+        const endpoint = this.isBalanceRepayment ? "/api/payments/balance/repay/" : `/api/payments/${this.paymentId}/`;
         this.showLoading = true;
 
         this.http.post<PaymentAttempt>(endpoint, null).subscribe(
             attempt => this.handleAttempt(attempt),
-            error => {
+            () => {
                 this.showSuccess = false;
                 this.showHttpError = true;
                 this.showLoading = false;
@@ -38,6 +38,7 @@ export class PaymentsMakeComponent implements OnInit {
     handleAttempt(attempt: PaymentAttempt) {
         this.showHttpError = false;
         if (!!attempt.paymentUrl) {
+            this.paymentId = attempt.paymentId.toString();
             const baseUrl = new URL(`/payments/${attempt.paymentId}/check`, window.location.toString());
             const queryParams = new URLSearchParams();
             queryParams.set("next", baseUrl.toString());

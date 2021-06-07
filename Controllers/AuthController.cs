@@ -91,7 +91,10 @@ namespace pwr_msi.Controllers {
                 Balance = 0,
                 BillingAddress = newUser.BillingAddress,
             };
-            if (user.BillingAddress != null) user.BillingAddress.AddressId = 0;
+            if (user.BillingAddress != null) {
+                user.BillingAddress.AddressId = 0;
+                user.BillingAddress.Users = new List<User> {user};
+            }
 
             user.Password = _authService.HashPassword(user, newUser.Password);
 
@@ -103,6 +106,7 @@ namespace pwr_msi.Controllers {
 
             await _dbContext.AddAsync(user);
             await _dbContext.SaveChangesAsync();
+
             await _accountEmailService.SendVerificationEmail(user);
             return StatusCode(statusCode: (int) HttpStatusCode.Created, value: user.AsProfile());
         }
@@ -128,7 +132,16 @@ namespace pwr_msi.Controllers {
         public ActionResult<UserProfileDto> GetProfile() {
             return MsiUser.AsProfile();
         }
-
+        
+        [Authorize]
+        [Route(template: "profile/edit/")]
+        [HttpPut]
+        public async Task<ActionResult<UserProfileDto>> ModifyProfile([FromBody] UserProfileDto dto) {
+            MsiUser.UpdateWithProfileDto(dto);
+            await _dbContext.SaveChangesAsync();
+            return MsiUser.AsProfile();
+        }
+        
         [Authorize]
         [Route(template: "profile/")]
         [HttpPut]
@@ -145,7 +158,12 @@ namespace pwr_msi.Controllers {
 
             user.FirstName = changes.FirstName;
             user.LastName = changes.LastName;
-            user.BillingAddress = changes.BillingAddress;
+            if (user.BillingAddressId == null) {
+                user.BillingAddress = changes.BillingAddress;
+                user.BillingAddress.Users = new List<User> {user};
+            } else {
+                user.BillingAddress = changes.BillingAddress;
+            }
 
             await _dbContext.SaveChangesAsync();
             return user.AsProfile();

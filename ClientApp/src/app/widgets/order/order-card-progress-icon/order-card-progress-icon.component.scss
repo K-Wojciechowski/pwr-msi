@@ -1,0 +1,60 @@
+@import '~bootstrap/scss/_functions.scss';
+@import '~bootstrap/scss/_variables.scss';
+@import '~bootstrap/scss/_mixins.scss';
+
+:host {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    flex-basis: 0;
+}
+
+:host.no-line {
+    flex-grow: 0;
+}
+
+.order-icon {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 0.1rem;
+    width: 4rem;
+}
+
+.order-icon bs-icon {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+}
+
+.order-icon .text {
+    font-size: 0.75rem;
+    height: 1rem;
+}
+
+.order-line {
+    background: $gray-700;
+    height: 0.15rem;
+    flex-grow: 1;
+}
+
+.order-line-mobile {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.order-line-done {
+    background: $primary;
+}
+
+@include media-breakpoint-down(sm) {
+    .order-icon {
+        width: unset;
+    }
+    .order-icon .text {
+        font-size: 0.6rem;
+    }
+    .order-line {
+        display: none;
+    }
+}

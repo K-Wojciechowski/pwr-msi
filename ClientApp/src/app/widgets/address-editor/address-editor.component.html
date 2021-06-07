@@ -19,4 +19,8 @@
             <input ngModel class="form-control" name="city" id="city" placeholder="City" [required]="required">
         </div>
     </div>
+    <div class="btn-box">
+        <button type="submit" standardButton btnStyle="form" btnType="save" [disabled]="!f.valid" (click)="submit()"></button>
+    </div>
+    
 </form>

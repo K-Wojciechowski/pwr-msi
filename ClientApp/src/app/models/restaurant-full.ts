@@ -1,7 +1,7 @@
 import {Address} from "./address";
 import {Cuisine} from "./cuisine";
 
-export interface RestaurantAdmin {
+export interface RestaurantFull {
     restaurantId?: number;
     name: string;
     website: string;
