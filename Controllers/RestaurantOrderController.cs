@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,6 +41,21 @@ namespace pwr_msi.Controllers {
             return await GetBasicOrders(query);
         }
 
+        [AcceptOrdersRestaurantAuthorize("id")]
+        [Route(template: "{id}/orders/preparing/")]
+        public async Task<ActionResult<List<OrderBasicDto>>> GetOrdersInPreparing([FromRoute] int id) {
+            var query = _dbContext.Orders.Where(o => o.RestaurantId == id && o.Status == OrderStatus.ACCEPTED);
+            return await GetBasicOrders(query);
+        }
+
+
+        [AcceptOrdersRestaurantAuthorize("id")]
+        [Route(template: "{id}/orders/delivery/")]
+        public async Task<ActionResult<List<OrderBasicDto>>> GetOrdersInDelivery([FromRoute] int id) {
+            var query = _dbContext.Orders.Where(o => o.RestaurantId == id && o.Status == OrderStatus.PREPARED);
+            return await GetBasicOrders(query);
+        }
+
         private async Task<ActionResult<OrderDto>> GetOrderById(int orderId, int restaurantId) {
             var order = await _orderDetailsService.GetOrderById(orderId, includeDeliveryPerson: true);
             if (order == null || order.Restaurant.RestaurantId != restaurantId) return NotFound();
@@ -77,23 +93,32 @@ namespace pwr_msi.Controllers {
         }
 
         private async Task<List<DelivererDto>> GetFreeDeliverersList(int id) {
-            var deliverers = _dbContext.RestaurantUsers.Where(ru => ru.RestaurantId == id && ru.CanDeliverOrders);
-            Dictionary<RestaurantUser, int> activeTasks = new();
-            foreach (var deliverer in deliverers) {
-                var count = await _dbContext.OrderTasks.CountAsync(ot =>
-                    ot.AssigneeUserId == deliverer.UserId
-                    && ot.AssigneeType == AssigneeType.DELIVERY
-                    && ot.DateCompleted != null);
-                activeTasks.Add(deliverer, count);
-            }
-
-            var freeDeliverers = activeTasks.ToList();
-            freeDeliverers.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
-            return freeDeliverers.Select(d => d.Key.AsDelivererDto(d.Value)).ToList();
+            var random = new Random();
+            var deliverers = await _dbContext.RestaurantUsers.Where(ru => ru.RestaurantId == id && ru.CanDeliverOrders)
+                .Select(ru => ru.UserId).ToListAsync();
+            var delivererUsers =
+                (await _dbContext.Users.Where(u => deliverers.Contains(u.UserId)).ToListAsync()).ToDictionary(u =>
+                    u.UserId);
+            var deliverersWithTasks = await _dbContext.OrderTasks.Where(ot =>
+                    ot.AssigneeUserId != null && deliverers.Contains(ot.AssigneeUserId!.Value) &&
+                    ot.AssigneeType == AssigneeType.DELIVERY && ot.DateCompleted == null)
+                .GroupBy(ot => ot.AssigneeUserId!.Value)
+                .OrderBy(g => g.Count())
+                .Select(g => new DelivererDto(delivererUsers[g.Key], g.Count()))
+                .ToListAsync();
+            var deliverersWithTasksIds = deliverersWithTasks.Select(d => d.User.UserId);
+            var remainingDeliverersIds = deliverers.Except(deliverersWithTasksIds);
+            var deliverersWithoutTasks = remainingDeliverersIds
+                .Select(i => new DelivererDto(delivererUsers[i], activeTasks: 0))
+                .OrderBy(_ => random.Next()).ToList();
+            var allDeliverers = new List<DelivererDto>();
+            allDeliverers.AddRange(deliverersWithoutTasks);
+            allDeliverers.AddRange(deliverersWithTasks);
+            return allDeliverers;
         }
 
         [AcceptOrdersRestaurantAuthorize("id")]
-        [Route(template: "{id}/freedeliverers/")]
+        [Route(template: "{id}/deliverers/")]
         public async Task<ActionResult<List<DelivererDto>>> GetFreeDeliverers([FromRoute] int id) {
             return await GetFreeDeliverersList(id);
         }
@@ -102,33 +127,37 @@ namespace pwr_msi.Controllers {
         [Route(template: "{id}/orders/{orderId}/delivery/")]
         [HttpPost]
         public async Task<ActionResult<OrderDto>> AssignOrder([FromRoute] int orderId, [FromRoute] int id,
-            [FromQuery] string assign, [FromBody] int deliverId) {
+            [FromQuery] string assign, [FromQuery(Name = "id")] int deliverId) {
             var order = await _dbContext.Orders.Where(o => o.RestaurantId == id && o.OrderId == orderId)
                 .FirstOrDefaultAsync();
             if (order == null) return NotFound();
-            OrderTask orderTask =
-                new OrderTask {Task = OrderTaskType.DELIVER, OrderId = orderId, AssigneeRestaurantId = id};
+            bool status;
             switch (assign) {
                 case "auto":
-                    orderTask.AssigneeType = AssigneeType.DELIVERY;
                     var freeDeliverers = await GetFreeDeliverersList(id);
                     if (freeDeliverers.Count == 0) {
                         return Problem("No free deliverers.");
                     } else {
-                        orderTask.AssigneeUserId = freeDeliverers[0].User.UserId;
+                        var assignee = freeDeliverers.First().User.UserId;
+                        status = await _orderTaskService.TryRegisterOrAssignTask(order, OrderTaskType.DELIVER,
+                            AssigneeType.DELIVERY, assigneeUserId: assignee);
                     }
 
                     break;
                 case "specified":
-                    orderTask.AssigneeType = AssigneeType.DELIVERY;
-                    orderTask.AssigneeUserId = deliverId;
+                    status = await _orderTaskService.TryRegisterOrAssignTask(order, OrderTaskType.DELIVER,
+                        AssigneeType.DELIVERY, assigneeUserId: deliverId);
                     break;
                 case "unassigned":
-                    orderTask.AssigneeType = AssigneeType.RESTAURANT;
+                    status = await _orderTaskService.TryRegisterOrAssignTask(order, OrderTaskType.DELIVER,
+                        AssigneeType.RESTAURANT, assigneeRestaurantId: order.RestaurantId);
+                    break;
+                default:
+                    status = false;
                     break;
             }
 
-            await _dbContext.OrderTasks.AddAsync(orderTask);
+            if (!status) return Problem("Unable to assign.");
             order.Updated = Utils.Now();
             await _dbContext.SaveChangesAsync();
 
