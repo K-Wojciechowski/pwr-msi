@@ -8,8 +8,7 @@ import {CrystalLightboxModule} from '@crystalui/angular-lightbox';
 import {RouterModule} from "@angular/router";
 import {AppRoutingModule} from "../../app-routing.module";
 import {BrowseRestaurantsComponent} from './browse-restaurants/browse-restaurants.component';
-import {RestaurantsMenuComponent} from './restaurants-menu/restaurants-menu.component';
-
+import {RestaurantMenuComponent} from "./restaurant-menu/restaurant-menu.component";
 
 
 @NgModule({
