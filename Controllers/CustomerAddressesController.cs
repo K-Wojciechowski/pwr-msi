@@ -28,9 +28,8 @@ namespace pwr_msi.Controllers {
         
         [Route(template: "")]
         public async Task<ActionResult<Page<Address>>> GetAddresses([FromQuery] int page) {
-            var user = await _dbContext.Users.Include(u => u.Addresses).Where(u => u.UserId == MsiUserId)
-                .FirstOrDefaultAsync();
-            return await Utils.Paginate(user.Addresses.AsQueryable(), page, a => a);
+            var query = _dbContext.Addresses.Where(a => a.Users.Contains(MsiUser));
+            return await Utils.Paginate(query, page, a => a);
         }
 
         [Route(template: "default/")]
@@ -47,7 +46,6 @@ namespace pwr_msi.Controllers {
             var address = await _dbContext.Addresses.FindAsync(addressIdInput.Input);
             user.BillingAddress = address;
             await _dbContext.SaveChangesAsync();
-            var user1 = await _dbContext.Users.FindAsync(MsiUserId);
             return await _dbContext.Addresses.FindAsync(user.BillingAddressId);
         }
 
@@ -60,6 +58,7 @@ namespace pwr_msi.Controllers {
             await _dbContext.SaveChangesAsync();
             return address;
         }
+
         [Route(template: "{id}/")]
         [HttpGet]
         public async Task<ActionResult<Address>> GetAddress([FromRoute] int id) {
@@ -84,6 +83,5 @@ namespace pwr_msi.Controllers {
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
-        
     }
 }

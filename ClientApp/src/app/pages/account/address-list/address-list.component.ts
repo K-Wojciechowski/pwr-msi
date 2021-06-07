@@ -1,50 +1,53 @@
-import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MsiHttpService} from "../../../services/msi-http.service";
 import {ToastService} from "../../../services/toast.service";
 import {Address} from "../../../models/address";
 import {HttpClient} from "@angular/common/http";
 
 @Component({
-  selector: 'app-address-list',
-  templateUrl: './address-list.component.html',
-  styleUrls: ['./address-list.component.scss']
+    selector: 'app-address-list',
+    templateUrl: './address-list.component.html',
+    styleUrls: ['./address-list.component.scss']
 })
-export class AddressListComponent implements OnInit, OnChanges {
+export class AddressListComponent implements OnInit {
     items: Address[] = [];
-    showLoading = false;
+    showLoading = 0;
     pageNumber: number = 1;
     totalItems!: number;
+    billingAddressId: number = -1;
 
-  constructor(private msiHttp: MsiHttpService, private http: HttpClient, private toastService: ToastService) { }
+    constructor(private msiHttp: MsiHttpService, private http: HttpClient, private toastService: ToastService) {
+    }
 
     ngOnInit(): void {
-        this.loadAllItems();
+        this.loadBillingAddressId();
+        this.loadPageItems();
     }
-    ngOnChanges(changes: SimpleChanges) {
-        this.loadAllItems()
+
+    loadBillingAddressId() {
+        this.showLoading++;
+        this.http.get<Address>("/api/addresses/default/").subscribe(address => {
+            this.showLoading--;
+            this.billingAddressId = address.addressId!;
+        }, error => {
+            this.showLoading--;
+            if (error.status == 404)  {
+                this.billingAddressId = -1;
+            } else {
+                this.toastService.handleHttpError(error);
+            }
+        });
     }
 
     loadPageItems() {
-        this.showLoading = true;
-        this.msiHttp.getPage<Address>("/api/address/", this.pageNumber).subscribe(res => {
-            this.showLoading = false;
+        this.showLoading++;
+        this.msiHttp.getPage<Address>("/api/addresses/", this.pageNumber).subscribe(res => {
+            this.showLoading--;
             this.items = res.items;
             this.pageNumber = res.page;
             this.totalItems = res.itemCount;
         }, error => {
-            this.showLoading = false;
-            this.toastService.handleHttpError(error);
-        });
-       
-    }
-    loadAllItems() {
-        this.showLoading = true;
-        this.http.get<Address[]>("/api/address/all/").subscribe(res => {
-            this.showLoading = false;
-            this.items = res;
-            this.totalItems = res.length;
-        }, error => {
-            this.showLoading = false;
+            this.showLoading--;
             this.toastService.handleHttpError(error);
         });
 
@@ -54,16 +57,31 @@ export class AddressListComponent implements OnInit, OnChanges {
         this.pageNumber = pageNumber;
         this.loadPageItems();
     }
-    
-    deleteAddress(address: Address){
-        this.http.delete<Address>("/api/address/"+address.addressId).subscribe(res => {
-            this.showLoading = false;
-            this.toastService.showSuccess(`Address: ${res.firstLine} ${res.secondLine} deleted`)
+
+    deleteAddress(address: Address) {
+        this.showLoading++;
+        this.http.delete<Address>(`/api/addresses/${address.addressId}/`).subscribe(res => {
+            this.showLoading--;
+            this.toastService.showSuccess(`Address: ${res.firstLine} ${res.secondLine} deleted.`);
+            this.loadPageItems();
         }, error => {
-            this.showLoading = false;
+            this.showLoading--;
             this.toastService.handleHttpError(error);
         });
-        this.loadAllItems();
     }
+
+    makeBilling(address: Address) {
+        this.showLoading++;
+        this.http.post<Address>("/api/addresses/default/", {input: address.addressId!}).subscribe(res => {
+            this.showLoading--;
+            this.toastService.showSuccess(`Address: ${res.firstLine} ${res.secondLine} made the billing address.`);
+            this.billingAddressId = res.addressId!;
+            this.loadPageItems();
+        }, error => {
+            this.showLoading--;
+            this.toastService.handleHttpError(error);
+        });
+    }
+
 
 }

@@ -6,9 +6,9 @@ import {Address} from "../../../models/address";
 import {ToastService} from "../../../services/toast.service";
 
 @Component({
-  selector: 'app-profile-editor',
-  templateUrl: './profile-editor.component.html',
-  styleUrls: ['./profile-editor.component.scss']
+    selector: 'app-profile-editor',
+    templateUrl: './profile-editor.component.html',
+    styleUrls: ['./profile-editor.component.scss']
 })
 export class ProfileEditorComponent implements OnInit {
     @Input("required") required: boolean = false;
@@ -17,10 +17,8 @@ export class ProfileEditorComponent implements OnInit {
     @ViewChild("f", {static: true}) form!: NgForm;
     user: UserProfile = this.newUser();
     userId: number | undefined;
-   
 
-
-    constructor(private toast: ToastService) {
+    constructor() {
     }
 
     ngOnInit(): void {
@@ -52,7 +50,6 @@ export class ProfileEditorComponent implements OnInit {
     }
 
     newUser(): UserProfile {
-        this.toast.showSuccess("new user created")
         return {
             userId: this.userId,
             firstName: "",
@@ -66,7 +63,6 @@ export class ProfileEditorComponent implements OnInit {
     }
 
     newAddress(): Address {
-        this.toast.showSuccess("new address created")
         return {
             addressee: "",
             firstLine: "",

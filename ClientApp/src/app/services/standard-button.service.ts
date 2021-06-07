@@ -43,6 +43,8 @@ export class StandardButtonService {
                 return {buttonClass: "secondary", iconName: "arrow-down", text: "Move Down"};
             case "undo":
                 return {buttonClass: "warning", iconName: "arrow-counterclockwise", text: "Undo"}
+            case "secondary":
+                return {buttonClass: "secondary", iconName: "arrow-right-circle", text: "Continue"}
             default:
                 return {buttonClass: "dark", iconName: "question-diamond-fill", text: "Unknown"};
         }
