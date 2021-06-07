@@ -82,5 +82,10 @@ namespace pwr_msi.Models {
                 }
             }
         }
+        public void UpdateWithProfileDto(UserProfileDto dto) {
+            Username = dto.Username;
+            FirstName = dto.FirstName;
+            LastName = dto.LastName;
+        }
     }
 }

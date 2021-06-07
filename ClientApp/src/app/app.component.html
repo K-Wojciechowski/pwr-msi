@@ -35,7 +35,7 @@
                 <a class="nav-link" routerLink="/auth/login">Log in</a>
             </li>
             <li class="nav-item" routerLinkActive="active" *ngIf="isLoggedIn">
-                <a class="nav-link" routerLink="/auth/profile">{{userName}}</a>
+                <a class="nav-link" routerLink="/account/profile">{{userName}}</a>
             </li>
             <li class="nav-item" *ngIf="isLoggedIn">
                 <a class="nav-link" routerLink="/" (click)="handleLogOut()">Log out</a>
@@ -113,6 +113,23 @@
                         <a class="sidebar-nav-link" routerLink="/manage/{{currentRestaurantIdValue}}/menu">
                             <bs-icon name="journal-text"></bs-icon>
                             <span>Menu Items</span>
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
+            <ng-container *ngSwitchCase="'account'">
+                <h1>Account</h1>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/account/profile">
+                            <bs-icon name="person"></bs-icon>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/account/address">
+                            <bs-icon name="globe"></bs-icon>
+                            <span>Addresses</span>
                         </a>
                     </li>
                 </ul>

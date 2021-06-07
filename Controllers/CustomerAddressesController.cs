@@ -19,11 +19,17 @@ namespace pwr_msi.Controllers {
             _dbContext = dbContext;
         }
         
-        [Route(template: "")]
-        public async Task<ActionResult<List<Address>>> GetAddresses() {
+        [Route(template: "all/")]
+        public async Task<ActionResult<List<Address>>> GetAllAddresses() {
             var user = await _dbContext.Users.Include(u => u.Addresses).Where(u => u.UserId == MsiUserId)
                 .FirstOrDefaultAsync();
             return user.Addresses.ToList();
+        }
+        
+        [Route(template: "")]
+        public async Task<ActionResult<Page<Address>>> GetAddresses([FromQuery] int page) {
+            var query = _dbContext.Addresses.Where(a => a.Users.Contains(MsiUser));
+            return await Utils.Paginate(query, page, a => a);
         }
 
         [Route(template: "default/")]
@@ -37,7 +43,8 @@ namespace pwr_msi.Controllers {
         [HttpPost]
         public async Task<ActionResult<Address>> SetDefaultAddress([FromBody] InputDto<int> addressIdInput) {
             var user = await _dbContext.Users.FindAsync(MsiUserId);
-            user.BillingAddressId = addressIdInput.Input;
+            var address = await _dbContext.Addresses.FindAsync(addressIdInput.Input);
+            user.BillingAddress = address;
             await _dbContext.SaveChangesAsync();
             return await _dbContext.Addresses.FindAsync(user.BillingAddressId);
         }
@@ -45,9 +52,17 @@ namespace pwr_msi.Controllers {
         [Route(template: "")]
         [HttpPost]
         public async Task<ActionResult<Address>> AddAddress([FromBody] Address address) {
+            address.Users = new List<User>();
             address.Users.Add(MsiUser);
             await _dbContext.Addresses.AddAsync(address);
             await _dbContext.SaveChangesAsync();
+            return address;
+        }
+
+        [Route(template: "{id}/")]
+        [HttpGet]
+        public async Task<ActionResult<Address>> GetAddress([FromRoute] int id) {
+            var address = await  _dbContext.Addresses.FindAsync(id);
             return address;
         }
 
@@ -68,6 +83,5 @@ namespace pwr_msi.Controllers {
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
-        
     }
 }
