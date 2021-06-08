@@ -83,7 +83,9 @@ export class RestaurantMenuComponent implements OnInit {
             }
             --this.showLoading;
         }, err => {
-            this.toastService.handleHttpError(err);
+            if (err.status !== 404) {
+                this.toastService.handleHttpError(err);
+            }
             --this.showLoading;
         });
     }
