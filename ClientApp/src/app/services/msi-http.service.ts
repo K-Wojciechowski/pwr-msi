@@ -11,7 +11,7 @@ interface HttpOptions {
     observe?: 'body';
     params?: HttpParams;
     reportProgress?: boolean;
-    responseType: 'json';
+    responseType?: 'json';
     withCredentials?: boolean;
 }
 

@@ -1,0 +1,29 @@
+@import 'src/sidebar';
+
+.restaurant-logo {
+    max-width: 100%;
+    max-height: 75px;
+}
+
+.delivery-address-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 2px;
+}
+
+.delivery-address {
+    flex-grow: 1;
+}
+
+.delivery-address-container button {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    align-self: stretch;
+}
+
+.col-sidebar {
+    border-bottom: 1px solid $gray-300;
+}

@@ -12,7 +12,7 @@ services:
             - ASPNETCORE_ENVIRONMENT
             - MSI_DB_CONNECTION_STRING
             - MSI_SERVER_ADDRESS
-            - MSI_REDIS_HOST=redis
+            - MSI_REDIS_CONNECTION_STRING=redis
             - MSI_SMTP_HOST=mailhog
             - MSI_PAY_URL=http://msipay:5007/
     msipay:

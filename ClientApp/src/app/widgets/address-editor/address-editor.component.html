@@ -19,8 +19,15 @@
             <input ngModel class="form-control" name="city" id="city" placeholder="City" [required]="required">
         </div>
     </div>
-    <div class="btn-box">
-        <button type="submit" standardButton btnStyle="form" btnType="save" [disabled]="!f.valid" (click)="submit()"></button>
+    <div class="form-group">
+        <label class="sr-only" for="latitude">Latitude</label>
+        <label class="sr-only" for="longitude">Longitude</label>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-info" type="button" (click)="setFromLocation()"><bs-icon name="cursor-fill"></bs-icon> Locate me</button>
+            </div>
+            <input ngModel class="form-control" name="latitude" id="latitude" placeholder="Latitude" [required]="required">
+            <input ngModel class="form-control" name="longitude" id="longitude" placeholder="Longitude" [required]="required">
+        </div>
     </div>
-    
 </form>

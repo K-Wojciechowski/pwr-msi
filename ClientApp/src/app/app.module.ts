@@ -10,6 +10,7 @@ import {PagesModule} from "./pages/pages.module";
 import {WidgetsModule} from "./widgets/widgets.module";
 import {PipesModule} from "./pipes/pipes.module";
 
+
 @NgModule({
     declarations: [
         AppComponent,

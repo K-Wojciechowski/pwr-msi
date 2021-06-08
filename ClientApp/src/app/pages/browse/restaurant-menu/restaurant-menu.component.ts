@@ -70,7 +70,7 @@ export class RestaurantMenuComponent implements OnInit {
             this.toastService.handleHttpError(err);
             --this.showLoading;
         });
-        this.http.get<Address[]>(`/api/addresses/`).subscribe(a => {
+        this.http.get<Address[]>(`/api/addresses/all/`).subscribe(a => {
             this.addresses = a;
             --this.showLoading;
         }, err => {

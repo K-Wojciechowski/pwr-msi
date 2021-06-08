@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
     public canManageMenu: boolean = false;
     public canManageAccept: boolean = false;
     public isAdmin: boolean = false;
+    public isMenuCollapsed = true;
 
     public currentRestaurantId: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
     public currentRestaurantIdValue: number | null = null;
