@@ -25,26 +25,23 @@ export class AddressEditorComponent implements OnInit, OnChanges {
         }
         this.form.valueChanges?.subscribe(v => {
             this.address = this.getAddress(v);
-            
+            this.addressChange.emit(this.address);
         });
-    }
-    submit(){
-        this.addressChange.emit(this.address);
     }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.addressInput.previousValue !== changes.addressInput.currentValue && this.addressInput !== undefined) {
-            console.log(this.address);
             setTimeout(() => setFormValues(changes.addressInput.currentValue, this.form), 0);
         }
     }
 
     getAddress(formValue: any): Address {
-        return {
+        const rawAddress = {
             addressId: this.addressId,
             ...formValue,
             country: "PL"
         };
+        return {...rawAddress, latitude: parseFloat(rawAddress.latitude), longitude: parseFloat(rawAddress.longitude)};
     }
 
     newAddress(): Address {
@@ -55,7 +52,15 @@ export class AddressEditorComponent implements OnInit, OnChanges {
             secondLine: "",
             postCode: "",
             city: "",
-            country: "PL"
+            country: "PL",
+            latitude: 0,
+            longitude: 0
         }
+    }
+
+    setFromLocation() {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            this.form.setValue({...this.form.value, latitude: pos.coords.latitude, longitude: pos.coords.longitude});
+        });
     }
 }

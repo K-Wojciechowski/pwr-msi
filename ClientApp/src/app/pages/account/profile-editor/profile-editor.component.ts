@@ -69,7 +69,9 @@ export class ProfileEditorComponent implements OnInit {
             secondLine: "",
             postCode: "",
             city: "",
-            country: "PL"
+            country: "PL",
+            latitude: 0,
+            longitude: 0
         }
     }
 }

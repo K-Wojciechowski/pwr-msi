@@ -1,2 +1,5 @@
 <h1>Edit address</h1>
-<app-address-editor (addressChange)="editAddress($event)" [address]="address"></app-address-editor>
+<app-address-editor (addressChange)="newAddress = $event" [address]="address"></app-address-editor>
+<div class="btn-box">
+    <button type="submit" standardButton btnStyle="form" btnType="save" (click)="saveAddress()"></button>
+</div>

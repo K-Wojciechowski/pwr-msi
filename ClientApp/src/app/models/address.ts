@@ -6,4 +6,6 @@ export interface Address {
     postCode: string;
     city: string;
     country: string;
+    latitude: number;
+    longitude: number;
 }
