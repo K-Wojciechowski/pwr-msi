@@ -3,5 +3,4 @@ export abstract class ObjectWrapper<T> {
     public constructor(value: T) {
         this.v = value;
     }
-
 }

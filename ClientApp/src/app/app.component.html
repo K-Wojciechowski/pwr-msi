@@ -44,9 +44,10 @@
     </div>
 </nav>
 
-<main role="main" class="container-fluid" id="main-container">
+<router-outlet *ngIf="sidebar === undefined"></router-outlet>
+<main role="main" class="container-fluid" id="main-container" *ngIf="sidebar !== undefined">
     <div class="row" id="main-container-row">
-        <div *ngIf="sidebar != null" class="col-sidebar" [ngSwitch]="sidebar">
+        <div *ngIf="sidebar !== null && sidebar !== undefined" class="col-sidebar" [ngSwitch]="sidebar">
             <ng-container *ngSwitchCase="'admin'">
                 <h1>Admin Panel</h1>
                 <ul class="sidebar-nav">
@@ -145,7 +146,7 @@
                 </ul>
             </ng-container>
         </div>
-        <div [class.col-main-sidebar]="sidebar != null" [class.col-main-full]="sidebar == null">
+        <div [class.col-main-sidebar]="sidebar !== null && sidebar !== undefined" [class.col-main-full]="sidebar === null">
             <router-outlet></router-outlet>
         </div>
     </div>

@@ -64,7 +64,7 @@ const routes: Routes = [
     {path: "manage/:restaurantId/orders/:id", component: ManageOrdersDetailsComponent, data: {sidebar: "manage", auth: AuthType.ACCEPT}},
     {path: "manage/:restaurantId/menucategories", component: ManageMenuCategoriesComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
     {path: "manage/:restaurantId/menu", component: ManageMenuItemsComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
-    {path: "browse", component: BrowseRestaurantsComponent, data: {sidebar: "browse", auth: AuthType.USER}},
+    {path: "browse", component: BrowseRestaurantsComponent, data: {hideSidebar: true, sidebar: undefined, auth: AuthType.USER}},
     {path: "browse/:id", component: RestaurantMenuComponent, data: {hideSidebar: true, sidebar: null, auth: AuthType.USER}},
     {path: "account", redirectTo: "/account/profile", pathMatch: "full"},
     {path: "account/profile", component: ProfileEditComponent, data: {sidebar: "account", auth: AuthType.USER}},

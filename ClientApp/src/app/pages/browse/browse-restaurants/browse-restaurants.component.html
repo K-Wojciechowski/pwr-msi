@@ -1,22 +1,93 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<div class = "row">
-    <div class="col-md-auto">
-        <label for="search-bar" >Search for:</label>
+<main role="main" class="container-fluid" id="main-container">
+    <div class="row" id="main-container-row">
+        <div class="col-sidebar">
+            <h1>Browse</h1>
+            <h2><label for="query">Search</label></h2>
+            <input class="form-control sidebar-input" [ngModel]="query" (ngModelChange)="updateQuery($event)" id="query">
+            <h2>Restaurants around</h2>
+            <div class="btn-group sidebar-margins" role="group">
+                <button type="button" (click)="switchToAddress()" class="btn btn-sm btn-outline-secondary"
+                        [class.active]="useAddress">
+                    <bs-icon name="pin-map-fill"></bs-icon>
+                    Address
+                </button>
+                <button type="button" (click)="switchToLocation()" class="btn btn-sm btn-outline-secondary"
+                        [class.active]="!useAddress">
+                    <bs-icon name="cursor-fill"></bs-icon>
+                    My Location
+                </button>
+            </div>
+            <div class="delivery-address-container" *ngIf="useAddress">
+                <div class="delivery-address" *ngIf="address !== null"
+                     [innerHTML]="address|multiLineAddress">
+                </div>
+                <div class="delivery-address" *ngIf="address === null">
+                    <span class="text-warning">No search address specified</span>
+                </div>
+                <button type="button" id="delivery-address-btn" (click)="openAddressPicker(addressModal)"
+                        standardButton
+                        btnStyle="outline" btnType="edit" [noText]="true"></button>
+            </div>
+            <h2>Cuisines</h2>
+            <ul class="list-unstyled sidebar-margins">
+                <li *ngFor="let cuisine of cuisines">
+                    <label><input type="checkbox" name="cuisine" value="{{cuisine.v.cuisineId}}" [ngModel]="cuisine.isChecked" (ngModelChange)="setCuisine(cuisine, $event)"> {{cuisine.v.name}}</label>
+                </li>
+            </ul>
+        </div>
+        <div class="col-main-sidebar">
+            <app-progress-spinner-content [showLoading]="showLoading > 0">
+                <app-empty-state [empty]="!showLoading && items.length === 0">
+                    <h1 *ngIf="totalItems === 1">{{totalItems}} Restaurant Near You</h1>
+                    <h1 *ngIf="totalItems !== 1">{{totalItems}} Restaurants Near You</h1>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th style="width: 15%">Logo</th>
+                            <th style="width: 35%">Name</th>
+                            <th style="width: 30%">Cuisines</th>
+                            <th style="width: 20%">Location</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let restaurant of items">
+                            <td style="width: 15%"><img class="restaurant-logo" src="{{restaurant.logo}}" alt=""></td>
+                            <td style="width: 35%"><a routerLink="/browse/{{restaurant.restaurantId}}">{{restaurant.name}}</a></td>
+                            <td style="width: 30%">{{getCuisines(restaurant)}}</td>
+                            <td style="width: 20%">{{getAddress(restaurant)}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </app-empty-state>
+            </app-progress-spinner-content>
+            <app-pager [page]="pageNumber" (pageChange)="goToPage($event)" [totalItems]="totalItems"></app-pager>
+        </div>
     </div>
-    <div class="col-8">
-        <input  name="SearchBar" ngModel class="form-control" id="search-bar" (change)="searchFor()">
+</main>
+
+<ng-template #addressModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Choose address for search</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
-</div>
-<app-progress-spinner-content [showLoading]="showLoading">
-    <app-empty-state [empty]="!showLoading && items.length === 0">
-        <table class="table table-hover">
-            <tbody>
-            <tr *ngFor="let restaurant of items">
-                <td style="height:100px;width:100px"><img src="{{restaurant.logo}}" alt="" border=3 height=100 width=100/></td>
-                <td><a routerLink="/offer/restaurants/{{restaurant.restaurantId}}">{{restaurant.name}}</a> </td>
-            </tr>
-            </tbody>
-        </table>
-    </app-empty-state>
-</app-progress-spinner-content>
-<app-pager [page]="pageNumber" (pageChange)="goToPage($event)" [totalItems]="totalItems"></app-pager>
+    <div class="modal-body address-selector-modal-body">
+        <app-empty-state [empty]="addresses.length === 0">
+            <div class="row">
+                <div *ngFor="let a of addresses" class="col-md-4 address-selector-card-holder">
+                    <div (click)="selectAddress(a)" class="card address-selector-card"
+                         [ngClass]="{'active': address?.addressId === a.addressId}">
+                        <div class="card-body" [innerHTML]="a|multiLineAddress"></div>
+                    </div>
+                </div>
+            </div>
+        </app-empty-state>
+    </div>
+    <div class="modal-footer">
+        <a target="_blank" routerLink="/profile/addresses" title="Page opens in new tab">Manage addresses in your
+            profile
+            <bs-icon name="box-arrow-up-right"></bs-icon>
+        </a>
+    </div>
+</ng-template>
