@@ -23,11 +23,12 @@ export class AddressAddComponent implements OnInit {
         this.showLoading = true;
         this.http.post<Address>("/api/addresses/", this.newAddress).subscribe(async newAddress => {
             this.toastService.showSuccess(`Address ${newAddress.firstLine} ${newAddress.secondLine} ${newAddress.city} created.`);
+            this.showLoading = false;
+            this.router.navigateByUrl("/account/address");
         }, error => {
             this.showLoading = false;
             this.toastService.handleHttpError(error);
         });
-        this.router.navigateByUrl("/account/address");
     }
 
 }

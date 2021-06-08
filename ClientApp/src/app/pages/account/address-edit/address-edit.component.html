@@ -1,3 +1,4 @@
+<app-progress-spinner-overlay *ngIf="showLoading"></app-progress-spinner-overlay>
 <h1>Edit address</h1>
 <app-address-editor (addressChange)="newAddress = $event" [address]="address"></app-address-editor>
 <div class="btn-box">
