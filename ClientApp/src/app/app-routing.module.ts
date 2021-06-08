@@ -25,7 +25,6 @@ import {ManagePickContextComponent} from "./pages/manage/manage-pick-context/man
 import {ManageIndexComponent} from "./pages/manage/manage-index/manage-index.component";
 import {ManageMenuCategoriesComponent} from "./pages/manage/manage-menu-categories/manage-menu-categories.component";
 import {ManageMenuItemsComponent} from "./pages/manage/manage-menu-items/manage-menu-items.component";
-import {RestaurantMenuComponent} from "./pages/browse/restaurant-menu/restaurant-menu.component";
 import {OrdersMakePaymentComponent} from "./pages/orders/orders-make-payment/orders-make-payment.component";
 import {ManageOrdersListComponent} from "./pages/manage/manage-orders-list/manage-orders-list.component";
 import {ManageOrdersDetailsComponent} from "./pages/manage/manage-orders-details/manage-orders-details.component";
@@ -33,6 +32,8 @@ import {ProfileEditComponent} from "./pages/account/profile-edit/profile-edit.co
 import {AddressListComponent} from "./pages/account/address-list/address-list.component";
 import {AddressEditComponent} from "./pages/account/address-edit/address-edit.component";
 import {AddressAddComponent} from "./pages/account/address-add/address-add.component";
+import {BrowseRestaurantsComponent} from "./pages/browse/browse-restaurants/browse-restaurants.component";
+import {RestaurantMenuComponent} from "./pages/browse/restaurant-menu/restaurant-menu.component";
 
 const routes: Routes = [
     {path: "", component: IndexComponent, pathMatch: "full", data: {sidebar: null}},
@@ -49,7 +50,6 @@ const routes: Routes = [
     {path: "admin/restaurants/add", component: RestaurantsAddComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/restaurants/:id", component: RestaurantsEditComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
     {path: "admin/cuisines", component: CuisinesListComponent, data: {sidebar: "admin", auth: AuthType.ADMIN}},
-    {path: "browse/:id", component: RestaurantMenuComponent, data: {hideSidebar: true, sidebar: null, auth: AuthType.USER}},
     {path: "orders", component: OrdersOverviewComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "orders/:id", component: OrdersDetailsComponent, data: {sidebar: "orders", auth: AuthType.USER}},
     {path: "orders/:id/pay", component: OrdersMakePaymentComponent, data: {sidebar: "orders", auth: AuthType.USER}},
@@ -64,6 +64,8 @@ const routes: Routes = [
     {path: "manage/:restaurantId/orders/:id", component: ManageOrdersDetailsComponent, data: {sidebar: "manage", auth: AuthType.ACCEPT}},
     {path: "manage/:restaurantId/menucategories", component: ManageMenuCategoriesComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
     {path: "manage/:restaurantId/menu", component: ManageMenuItemsComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
+    {path: "browse", component: BrowseRestaurantsComponent, data: {hideSidebar: true, sidebar: undefined, auth: AuthType.USER}},
+    {path: "browse/:id", component: RestaurantMenuComponent, data: {hideSidebar: true, sidebar: null, auth: AuthType.USER}},
     {path: "account", redirectTo: "/account/profile", pathMatch: "full"},
     {path: "account/profile", component: ProfileEditComponent, data: {sidebar: "account", auth: AuthType.USER}},
     {path: "account/address", component: AddressListComponent, data: {sidebar: "account", auth: AuthType.USER}},

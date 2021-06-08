@@ -1,11 +1,10 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark static-top" id="navbar" *ngIf="showNavbar">
     <a class="navbar-brand" routerLink="/">MSI</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" (click)="isMenuCollapsed = !isMenuCollapsed">
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <div class="collapse navbar-collapse" [ngbCollapse]="isMenuCollapsed">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                 <a class="nav-link" routerLink="/">Dashboard</a>
@@ -45,9 +44,10 @@
     </div>
 </nav>
 
-<main role="main" class="container-fluid" id="main-container">
+<router-outlet *ngIf="sidebar === undefined"></router-outlet>
+<main role="main" class="container-fluid" id="main-container" *ngIf="sidebar !== undefined">
     <div class="row" id="main-container-row">
-        <div *ngIf="sidebar != null" class="col-sidebar" [ngSwitch]="sidebar">
+        <div *ngIf="sidebar !== null && sidebar !== undefined" class="col-sidebar" [ngSwitch]="sidebar">
             <ng-container *ngSwitchCase="'admin'">
                 <h1>Admin Panel</h1>
                 <ul class="sidebar-nav">
@@ -134,8 +134,19 @@
                     </li>
                 </ul>
             </ng-container>
+            <ng-container *ngSwitchCase="'browse'">
+                <h1>Manage</h1>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item sidebar-context" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                        <a class="sidebar-nav-link" routerLink="/browse">
+                            <bs-icon name="shop"></bs-icon>
+                            <span>Restaurants</span>
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
         </div>
-        <div [class.col-main-sidebar]="sidebar != null" [class.col-main-full]="sidebar == null">
+        <div [class.col-main-sidebar]="sidebar !== null && sidebar !== undefined" [class.col-main-full]="sidebar === null">
             <router-outlet></router-outlet>
         </div>
     </div>

@@ -12,7 +12,7 @@ namespace pwr_msi.Models.Dto.Admin {
         public List<Cuisine> Cuisines { get; init; }
 
         public Restaurant AsNewRestaurant() => new() {
-            Name = Name, Website = Website, Description = Description, Logo = Logo, Address = Address, IsActive = IsActive,
+            Name = Name, Website = Website, Description = Description, Logo = Logo, Address = Address, IsActive = IsActive, Cuisines = Cuisines,
         };
     }
 }

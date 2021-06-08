@@ -24,7 +24,8 @@ namespace pwr_msi.Controllers {
             _menuService = menuService;
         }
 
-        private static async Task<List<Restaurant>> GetCloseRestaurants(IQueryable<Restaurant> query, GeoCoordinate userLoc) {
+        private static async Task<List<Restaurant>> GetCloseRestaurants(IQueryable<Restaurant> query,
+            GeoCoordinate userLoc) {
             var rList = await query.ToListAsync();
             return rList.Where(r => {
                 // This could be computed in Postgres, but that might be difficult, so let's do it here.
@@ -38,60 +39,56 @@ namespace pwr_msi.Controllers {
             _dbContext.Restaurants.Include(r => r.Address).Include(r => r.Cuisines);
 
         [Route(template: "")]
-        public async Task<ActionResult<Page<RestaurantDetailDto>>> AllRestaurants([FromQuery] int page = 1) {
-            var user = await _dbContext.Users.FindAsync(MsiUserId);
-            if (user == null) return NotFound();
-            // TODO use coords from browser?
-            Address last = user.Addresses.Last();
-            // reverse geosearch using nominatim API
-            // Address userAddress = user.Addresses.Last();
-            // WebClient wb = new WebClient();
-            // wb.Headers.Add("User-Agent: Other");
-            // var json = wb.DownloadString("https://nominatim.openstreetmap.org/search?city="
-            //                              +userAddress.City+"&street="+userAddress.HouseNumber+" "+userAddress.Street+
-            //                              "&postalcode="+userAddress.PostCode+"&format=json");
+        public async Task<ActionResult<Page<RestaurantDetailDto>>> GetRestaurants([FromQuery] string search = "",
+            [FromQuery] string cuisines = "", [FromQuery] double latitude = 0, [FromQuery] double longitude = 0,
+            [FromQuery] int page = 1) {
             var query = RestaurantsDetailQuery();
-            var userAddress = new GeoCoordinate(last.Latitude, last.Longitude);
-            var rList = await GetCloseRestaurants(query, userAddress);
-            return await Utils.Paginate(rList.AsQueryable(), page, r => r.AsDetailDto());
-        }
+            if (cuisines != null && cuisines.Length > 0) {
+                var cuisinesIds = cuisines.Split(',').Select(c => {
+                    var status = int.TryParse(c, out var res);
+                    return status ? res : -1;
+                });
+                query = query.Where(r => r.Cuisines.Any(c => cuisinesIds.Contains(c.CuisineId)));
+            }
 
-        [Route(template: "")]
-        public async Task<ActionResult<Page<RestaurantDetailDto>>> FilteredRestaurants([FromQuery] string name,
-            [FromQuery] string cuisine, [FromQuery] string meal, [FromQuery] int page = 1) {
-            var user = await _dbContext.Users.FindAsync(MsiUserId);
-            if (user == null) return NotFound();
-            Address last = user.Addresses.Last();
-            ZonedDateTime now = Utils.Now();
-            var likeQueryName = $"%{name}%";
-            var likeQueryCuisine = $"%{cuisine}%";
-            var likeQueryMeal = $"%{meal}%";
-            var query = RestaurantsDetailQuery()
-                .Where(r => EF.Functions.ILike(r.Name, likeQueryName))
-                .Where(r => r.Cuisines.Any(c =>
-                    EF.Functions.ILike(c.Name, likeQueryCuisine)))
-                .Where(r => r.MenuItems.Any(mi =>
-                    EF.Functions.ILike(mi.Name, likeQueryMeal)
-                    &&
-                    (mi.ValidUntil == null ||
-                     ZonedDateTime.Comparer.Local.Compare(
-                         (ZonedDateTime) mi.ValidUntil, now) >= 0)
-                    && ZonedDateTime.Comparer.Local.Compare(now,
-                        mi.ValidFrom) > 0));
-            var userAddress = new GeoCoordinate(last.Latitude, last.Longitude);
-            var rList = await GetCloseRestaurants(query, userAddress);
-            return await Utils.Paginate(rList.AsQueryable(), page, r => r.AsDetailDto());
+            if (search != null && search.Length > 0) {
+                var now = Utils.Now();
+                var matchPattern = $"%{search.Trim()}%";
+                query = query.Include(r => r.MenuItems).Where(r =>
+                    EF.Functions.ILike(r.Name, matchPattern) ||
+                    r.MenuItems.Any(mi => EF.Functions.ILike(mi.Name, matchPattern)
+                                          && (mi.ValidUntil == null ||
+                                              ZonedDateTime.Comparer.Local.Compare(
+                                                  (ZonedDateTime) mi.ValidUntil, now) >= 0)
+                                          && ZonedDateTime.Comparer.Local.Compare(now,
+                                              mi.ValidFrom) > 0));
+            }
+
+            var userLocation = new GeoCoordinate(latitude, longitude);
+            List<Restaurant> restaurants;
+            if (latitude == 0 && longitude == 0) {
+                restaurants = await query.ToListAsync();
+            } else {
+                restaurants = await GetCloseRestaurants(query, userLocation);
+            }
+
+            return Utils.PaginateList(restaurants, page, r => r.AsDetailDto());
         }
 
         [Route(template: "{id}/")]
         public async Task<ActionResult<RestaurantDetailDto>> RestaurantDetails([FromRoute] int id) {
-            var restaurant = await _dbContext.Restaurants.FindAsync(id);
+            var restaurant = await RestaurantsDetailQuery().Where(r => r.RestaurantId == id).FirstAsync();
             return restaurant.AsDetailDto();
         }
 
         [Route(template: "{id}/menu/")]
         public async Task<ActionResult<List<MenuCategoryWithItemsDto>>> RestaurantMenu([FromRoute] int id) {
             return await _menuService.GetMenuFromCache(id, Utils.Now());
+        }
+
+        [Route("cuisines/")]
+        public async Task<ActionResult<List<Cuisine>>> GetCuisines() {
+            return await _dbContext.Cuisines.OrderBy(c => c.Name).ToListAsync();
         }
     }
 }

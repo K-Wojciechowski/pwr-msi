@@ -12,6 +12,7 @@ import {Address} from "../../../models/address";
 export class AddressEditComponent implements OnInit {
     showLoading: boolean = false;
     address: Address | undefined;
+    newAddress: Address | undefined;
     addressId: number | undefined;
     isBillingAddress: boolean = false;
 
@@ -36,9 +37,9 @@ export class AddressEditComponent implements OnInit {
         });
     }
 
-    editAddress(address: Address) {
+    saveAddress() {
         this.showLoading = true;
-        this.http.put<Address>(`/api/addresses/${this.addressId}/`, address).subscribe(newAddress => {
+        this.http.put<Address>(`/api/addresses/${this.addressId}/`, this.newAddress).subscribe(newAddress => {
             this.toastService.showSuccess(`Address ${newAddress.firstLine} ${newAddress.secondLine} ${newAddress.city} changed.`);
             this.showLoading = false;
         }, error => {
