@@ -6,15 +6,7 @@ namespace pwr_msi.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "Street",
-                table: "Addresses",
-                newName: "SecondLine");
-
-            migrationBuilder.RenameColumn(
-                name: "HouseNumber",
-                table: "Addresses",
-                newName: "FirstLine");
+        
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

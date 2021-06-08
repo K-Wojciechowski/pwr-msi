@@ -20,7 +20,7 @@
                 <a class="nav-link" routerLink="/account">Account</a>
             </li>
             <li class="nav-item" routerLinkActive="active" *ngIf="canDeliver">
-                <a class="nav-link" routerLink="/deliver">Deliver</a>
+                <a class="nav-link" routerLink="/deliver/orders/all">Deliver</a>
             </li>
             <li class="nav-item" routerLinkActive="active" *ngIf="canManage">
                 <a class="nav-link" routerLink="/manage">Manage</a>
@@ -113,6 +113,23 @@
                         <a class="sidebar-nav-link" routerLink="/manage/{{currentRestaurantIdValue}}/menu">
                             <bs-icon name="journal-text"></bs-icon>
                             <span>Menu Items</span>
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
+            <ng-container *ngSwitchCase="'delivery'">
+                <h1>Delivery</h1>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/deliver/orders/all">
+                            <bs-icon name="basket"></bs-icon>
+                            <span>Orders</span>
+                        </a>
+                    </li>
+                    <li *ngIf="canDeliver" class="sidebar-nav-item" routerLinkActive="active">
+                        <a class="sidebar-nav-link" routerLink="/deliver/restaurants">
+                            <bs-icon name="shop"></bs-icon>
+                            <span>Restaurants</span>
                         </a>
                     </li>
                 </ul>

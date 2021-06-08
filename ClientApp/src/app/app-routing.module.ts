@@ -27,6 +27,9 @@ import {ManageMenuCategoriesComponent} from "./pages/manage/manage-menu-categori
 import {ManageMenuItemsComponent} from "./pages/manage/manage-menu-items/manage-menu-items.component";
 import {RestaurantMenuComponent} from "./pages/browse/restaurant-menu/restaurant-menu.component";
 import {OrdersMakePaymentComponent} from "./pages/orders/orders-make-payment/orders-make-payment.component";
+import {OrdersListComponent} from "./pages/delivery/orders-list/orders-list.component";
+import {OrderDetailsComponent} from "./pages/delivery/order-details/order-details.component";
+import {RestaurantsOrderListComponent} from "./pages/delivery/restaurants-order-list/restaurants-order-list.component";
 import {ManageOrdersListComponent} from "./pages/manage/manage-orders-list/manage-orders-list.component";
 import {ManageOrdersDetailsComponent} from "./pages/manage/manage-orders-details/manage-orders-details.component";
 import {ProfileEditComponent} from "./pages/account/profile-edit/profile-edit.component";
@@ -64,6 +67,9 @@ const routes: Routes = [
     {path: "manage/:restaurantId/orders/:id", component: ManageOrdersDetailsComponent, data: {sidebar: "manage", auth: AuthType.ACCEPT}},
     {path: "manage/:restaurantId/menucategories", component: ManageMenuCategoriesComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
     {path: "manage/:restaurantId/menu", component: ManageMenuItemsComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
+    {path: "deliver/orders/:restaurantId", component: OrdersListComponent, data: {sidebar: "delivery", auth: AuthType.USER}},
+    {path: "deliver/restaurants", component: RestaurantsOrderListComponent, data: {sidebar: "delivery", auth: AuthType.USER}},
+    {path: "deliver/order/:id", component: OrderDetailsComponent, data: {sidebar: "delivery", auth: AuthType.USER}},
     {path: "account", redirectTo: "/account/profile", pathMatch: "full"},
     {path: "account/profile", component: ProfileEditComponent, data: {sidebar: "account", auth: AuthType.USER}},
     {path: "account/address", component: AddressListComponent, data: {sidebar: "account", auth: AuthType.USER}},

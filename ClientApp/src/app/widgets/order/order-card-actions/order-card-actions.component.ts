@@ -43,6 +43,7 @@ export class OrderCardActionsComponent implements OnInit, OnChanges {
 
     private computeActions(order: Order) {
         const actions = [];
+        console.log(order.status+"  "+this.userRole);
         let isImportant = true;
         if (order.status === OrderStatus.CREATED && this.userRole === OrderUserRole.CUSTOMER) {
             actions.push(new OrderAction("pay", "Pay " + this.currencyPipe.transform(order.totalPrice, "PLN")));
@@ -64,6 +65,9 @@ export class OrderCardActionsComponent implements OnInit, OnChanges {
             actions.push(new OrderAction("assign", "Assign delivery person"));
         }
         if (order.status === OrderStatus.PREPARED && this.order.deliveryPerson === null && this.userRole === OrderUserRole.DELIVERY) {
+            actions.push(new OrderAction("selfassign", "Assign to me"));
+        }
+        if (order.status === OrderStatus.ACCEPTED && this.order.deliveryPerson === null && this.userRole === OrderUserRole.DELIVERY) {
             actions.push(new OrderAction("selfassign", "Assign to me"));
         }
         if (order.status === OrderStatus.PREPARED && this.order.deliveryPerson?.userId === this.currentUserId && this.userRole === OrderUserRole.DELIVERY) {

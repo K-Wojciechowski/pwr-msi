@@ -39,7 +39,7 @@ import {OrderCardProgressIconComponent} from "./order/order-card-progress-icon/o
 import {OrderCardRestaurantComponent} from "./order/order-card-restaurant/order-card-restaurant.component";
 import {OrderItemsComponent} from "./order/order-items/order-items.component";
 import {OrderTableComponent} from "./order/order-table/order-table.component";
-import {CrystalLightboxModule} from "@crystalui/angular-lightbox";
+
 
 const components = [
     AddressDisplayComponent,
@@ -87,7 +87,7 @@ const components = [
         NgbTimepickerModule,
         NgbDatepickerModule,
         PipesModule,
-        CrystalLightboxModule,
+      
     ],
     providers: [CurrencyPipe],
 })
