@@ -7,6 +7,7 @@ import {WidgetsModule} from "../widgets/widgets.module";
 import {BrowseModule} from "./browse/browse.module";
 import {OrdersModule} from "./orders/orders.module";
 import {ManageModule} from "./manage/manage.module";
+import {DeliveryModule} from "./delivery/delivery.module";
 import {AccountModule} from "./account/account.module";
 
 @NgModule({
@@ -17,6 +18,7 @@ import {AccountModule} from "./account/account.module";
         AuthModule,
         BaseModule,
         BrowseModule,
+        DeliveryModule,
         ManageModule,
         OrdersModule
     ],

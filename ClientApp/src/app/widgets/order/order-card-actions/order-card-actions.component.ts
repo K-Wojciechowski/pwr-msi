@@ -27,7 +27,10 @@ export class OrderCardActionsComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         this.computeActions(this.order);
-        this.authStore.user.subscribe(u => this.currentUserId = u?.userId ?? -1);
+        this.authStore.user.subscribe(u => {
+            this.currentUserId = u?.userId ?? -1;
+            this.computeActions(this.order);
+        });
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -64,6 +67,9 @@ export class OrderCardActionsComponent implements OnInit, OnChanges {
             actions.push(new OrderAction("assign", "Assign delivery person"));
         }
         if (order.status === OrderStatus.PREPARED && this.order.deliveryPerson === null && this.userRole === OrderUserRole.DELIVERY) {
+            actions.push(new OrderAction("selfassign", "Assign to me"));
+        }
+        if (order.status === OrderStatus.ACCEPTED && this.order.deliveryPerson === null && this.userRole === OrderUserRole.DELIVERY) {
             actions.push(new OrderAction("selfassign", "Assign to me"));
         }
         if (order.status === OrderStatus.PREPARED && this.order.deliveryPerson?.userId === this.currentUserId && this.userRole === OrderUserRole.DELIVERY) {

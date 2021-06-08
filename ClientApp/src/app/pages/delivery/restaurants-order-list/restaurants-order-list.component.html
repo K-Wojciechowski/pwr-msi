@@ -1,0 +1,13 @@
+<app-progress-spinner-content [showLoading]="showLoading">
+    <app-empty-state [empty]="!showLoading && items.length === 0">
+        <table class="table table-hover">
+            <tbody>
+            <tr *ngFor="let restaurant of items">
+                <td style="height:100px;width:100px"><img src="{{restaurant.logo}}" alt="" border=3 height=100 width=100/></td>
+                <td><a routerLink="/deliver/orders/{{restaurant.restaurantId}}">{{restaurant.name}}</a> </td>
+            </tr>
+            </tbody>
+        </table>
+    </app-empty-state>
+</app-progress-spinner-content>
+

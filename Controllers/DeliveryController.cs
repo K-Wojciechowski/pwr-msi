@@ -53,10 +53,13 @@ namespace pwr_msi.Controllers {
 
         [Route(template: "waiting/")]
         public async Task<ActionResult<List<OrderBasicDto>>> AllWaitingOrders([FromQuery] float lat,
-            [FromQuery] float lng, [FromQuery] int range, [FromQuery] int restaurantId) {
+            [FromQuery] float lng, [FromQuery] int range, [FromQuery] int restaurantId = -1) {
             var restaurants = await _dbContext.RestaurantUsers
                 .Where(ru => ru.UserId == MsiUserId && ru.CanDeliverOrders)
                 .Select(ru => ru.RestaurantId).ToListAsync();
+            if (restaurantId > 0) {
+                restaurants = restaurants.Where(o => o == restaurantId).ToList();
+            }
             var query = _dbContext.Orders
                 .OrderByDescending(o => o.Updated)
                 .Where(o => o.DeliveryPersonId == null)
@@ -72,6 +75,14 @@ namespace pwr_msi.Controllers {
             var userAddress = new GeoCoordinate(lat, lng);
             var orders = await GetNearbyOrders(enrichedQuery, userAddress, range);
             return await GetBasicOrders(orders);
+        }
+        
+        [Route(template: "restaurants/")]
+        public async Task<ActionResult<List<RestaurantBasicDto>>> AssignedRestaurants() {
+            var restaurants = await _dbContext.RestaurantUsers
+                .Where(ru => ru.UserId == MsiUserId && ru.CanDeliverOrders)
+                .Select(ru => ru.Restaurant.AsBasicDto()).ToListAsync();
+            return restaurants;
         }
 
         [Route(template: "history/")]
