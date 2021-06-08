@@ -27,7 +27,10 @@ export class OrderCardActionsComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         this.computeActions(this.order);
-        this.authStore.user.subscribe(u => this.currentUserId = u?.userId ?? -1);
+        this.authStore.user.subscribe(u => {
+            this.currentUserId = u?.userId ?? -1;
+            this.computeActions(this.order);
+        });
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -43,7 +46,6 @@ export class OrderCardActionsComponent implements OnInit, OnChanges {
 
     private computeActions(order: Order) {
         const actions = [];
-        console.log(order.status+"  "+this.userRole);
         let isImportant = true;
         if (order.status === OrderStatus.CREATED && this.userRole === OrderUserRole.CUSTOMER) {
             actions.push(new OrderAction("pay", "Pay " + this.currencyPipe.transform(order.totalPrice, "PLN")));
