@@ -1,0 +1,25 @@
+<h1>Orders</h1>
+<app-progress-spinner-content [showLoading]="showLoading > 0">
+    <ng-container *ngIf="ordersInProgress.length > 0">
+        <h2>Orders in progress</h2>
+        <app-order-table [showLoading]="showLoading > 0" [orders]="ordersInProgress" [showCustomer]="true"></app-order-table>
+    </ng-container>
+</app-progress-spinner-content>
+    <ng-container >
+        <h2>Available orders</h2>
+        <div class="col-sm-10">
+            <label class="msi-form-check">
+                <input id="nearbyOrders" [(ngModel)]="onlyNearbyOrders" [ngModelOptions]="{standalone: true}" (change)="getCoords()"
+                       type="checkbox">
+                Show available orders only from nearby restaurants
+            </label>
+        </div>
+        <app-order-table *ngIf="ordersAwaiting.length > 0" [showLoading]="showLoading > 0" [orders]="ordersAwaiting" [showRestaurant]="true"></app-order-table>
+    </ng-container>
+
+   
+    <ng-container *ngIf="orderHistory.length > 0">
+        <h2>Completed orders</h2>
+        <app-order-table [showLoading]="showLoading > 0" [orders]="orderHistory" [showRestaurant]="true"></app-order-table>
+    </ng-container>
+
