@@ -9,9 +9,9 @@ import {OrderStatus} from "../../../models/enum/order-status";
 
 
 @Component({
-  selector: 'app-orders-list',
-  templateUrl: './orders-list.component.html',
-  styleUrls: ['./orders-list.component.scss']
+    selector: 'app-orders-list',
+    templateUrl: './orders-list.component.html',
+    styleUrls: ['./orders-list.component.scss']
 })
 export class OrdersListComponent implements OnInit {
     lat: number | undefined;
@@ -29,23 +29,23 @@ export class OrdersListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        for(var i = 0;i<3;i++){
-       
+        for (var i = 0; i < 3; i++) {
+
         }
         this.restIdString = this.route.snapshot.paramMap.get("restaurantID");
-        if(this.restIdString=="all" || this.restIdString==null){
-            this.restIdString="-1";
+        if (this.restIdString == "all" || this.restIdString == null) {
+            this.restIdString = "-1";
         }
         this.loadActiveOrders();
         this.loadWaitingOrders();
         this.loadHistoryOrders();
 
     }
-   
+
 
     loadActiveOrders() {
         //this.showLoading++;
-        this.http.get<OrderBasic[]>("/api/delivery/active/?restaurantId="+this.restIdString).subscribe(
+        this.http.get<OrderBasic[]>("/api/delivery/active/?restaurantId=" + this.restIdString).subscribe(
             orders => {
                 this.ordersInProgress = orders.map(i => new OrderBasicWrapper(i, "/deliver/order/"));
                 //this.ordersInProgress = this.mockData.map(i => new OrderBasicWrapper(i, "/delivery/active/?restaurantId="+this.restIdString));
@@ -56,30 +56,27 @@ export class OrdersListComponent implements OnInit {
             }
         )
     }
-    
+
     loadWaitingOrders() {
         console.log(this.onlyNearbyOrders);
         //this.showLoading++;
-        if(this.lat!=undefined && this.lng!=undefined && this.onlyNearbyOrders){
-            this.http.get<OrderBasic[]>("/api/delivery/waiting/?restaurantId="+this.restIdString+"&lng="+this.lng.toString()+"&lat="+this.lat.toString()+"&range=10000").subscribe(
+        if (this.lat != undefined && this.lng != undefined && this.onlyNearbyOrders) {
+            this.http.get<OrderBasic[]>("/api/delivery/waiting/?restaurantId=" + this.restIdString + "&lng=" + this.lng.toString() + "&lat=" + this.lat.toString() + "&range=10000").subscribe(
                 orders => {
-                    console.log(orders[0].orderId);
                     this.ordersAwaiting = orders.map(i => new OrderBasicWrapper(i, "/deliver/order/"));
                     //this.ordersAwaiting = this.mockData.map(i => new OrderBasicWrapper(i,
-                       // "/delivery/waiting/?restaurantId="+this.restIdString+"&lng="+this.lng?.toString()+"&lat="+this.lat?.toString()+"&range=10000"));
+                    // "/delivery/waiting/?restaurantId="+this.restIdString+"&lng="+this.lng?.toString()+"&lat="+this.lat?.toString()+"&range=10000"));
                     this.showLoading--;
                 }, error => {
                     this.toastService.handleHttpError(error);
                     this.showLoading--;
                 }
             )
-        }
-        else{
-            this.http.get<OrderBasic[]>("/api/delivery/waiting/?restaurantId="+this.restIdString).subscribe(
+        } else {
+            this.http.get<OrderBasic[]>("/api/delivery/waiting/?restaurantId=" + this.restIdString).subscribe(
                 orders => {
-                    console.log(orders[0].orderId);
                     this.ordersAwaiting = orders.map(i => new OrderBasicWrapper(i, "/deliver/order/"));
-                   // this.ordersAwaiting = this.mockData.map(i => new OrderBasicWrapper(i, "/delivery/waiting/?restaurantId="+this.restIdString));
+                    // this.ordersAwaiting = this.mockData.map(i => new OrderBasicWrapper(i, "/delivery/waiting/?restaurantId="+this.restIdString));
                     this.showLoading--;
                 }, error => {
                     this.toastService.handleHttpError(error);
@@ -88,25 +85,24 @@ export class OrdersListComponent implements OnInit {
             )
         }
     }
-    
-    getCoords(){
-        this.ordersAwaiting=[];
-        if(this.onlyNearbyOrders){
+
+    getCoords() {
+        this.ordersAwaiting = [];
+        if (this.onlyNearbyOrders) {
             navigator.geolocation.getCurrentPosition(position => {
                 console.log(position);
-                this.lat= position.coords.latitude;
-                this.lng= position.coords.longitude;
+                this.lat = position.coords.latitude;
+                this.lng = position.coords.longitude;
                 this.loadWaitingOrders()
             });
-        }
-        else{
+        } else {
             this.loadWaitingOrders()
         }
     }
-    
+
     loadHistoryOrders() {
-       // this.showLoading++;
-        this.http.get<OrderBasic[]>("/api/delivery/history/?restaurantId="+this.restIdString).subscribe(
+        // this.showLoading++;
+        this.http.get<OrderBasic[]>("/api/delivery/history/?restaurantId=" + this.restIdString).subscribe(
             orders => {
                 this.orderHistory = orders.map(i => new OrderBasicWrapper(i, "/deliver/order/"));
                 //this.orderHistory = this.mockData.map(i => new OrderBasicWrapper(i, "/delivery/history/?restaurantId="+this.restIdString));
