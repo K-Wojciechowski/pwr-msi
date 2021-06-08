@@ -21,7 +21,7 @@ export class AddressAddComponent implements OnInit {
 
     saveAddress() {
         this.showLoading = true;
-        this.http.post<Address>("/api/address/", this.newAddress).subscribe(async newAddress => {
+        this.http.post<Address>("/api/addresses/", this.newAddress).subscribe(async newAddress => {
             this.toastService.showSuccess(`Address ${newAddress.firstLine} ${newAddress.secondLine} ${newAddress.city} created.`);
         }, error => {
             this.showLoading = false;
