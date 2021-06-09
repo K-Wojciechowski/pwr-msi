@@ -67,6 +67,7 @@ const routes: Routes = [
     {path: "manage/:restaurantId/orders/:id", component: ManageOrdersDetailsComponent, data: {sidebar: "manage", auth: AuthType.ACCEPT}},
     {path: "manage/:restaurantId/menucategories", component: ManageMenuCategoriesComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
     {path: "manage/:restaurantId/menu", component: ManageMenuItemsComponent, data: {sidebar: "manage", auth: AuthType.MANAGE}},
+    {path: "deliver", redirectTo: "/deliver/orders/all", pathMatch: "full"},
     {path: "deliver/orders/:restaurantId", component: OrdersListComponent, data: {sidebar: "delivery", auth: AuthType.USER}},
     {path: "deliver/restaurants", component: RestaurantsOrderListComponent, data: {sidebar: "delivery", auth: AuthType.USER}},
     {path: "deliver/order/:id", component: OrderDetailsComponent, data: {sidebar: "delivery", auth: AuthType.USER}},
