@@ -53,8 +53,6 @@ export class RestaurantMenuComponent implements OnInit {
         this.restaurantId = parseInt(restaurantIdString);
         this.http.get<RestaurantFull>(`/api/offer/restaurants/${this.restaurantId}/`).subscribe(r => {
             this.restaurant = r;
-            // TODO for testing
-            this.addresses = [r.address, {...r.address, addressee: "test2", addressId: 1234}];
             --this.showLoading;
         }, err => {
             this.toastService.handleHttpError(err);
@@ -126,7 +124,7 @@ export class RestaurantMenuComponent implements OnInit {
     }
 
     reloadAddressesSilently() {
-        this.http.get<Address[]>(`/api/addresses/`).subscribe(a => {
+        this.http.get<Address[]>(`/api/addresses/all/`).subscribe(a => {
             this.addresses = a;
         }, err => {
             this.toastService.handleHttpError(err);
