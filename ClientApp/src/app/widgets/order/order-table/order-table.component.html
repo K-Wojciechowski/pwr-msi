@@ -5,12 +5,12 @@
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Date</th>
-                <th class="table-hidden-sm" scope="col">Items</th>
+                <th *ngIf="showItems" class="table-hidden-sm" scope="col">Items</th>
                 <th *ngIf="showRestaurant" class="table-hidden-sm" scope="col">Restaurant</th>
                 <th *ngIf="showCustomer" class="table-hidden-sm" scope="col">Customer</th>
                 <th *ngIf="showDelivery" class="table-hidden-sm" scope="col">Delivered by</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Status</th>
+                <th scope="col">Total</th>
+                <th *ngIf="showStatus" class="table-hidden-sm" scope="col">Status</th>
                 <th scope="col">Actions</th>
             </tr>
             </thead>
@@ -18,12 +18,12 @@
             <tr *ngFor="let order of items">
                 <th scope="row"><a [routerLink]="order.routerLink">{{order.v.orderId}}</a></th>
                 <td>{{order.v.created|ldate}}</td>
-                <td>{{order.itemNames}}</td>
+                <td *ngIf="showItems" class="table-hidden-sm">{{order.itemNames}}</td>
                 <td *ngIf="showRestaurant" class="table-hidden-sm"><a href="/browse/{{order.v.restaurant.restaurantId}}">{{order.v.restaurant.name}}</a></td>
                 <td *ngIf="showCustomer" class="table-hidden-sm">{{order.customerName}}</td>
                 <td *ngIf="showDelivery" class="table-hidden-sm">{{order.deliveryPersonName}}</td>
                 <td>{{order.v.totalPrice|currency:"PLN"}}</td>
-                <td>{{order.statusText}}</td>
+                <td *ngIf="showStatus" class="table-hidden-sm">{{order.statusText}}</td>
                 <td><a [routerLink]="order.routerLink" standardButton btnStyle="table-sm" btnType="show">Show</a></td>
             </tr>
             </tbody>

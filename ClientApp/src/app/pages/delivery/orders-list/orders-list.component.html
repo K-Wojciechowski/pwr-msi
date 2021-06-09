@@ -2,7 +2,7 @@
 <app-progress-spinner-content [showLoading]="showLoading > 0">
     <ng-container *ngIf="ordersInProgress.length > 0">
         <h2>Orders in progress</h2>
-        <app-order-table [showLoading]="showLoading > 0" [orders]="ordersInProgress" [showCustomer]="true"></app-order-table>
+        <app-order-table [showLoading]="showLoading > 0" [orders]="ordersInProgress" [showCustomer]="true" [showItems]="false" [showStatus]="false"></app-order-table>
     </ng-container>
 </app-progress-spinner-content>
     <ng-container >
@@ -14,12 +14,12 @@
                 Show available orders only from nearby restaurants
             </label>
         </div>
-        <app-order-table *ngIf="ordersAwaiting.length > 0" [showLoading]="showLoading > 0" [orders]="ordersAwaiting" [showRestaurant]="true"></app-order-table>
+        <app-order-table *ngIf="ordersAwaiting.length > 0" [showLoading]="showLoading > 0" [orders]="ordersAwaiting" [showRestaurant]="true" [showItems]="false" [showStatus]="false"></app-order-table>
     </ng-container>
 
    
     <ng-container *ngIf="orderHistory.length > 0">
         <h2>Completed orders</h2>
-        <app-order-table [showLoading]="showLoading > 0" [orders]="orderHistory" [showRestaurant]="true"></app-order-table>
+        <app-order-table [showLoading]="showLoading > 0" [orders]="orderHistory" [showRestaurant]="true" [showItems]="false" [showStatus]="false"></app-order-table>
     </ng-container>
 

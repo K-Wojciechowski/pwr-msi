@@ -11,6 +11,9 @@ export class OrderTableComponent implements OnInit {
     @Input("showRestaurant") showRestaurant: boolean = false;
     @Input("showCustomer") showCustomer: boolean = false;
     @Input("showDelivery") showDelivery: boolean = false;
+    @Input("showAmount") showAmount: boolean = false;
+    @Input("showItems") showItems: boolean = false;
+    @Input("showStatus") showStatus: boolean = false;
     @Input("orders") items!: OrderBasicWrapper[];
 
     constructor() {
