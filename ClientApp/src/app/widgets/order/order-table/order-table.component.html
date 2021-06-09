@@ -18,7 +18,7 @@
             <tr *ngFor="let order of items">
                 <th scope="row"><a [routerLink]="order.routerLink">{{order.v.orderId}}</a></th>
                 <td>{{order.v.created|ldate}}</td>
-                <td>{{order.itemNames}}</td>
+                <td class="table-hidden-sm">{{order.itemNames}}</td>
                 <td *ngIf="showRestaurant" class="table-hidden-sm"><a href="/browse/{{order.v.restaurant.restaurantId}}">{{order.v.restaurant.name}}</a></td>
                 <td *ngIf="showCustomer" class="table-hidden-sm">{{order.customerName}}</td>
                 <td *ngIf="showDelivery" class="table-hidden-sm">{{order.deliveryPersonName}}</td>
