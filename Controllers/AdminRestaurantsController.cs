@@ -48,6 +48,8 @@ namespace pwr_msi.Controllers {
         [HttpPost]
         public async Task<ActionResult<RestaurantFullDto>> Create([FromBody] RestaurantFullDto restaurantFullDto) {
             var restaurant = restaurantFullDto.AsNewRestaurant();
+            var cuisineIds = restaurantFullDto.Cuisines.Select(c => c.CuisineId);
+            restaurant.Cuisines = await _dbContext.Cuisines.Where(c => cuisineIds.Contains(c.CuisineId)).ToListAsync();
             await _dbContext.Restaurants.AddAsync(restaurant);
             await _dbContext.SaveChangesAsync();
             return restaurant.AsAdminDto();
