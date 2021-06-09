@@ -217,10 +217,14 @@ namespace pwr_msi.Services {
                 await using var transaction =
                     await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
                 var httpClient = _httpClientFactory.CreateClient();
-                Debug.Assert(payment.ExternalPaymentId != null, "payment.ExternalPaymentId != null");
-                using var httpResponse = await httpClient.GetAsync(_gatewayEndpointInfo(payment.ExternalPaymentId));
-                paymentInfo = await DeserializeFromGateway<PaymentInfoDto>(httpResponse);
-                await UpdatePaymentFromApi(payment, paymentInfo.Payment);
+                if (payment.ExternalPaymentId != null) {
+                    using var httpResponse = await httpClient.GetAsync(_gatewayEndpointInfo(payment.ExternalPaymentId));
+                    paymentInfo = await DeserializeFromGateway<PaymentInfoDto>(httpResponse);
+                    if (paymentInfo != null) {
+                        await UpdatePaymentFromApi(payment, paymentInfo.Payment);
+                    }
+                }
+
                 await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
             });
