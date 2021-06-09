@@ -32,7 +32,7 @@ export class OrdersListComponent implements OnInit {
         for (var i = 0; i < 3; i++) {
 
         }
-        this.restIdString = this.route.snapshot.paramMap.get("restaurantID");
+        this.restIdString = this.route.snapshot.paramMap.get("restaurantId");
         if (this.restIdString == "all" || this.restIdString == null) {
             this.restIdString = "-1";
         }

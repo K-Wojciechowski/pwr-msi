@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GeoCoordinatePortable;
 using System.Linq;
@@ -48,7 +49,15 @@ namespace pwr_msi.Controllers {
                     var status = int.TryParse(c, out var res);
                     return status ? res : -1;
                 });
+                foreach (var id in cuisinesIds) {
+                    Console.WriteLine(id);
+                }
+
+                Console.WriteLine("restauracje " + query.ToList().Count);
                 query = query.Where(r => r.Cuisines.Any(c => cuisinesIds.Contains(c.CuisineId)));
+                Console.WriteLine("Kuchnia "+(await _dbContext.Cuisines.FindAsync(cuisinesIds.ToList()[0])).Name);
+                Console.WriteLine("restauracje " + query.ToList().Count);
+
             }
 
             if (search != null && search.Length > 0) {
