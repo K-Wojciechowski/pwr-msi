@@ -51,16 +51,14 @@ export class RestaurantMenuComponent implements OnInit {
         const restaurantIdString = this.route.snapshot.paramMap.get("id");
         if (restaurantIdString === null) return;
         this.restaurantId = parseInt(restaurantIdString);
-        this.http.get<RestaurantFull>(`/api/restaurants/${this.restaurantId}/`).subscribe(r => {
+        this.http.get<RestaurantFull>(`/api/offer/restaurants/${this.restaurantId}/`).subscribe(r => {
             this.restaurant = r;
-            // TODO for testing
-            this.addresses = [r.address, {...r.address, addressee: "test2", addressId: 1234}];
             --this.showLoading;
         }, err => {
             this.toastService.handleHttpError(err);
             --this.showLoading;
         });
-        this.http.get<RestaurantMenuCategoryWithItems[]>(`/api/restaurants/${this.restaurantId}/menu/`).subscribe(m => {
+        this.http.get<RestaurantMenuCategoryWithItems[]>(`/api/offer/restaurants/${this.restaurantId}/menu/`).subscribe(m => {
             this.menu = m;
             this.menuCategories = m;
             this.buildWrappedMenu();
@@ -126,7 +124,7 @@ export class RestaurantMenuComponent implements OnInit {
     }
 
     reloadAddressesSilently() {
-        this.http.get<Address[]>(`/api/addresses/`).subscribe(a => {
+        this.http.get<Address[]>(`/api/addresses/all/`).subscribe(a => {
             this.addresses = a;
         }, err => {
             this.toastService.handleHttpError(err);
