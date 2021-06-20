@@ -1,23 +1,23 @@
 MSI
 ===
 
-Production environment
-----------------------
+A university project for *Mobilne Systemy Informatyczne* — an app to order food
+and get it delivered.
 
-<https://msi.krzysztofwojciechowski.pl/>
+Technologies
+------------
 
-Log into server: user = msi, password = nSHwuL2RpWhAsJRk
-
-Log into app: user = admin, password = nSHwuL2RpWhAsJRk
-
-Mailhog is available at <https://msi.krzysztofwojciechowski.pl/mailhog>.
+* Main backend: C# + ASP.NET Core + REST
+* Frontend: Angular + Bootstrap 4
+* MSIPay app (simple payment simulator): Python + FastAPI + Jinja2
+* Database: PostgreSQL
 
 Local development setup
 -----------------------
 
-Run app in development: use Rider (or VS), or `dotnet run`.
+Run app in development: use Rider, Visual Studio, or VS Code, or `dotnet run`.
 
-Run PostgreSQL, Redis, Mailhog in Docker: `docker-compose -f docker-compose.infra.yml up`
+Run PostgreSQL, Redis, Mailhog, Minio, MSIPay in Docker: `docker-compose -f docker-compose.infra.yml up`
 
 Database migration: Install `dotnet ef` first by running `dotnet tool install
 --global dotnet-ef`. Then you can use `dotnet ef database update` to migrate the
