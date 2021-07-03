@@ -12,6 +12,15 @@ Technologies
 * MSIPay app (simple payment simulator): Python + FastAPI + Jinja2
 * Database: PostgreSQL
 
+Screenshots
+-----------
+
+![Start screen](https://raw.githubusercontent.com/K-Wojciechowski/pwr-msi/master/screenshots/msi-start-screen.png)
+
+![Menu (order creation)](https://raw.githubusercontent.com/K-Wojciechowski/pwr-msi/master/screenshots/msi-menu-ordering.png)
+
+![Order details](https://raw.githubusercontent.com/K-Wojciechowski/pwr-msi/master/screenshots/msi-order-details.png)
+
 Local development setup
 -----------------------
 
