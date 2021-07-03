@@ -11,6 +11,8 @@ Technologies
 * Frontend: Angular + Bootstrap 4
 * MSIPay app (simple payment simulator): Python + FastAPI + Jinja2
 * Database: PostgreSQL
+* Cache: Redis
+* Uploaded file storage: Minio
 
 Screenshots
 -----------
